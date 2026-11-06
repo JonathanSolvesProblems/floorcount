@@ -44,5 +44,5 @@
     -
       {}
   InputLines:
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountPadController – sole prints, pad border and turn arc</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountPadController: sole prints, pad border and turn arc</span>"}'
     - '// @ui {"widget":"separator"}'

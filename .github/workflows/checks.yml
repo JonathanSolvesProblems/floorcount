@@ -1,0 +1,25 @@
+name: checks
+
+# Runs on every push. The LEAF scenarios need Lens Studio's preview and run there; these are the
+# checks that need only Node: the unit tests for the Lens's pure logic, the planted-breaks run
+# that proves those tests catch what they claim to, and the repository checks.
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install the test toolchain
+        run: npm ci --prefix tests/unit
+      - name: Unit tests (footwork data, session rules, brightness curve)
+        run: npm test --prefix tests/unit
+      - name: Planted breaks (every one must be caught)
+        run: npm run breaks --prefix tests/unit
+      - name: Repository checks (no LFS pointers, scenarios registered, no local paths, voice)
+        run: node tests/check-repo.mjs

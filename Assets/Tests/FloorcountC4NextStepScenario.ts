@@ -6,7 +6,7 @@
 import { Scenario } from "Leaf.lspkg/Scenarios/scenario/Scenario"
 import { expect } from "Leaf.lspkg/Utils/common/Expect"
 import { sleep } from "Leaf.lspkg/Utils/common/Utils"
-import { card, interactor, main, pad, pinch, restartSession, waitForPhase } from "./FloorcountTestKit"
+import { card, interactor, main, pad, pinch, restartSession, waitForStepIndex, watchPhases } from "./FloorcountTestKit"
 
 @component
 export class FloorcountC4NextStepScenario extends Scenario {
@@ -35,17 +35,21 @@ export class FloorcountC4NextStepScenario extends Scenario {
     await pinch("GotItButton", io)
     await sleep(200)
     expect(m.state.fullGotItStreak).toBe(2)
-    const fadeBefore = p.isFloorVisible
-    await pinch("GotItButton", io)
-    await sleep(120)
-    print("[C4] after the third Got it at Full: phase=" + m.state.phase)
-    expect(fadeBefore).toBe(true)
-    expect(m.state.phase).toBe("fading")
+    expect(p.isFloorVisible).toBe(true)
 
-    // The footprints fade out over two counts, then the next step loads.
-    const reachedLearning = await waitForPhase("learning", 12000)
-    expect(reachedLearning).toBe(true)
+    // The footprints fade out over two counts, then the next step loads. At Full tempo those two
+    // counts are 0.63 s and a simulated pinch costs about 0.95 s, so the fade can start and finish
+    // inside the pinch and one look at the phase afterwards proves nothing either way. Every frame
+    // is watched instead, which also pins the order: the step never changes without a fade.
+    const phases = watchPhases()
+    await pinch("GotItButton", io)
+    const reachedNext = await waitForStepIndex(1, 12000)
     await sleep(400)
+    const seen = phases.stop()
+    print("[C4] after the third Got it at Full, phases frame by frame: " + seen.join(" > "))
+    expect(reachedNext).toBe(true)
+    expect(seen.join(",")).toBe("learning/0,fading/0,learning/1")
+
     print("[C4] loaded step " + m.state.stepIndex + ": " + m.state.step.id)
     expect(m.state.stepIndex).toBe(1)
     expect(m.state.step.id).toBe("rightTurn")
@@ -59,12 +63,12 @@ export class FloorcountC4NextStepScenario extends Scenario {
 
     // The turn arc shows on the turn counts (2 and 3) and on no others.
     const arcOn: boolean[] = [false, false, false, false, false, false, false, false, false]
-    const seen: boolean[] = [false, false, false, false, false, false, false, false, false]
+    const counted: boolean[] = [false, false, false, false, false, false, false, false, false]
     const deadline = getTime() + 9
     while (getTime() < deadline) {
       const n = m.currentCount
       if (n >= 1 && n <= 8) {
-        seen[n] = true
+        counted[n] = true
         if (p.arcVisible) arcOn[n] = true
       }
       await sleep(30)
@@ -73,7 +77,7 @@ export class FloorcountC4NextStepScenario extends Scenario {
     for (let i = 1; i <= 8; i++) if (arcOn[i]) onCounts.push(i)
     print("[C4] turn arc visible on counts: " + onCounts.join(", "))
 
-    for (let i = 1; i <= 8; i++) expect(seen[i]).toBe(true)
+    for (let i = 1; i <= 8; i++) expect(counted[i]).toBe(true)
     expect(onCounts.length > 0).toBe(true)
     for (const n of onCounts) expect(n === 2 || n === 3).toBe(true)
     expect(arcOn[1]).toBe(false)

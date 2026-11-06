@@ -167,7 +167,7 @@ sweep's log.
 | 4 | Got it three times at Full loads the right turn and its arc shows on the turn counts | `floorcount-c4-next-step` | **PASS** |
 | 5 | Pinching a print flashes it; the worst step replays; the floor clears and the card shows each step's Agains | `floorcount-c5-mark-and-summary` | **PASS** |
 | 6 | Looking away from the pad shows an arrow pointing back to it | `floorcount-c6-off-view-arrow` | **PASS** |
-| — | Capture helper, holds the session on one count for a screenshot | `floorcount-hold-on-count` | **PASS** (not a done criterion) |
+| - | Capture helper, holds the session on one count for a screenshot | `floorcount-hold-on-count` | **PASS** (not a done criterion) |
 
 What the sweep measured:
 
@@ -284,10 +284,10 @@ values for them are simply ignored.
 
 New:
 
-- `Assets/Scripts/FloorcountLook.ts` — the tokens, the brightness curve, the mesh builders, the
+- `Assets/Scripts/FloorcountLook.ts`: the tokens, the brightness curve, the mesh builders, the
   fonts and the materials. Everything visual reads from here.
 - `Assets/Materials/Floorcount{FootLeft,FootRight,Cell,CellEmpty,PadBorder,Parquet,Arrow}.mat`
-- `Assets/Tests/FloorcountHoldOnCountScenario.ts` — the screenshot helper.
+- `Assets/Tests/FloorcountHoldOnCountScenario.ts`: the screenshot helper.
 
 Changed: `FloorcountPadController.ts`, `FloorcountCountUI.ts`, `FloorcountStepCardUI.ts`,
 `FloorcountOffViewArrow.ts`, `FloorcountMain.ts`, `Assets/Tests/FloorcountC1StartScenario.ts`,
@@ -418,7 +418,7 @@ change. All eight pass.
 | 5 | Pinching a print flashes it; the worst step replays; the floor clears and the card shows each step's Agains | `floorcount-c5-mark-and-summary` | **PASS** |
 | 6 | Looking away from the pad shows an arrow pointing back to it | `floorcount-c6-off-view-arrow` | **PASS** |
 | 7 | **New.** One left edge, capsules fitted and apart, paused line in words | `floorcount-c7-step-card` | **PASS** |
-| — | Capture helper, holds the session on one count for a screenshot | `floorcount-hold-on-count` | **PASS** (not a done criterion) |
+| - | Capture helper, holds the session on one count for a screenshot | `floorcount-hold-on-count` | **PASS** (not a done criterion) |
 
 What the sweep measured, where it differs from 2 November:
 
@@ -814,3 +814,216 @@ Saved through the Editor API (`model.project.save()`), **last at 09:50:10 on 6 N
 time. `ARSpec.esproj` was written at 09:50:10. `Assets/Scene.scene` still carries 09:14:06 from the
 first save of the session, the scene being untouched by this pass. Nothing in the project has changed
 since the last save.
+
+## Session memory and coverage, 6 November 2026
+
+The second half of the 6 November validation, finishing a pass that a usage limit cut off. No design
+work, no scene change, and no script change: everything below is a check, a measurement or a
+screenshot. All times are local time on 6 November.
+
+### What was verified
+
+- **TypeScript compiles.** `RecompileTypeScriptTool` reported `succeeded`. The first call timed out
+  at the MCP transport while Lens Studio was blocked on an `adb` poll, and the retry a minute later
+  succeeded; nothing was wrong with the code.
+- **The preview starts clean.** After a refresh the log reads
+  `Floorcount: session started, Basic step at Slow (140 BPM)` and no Floorcount script logged an
+  error or a warning. The only warnings in the window belong to the LEAF plugin saving its panel
+  state and to Lens Studio polling attached Android devices.
+- **Every LEAF scenario, c1 to c17 plus the hold-on-count helper and the capture helper.** Table
+  below. All pass.
+- **A saved session survives a real preview reset.** Measured two ways, below.
+- **The storage calls match the type definitions.** `FloorcountMain` reaches persistent storage
+  through `global.persistentStorageSystem`, then `.store`, then `getString`, `putString` and
+  `remove`. `Support/StudioLib.d.ts` declares `persistentStorageSystem` as a global, `store` as a
+  `GeneralDataStore`, and all three methods with exactly those signatures. Nothing is off-contract.
+- **No OneDrive duplicates.** `Assets/` and `Packages/` were checked for "* 2.*" files before
+  compiling and again after the sweep. There are none.
+- **Packages are the pinned set.** Spectacles Interaction Kit 2.0.0, Spectacles UI Kit 2.0.0 and
+  LEAF 2.0.2. Nothing was installed, and neither `QueryRuntimeSceneTool` nor `PreviewInteractTool`
+  was called. LEAF was pinned to the preview rather than to a device before the sweep, because a
+  Quest 3S and later a phone were attached over adb and the panel's target is sticky.
+
+### What changed, and why
+
+Nothing was changed in this session. The three test-side changes below were already on disk when it
+started, made by the session the limit cut off. Each was reviewed here and each is kept.
+
+- **`masterCurrentStep` in the test kit stops on either signal.** It used to loop while the phase
+  was still "learning", which is wrong at Full tempo: the fade between steps lasts two counts, 0.63
+  s, and a simulated pinch costs about 0.95 s, so the loop could look once before the step completed
+  and again after the next step had loaded, see "learning" both times, and spend the caller's
+  remaining pinches answering for a step the caller had not reached. It now also stops when the step
+  index moves off the one it started on. This is the right fix: the helper's job is to master *one*
+  step, so the step index is the thing it should be watching.
+- **The c13 freeze helper waits on frames, not on sleeps.** `freezeNearStrikeOf` needs to stop the
+  beat within a fraction of a count's strike. A `sleep` in this preview resolves about every 140 ms
+  against a 429 ms beat, so the beat positions a scenario could even observe fell on a coarse grid
+  and landing near a strike was luck over tens of seconds. Waiting a frame at a time puts every
+  drawn frame within reach. It returns 1 rather than hanging if no close reading turns up, so the
+  caller fails on a number instead of timing out.
+- **C4 watches every frame instead of looking once.** This is the change the cut-off session was
+  asked to review, and it is sound. The old scenario pinched the third Got it and then took one look
+  at the phase, which at Full tempo proves nothing either way: the fade can start and finish inside
+  the pinch, so a single look afterwards finds "learning" whether the fade happened or not, and C4
+  failed on every run for that reason. It now uses a new test-kit helper, `watchPhases`, which
+  records phase and step index on every frame and appends only on a change. C4 asserts the exact
+  sequence `learning/0, fading/0, learning/1`. That is **stricter** than what it replaced, not
+  looser: the old check could not see the fade at all, and the new one fails if the fade is missing,
+  if it happens twice, or if the step changes without one. In this sweep C4 printed exactly
+  `learning/0 > fading/0 > learning/1` and passed. The assertion was not relaxed to get there.
+
+### The LEAF sweep
+
+One sweep, run in the Lens Studio preview through the LEAF panel, between 13:57 and 14:10. The
+preview was refreshed before each timing-sensitive scenario (c2, c5, c8, c9, c13). c5 and c8 were
+run twice each, as they share the fragile timing path with C4.
+
+| # | Scenario | Result | Note |
+|---|---|---|---|
+| 1 | `floorcount-c1-start` | **PASS** | |
+| 2 | `floorcount-c2-beat` | **PASS** | on the second attempt, see below |
+| 3 | `floorcount-c3-again` | **PASS** | |
+| 4 | `floorcount-c4-next-step` | **PASS** | the `watchPhases` change, first green run |
+| 5 | `floorcount-c5-mark-and-summary` | **PASS** | run twice, passed both |
+| 6 | `floorcount-c6-off-view-arrow` | **PASS** | |
+| 7 | `floorcount-c7-step-card` | **PASS** | |
+| 8 | `floorcount-c8-answer-guard` | **PASS** | run twice, passed both |
+| 9 | `floorcount-c9-session-memory` | **PASS** | and again at 14:27 as the clearing step |
+| 10 | `floorcount-c10-left-turn` | **PASS** | |
+| 11 | `floorcount-c11-halves` | **PASS** | |
+| 12 | `floorcount-c12-count-display` | **PASS** | |
+| 13 | `floorcount-c13-the-and` | **PASS** | |
+| 14 | `floorcount-c14-mark-ring` | **PASS** | |
+| 15 | `floorcount-c15-restart-from-summary` | **PASS** | |
+| 16 | `floorcount-c16-arc-inside-pad` | **PASS** | |
+| 17 | `floorcount-c17-teal-law` | **PASS** | |
+| helper | `floorcount-hold-on-count` | **PASS** | not a done criterion |
+| helper | `floorcount-capture` | **PASS** | all three shots, not a done criterion |
+
+**C2's one retry was a lost dispatch, not a failure.** The first attempt produced no output at all:
+no assertion failed, the scenario body never ran. `RunAndCollectLogsTool` in refresh mode fires two
+Lens resets a fraction of a second apart, and the run was dispatched after the first reset's
+`session started` print, which put it into the second reset and threw the request away. Waiting for
+the LEAF panel's own `Loaded 19 scenario(s) from preview` line before dispatching avoided it for the
+rest of the sweep. This is worth knowing because it looks exactly like a hang.
+
+What the sweep measured, in the scenarios' own prints:
+
+- **C2.** 154 samples over 8.01 s, 18.75 beats, 140.5 BPM against the 140 BPM loop. Zero mismatches
+  on lit prints, hold counts, the numeral and the hold cells, zero brightness values out of range,
+  brightest own cell 0.99, seven clave hits. 154 samples is a healthy preview; a degraded one took
+  12 to 93 on 6 November morning.
+- **C4.** Phases frame by frame after the third Got it at Full: `learning/0 > fading/0 >
+  learning/1`. Step 1 loaded as `rightTurn`, turn arc visible on counts 2 and 3 and no others.
+- **C5.** Pinching `Footprint_C1` set it flashing and recorded the mark; the review came back on
+  step 0 at Full; rows read "Basic step: 1 Again", "Right turn: 0 Agains", "Left turn: 0 Agains".
+- **C8.** Both runs: the guard refused a Got it before any 8-count had played, and of two pinches
+  inside one 8-count the first was taken and the second dropped, at beat 10.9 and beat 10.7, both
+  landing in 8-count 1.
+- **C9.** First session no rings and `previous` null; second session `previousLost=5`,
+  `previousAgains=1`, ring on count 5 at 0.350 and none on count 1; second session rows all carrying
+  a "last time" comparison.
+- **C10.** Left turn loaded, count 6's toes pointing (0.00, 0.00, 1.00) in pad space, arc at full on
+  counts 6 and 7 only.
+- **C11.** Whole step lights 1, 2, 3, 5, 6, 7; first half 1, 2, 3; second half 5, 6, 7; whole step
+  back again.
+- **C12.** A Got it hides the numeral and the strip, an Again puts them back.
+- **C13.** 356 samples, one every 0.108 beats; frozen 0.016 beats past count 2's strike with the
+  print at 0.960 against a curve that says 0.960; worst hold cell 0.350; nothing off the curve.
+- **C14.** Marks on 2 and 5, both rings at 0.500, row reads "Basic step: 0 Agains, lost it on 2 and
+  5".
+- **C15.** At the summary the title is "Practise again" with the floor and both buttons off;
+  pinching it returns to step 0 at Slow with the floor and both answers back.
+- **C16.** Right turn arc furthest point 35.68 cm from the pad centre, left turn 35.23 cm, both
+  inside the border's inner edge at 43.2 cm.
+- **C17.** On all three steps the only teal in the scene is count 1's print and cell 1.
+
+### A saved session across a real preview reset
+
+Checked by hand, not by a scenario asserting against itself. The capture helper's `last-time-rings`
+shot was run first, which plays and finishes one session losing counts 2 and 5 and leaves it in
+persistent storage. Then the preview was reset for real, which tears the Lens down and builds it
+again from cold, so anything that comes back has been read off storage rather than held in memory.
+
+**What the fresh Lens said about itself.** The step card measures and logs its own width at startup.
+On a first session it reports `Card 39.5 cm wide` with line widths `39.5 / 28.9 / 33.1 / 25.7 cm`.
+After the reset, with the session saved, the same print read `Card 62.1 cm wide` with line widths
+`39.5 / 28.9 / 33.1 / 62.1 cm`, and every line laid out from -30.00 cm instead of -19.76 cm. The
+fourth line is the focus line, and it grew from 25.7 cm to 62.1 cm because it was carrying "Last
+time: lost it on 2 and 5" rather than "Whole step". The card widened to fit last session's result.
+
+**What it looked like.** Looking down at the pad in that cold-booted Lens, counts 2 and 5 each
+carried the faint ivory halo that marks where it went wrong last time, and no other print did. The
+ring is a slightly larger copy of the foot mesh drawn just under the print, so it reads as an
+outline hugging the silhouette; at this size it is clearly a second shape and not an edge of the
+print. Count 3's print beside it is a plain solid shape with no halo at all.
+
+**And the other direction.** After `floorcount-c9-session-memory` cleared the save and the preview
+was reset again, the same startup print was back to `Card 39.5 cm wide` and `25.7 cm` on the fourth
+line. So the round trip was observed in both directions on a cold Lens: written and read back, then
+removed and gone.
+
+### The captures
+
+Three frames, each 1280 x 720, each the square 1590 x 1590 preview frame with its top 80 rows
+cropped off the LEAF banner, scaled to 720 high and centred on a `#1A1612` canvas through
+`tmp/compose_shot.py`. Each was looked at before moving on. Preview-camera coordinates are the ones
+the Inspector and `MovePreviewCamera` use, where the default camera is the origin at eye height and
+the floor is 150 cm below it. For every shot the Lens was reset with the camera at the 3 November
+start position, (-120, 0, -215) facing -Z, so the layout pinned over the clear rug before the camera
+was aimed.
+
+| Path | Camera | What it shows |
+|---|---|---|
+| `devpost/shots/right-turn-arc.png` | (-120, 0, -145), looking at (-120, -131, -296), about 41 degrees down | The right turn held on count 2, arc at full, print and cell both at 0.97. The whole pad over clear floor, the numeral "2", cell 1 teal and cell 2 struck. The Again capsule clips the top right corner. |
+| `devpost/shots/last-time-rings.png` | (-132, 0, -100), looking at (-74, -112, -293) | A second practice held on count 2. Counts 2 and 5 both carry last time's ring, and the card reads "Step 1 of 3", "Slow, 140 BPM" and the full line "Last time: lost it on 2 and 5". |
+| `devpost/shots/summary-last-time.png` | (90, 0, -279), looking at (-120, -67, -279), about 17.8 degrees down | The summary card, whole, on the plain partition wall: "Practise again", then three rows each ending in a comparison, then "Pinch the title to practise again". |
+
+**The card and the whole pad do not fit in one frame, and `last-time-rings` is the compromise.** The
+preview's frame is 36.2 degrees across and the pad alone already spans most of it, with the card up
+and to the right of the pad. Framed on the pad alone the rings are large and obvious but nothing in
+the picture says the session is a second one. Framed to include the card, the title "Basic step"
+falls in the 80 rows the compositing crops and the left end of the clave strip runs off the left
+edge. The published frame is the second of those, because the line "Last time: lost it on 2 and 5"
+is what makes the shot mean what its name says, and both rings are still clearly readable in it. The
+clipped title and the cropped strip end are known and deliberate. A pad-only version of the same
+held frame was looked at and rejected on those grounds.
+
+### Things worth knowing
+
+**The preview panel can pause itself, and a resume is not enough.** Partway through, the preview
+stopped producing any log output for about four minutes. There was no modal dialog: checked with UI
+Automation, the only Lens Studio window was the main one. `PreviewPanelTool` with `getConfig`
+reported `inputType: "Preview is Paused"`. Calling `resume` returned success and changed nothing;
+the Lens only came back after a `refresh`, which put the input type back to `Interactive` on the
+Sunlit Room scene and re-registered all 19 scenarios. A silent preview is worth one `getConfig`
+before anything is concluded about the Lens.
+
+**Two scenario runs in this session outlasted the MCP call timeout** and one Editor tool call did
+too, while Lens Studio was blocked on an `adb` poll. Both attached Android devices, a Quest 3S and
+later a phone, are polled every three seconds and the poll sometimes times out. When a call comes
+back as a transport timeout the work usually finished anyway, and the result is in the log.
+
+### Files
+
+Changed in this session: `devpost/design-pass-report.md`, this section, and the three new PNGs under
+`devpost/shots/`. No TypeScript, no scene object, no material, texture, font or sound was touched.
+No `@input` was wired or changed, and every name the LEAF scenarios look up is still there.
+
+### Saves
+
+Saved through the Editor API (`model.project.save()`) four times: 13:57:04 after the clean compile,
+14:10:52 after the LEAF sweep, 14:28:25 after the saved session was cleared, and **14:30:48 last**.
+`ARSpec.esproj` was written at 14:30:48. `Assets/Scene.scene` still carries 10:48:44 from earlier in
+the day, the scene being untouched by this pass.
+
+The project is left as a first session: the saved session was cleared with
+`floorcount-c9-session-memory`, which ends by calling `clearSaved()` and asserting `previous` is
+null, and the clear was then confirmed on a cold Lens by the card measuring 39.5 cm again. The only
+things written after the last save are this section and the screenshots, both outside the Lens
+project's assets, so nothing in the project itself has changed since.
+
+**Still outstanding, and not done here.** The Lens name in `ARSpec.esproj` is still
+`SpecsBaseTemplate`; it cannot be set through the Editor API, as the 6 November morning note
+explains, and remains a by-hand go-live step in Project Settings.

@@ -1,5 +1,5 @@
 /**
- * FloorcountStepCardUI — the step card to the right of the pad.
+ * FloorcountStepCardUI: the step card to the right of the pad.
  *
  * Owns: ivory text on the air (no panel, charter law 16) with the step name, "Step N of 3", the
  * tempo and what part of the step is showing, plus the two pinch targets: Again on the left and
@@ -87,7 +87,7 @@ interface AnswerButton {
 
 @component
 export class FloorcountStepCardUI extends BaseScriptComponent {
-  @ui.label('<span style="color: #60A5FA;">FloorcountStepCardUI – step card with Again and Got it</span>')
+  @ui.label('<span style="color: #60A5FA;">FloorcountStepCardUI: step card with Again and Got it</span>')
   @ui.separator
   @ui.group_start("Settings")
   @input

@@ -1,9 +1,11 @@
 const path = require('path');
 const fs = require('fs');
-const audio = require(require('path').join(process.env.CLAD_SKILLS_DIR, 'build-sfx', 'tools'));
+// CLAD's build-sfx tools live in the ls-clad plugin, not in this repository. Point
+// CLAD_SKILLS_DIR at the plugin's skills folder to run this again.
+const audio = require(path.join(process.env.CLAD_SKILLS_DIR || '.', 'build-sfx', 'tools'));
 const A = audio.audio_primitives;
 const SR = A.SAMPLE_RATE;
-const PROJECT_ASSETS_SFX = require('path').join(__dirname, '..', 'Assets', 'GeneratedSFX');
+const PROJECT_ASSETS_SFX = path.join(__dirname, '..', 'Assets', 'GeneratedSFX');
 fs.mkdirSync(PROJECT_ASSETS_SFX, { recursive: true });
 
 // Clave click: hardwood clave, bright tonal knock (~2.5 kHz) + stick attack. Layered attack + body.

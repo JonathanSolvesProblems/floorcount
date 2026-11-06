@@ -1,4 +1,4 @@
-﻿"""Render the Floorcount brand kit to PNG.
+"""Render the Floorcount brand kit to PNG.
 
 Writes the wordmark (one glyph redrawn) and every texture the Lens uses to .design/brand/export/.
 Textures are ivory shapes at full opacity on a transparent ground; the Lens material sets the

@@ -1,5 +1,5 @@
 /**
- * FloorcountSteps — footwork data for the three steps (pure data, no scene access).
+ * FloorcountSteps: footwork data for the three steps (pure data, no scene access).
  *
  * Owns: the brief's footwork tables (leader's part, On1, counts from the start position),
  * translated into floor spots on the pad. Coordinates are cm in the pad's local space:
@@ -98,7 +98,9 @@ export const STEPS: StepDef[] = [
       { count: 7, foot: "R", x: HOME_R.x, z: HOME_R.z, yawDeg: 0, label: "right foot back beside left" },
       hold(8),
     ],
-    turn: { counts: [2, 3], direction: "right", centerX: -4, centerZ: -26, radius: 24, startDeg: -60, sweepDeg: 250 },
+    // A ring around the two forward prints, open at the front where their toes point, and well
+    // inside the pad's border (the first arc ran 5 cm past the pad's far edge).
+    turn: { counts: [2, 3], direction: "right", centerX: -4, centerZ: -24, radius: 17, startDeg: 50, sweepDeg: 250 },
   },
   {
     id: "leftTurn",
@@ -115,7 +117,8 @@ export const STEPS: StepDef[] = [
       { count: 7, foot: "R", x: HOME_R.x, z: HOME_R.z, yawDeg: 0, label: "right foot completes the turn" },
       hold(8),
     ],
-    turn: { counts: [6, 7], direction: "left", centerX: 4, centerZ: 26, radius: 24, startDeg: 260, sweepDeg: 250 },
+    // The right turn's ring turned half a revolution and swept the other way.
+    turn: { counts: [6, 7], direction: "left", centerX: 4, centerZ: 24, radius: 17, startDeg: 120, sweepDeg: 250 },
   },
 ]
 

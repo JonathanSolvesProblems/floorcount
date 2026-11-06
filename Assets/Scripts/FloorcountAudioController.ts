@@ -1,5 +1,5 @@
 /**
- * FloorcountAudioController — plays the practice music and cues from the pad.
+ * FloorcountAudioController: plays the practice music and cues from the pad.
  *
  * Owns: the music AudioComponent (one generated loop per tempo), the clave click on counts
  * 1 and 5, the button tap and the step-mastered cue. Also owns the beat clock: the beat is
@@ -14,7 +14,7 @@
 
 @component
 export class FloorcountAudioController extends BaseScriptComponent {
-  @ui.label('<span style="color: #60A5FA;">FloorcountAudioController – music, clave and cues from the pad</span>')
+  @ui.label('<span style="color: #60A5FA;">FloorcountAudioController: music, clave and cues from the pad</span>')
   @ui.separator
   @ui.group_start("References")
   @input

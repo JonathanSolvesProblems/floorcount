@@ -1,5 +1,5 @@
 /**
- * FloorcountOffViewArrow — a small arrow at the bottom of the view pointing back to the pad.
+ * FloorcountOffViewArrow: a small arrow at the bottom of the view pointing back to the pad.
  *
  * Owns: the chevron texture on a 6 cm quad placed in front of the camera, low in the view and
  * rolled to point toward the pad, ivory at 60 per cent and never animated (laws 10 and 17).
@@ -19,7 +19,7 @@ const ARROW_SIZE_CM = 6
 
 @component
 export class FloorcountOffViewArrow extends BaseScriptComponent {
-  @ui.label('<span style="color: #60A5FA;">FloorcountOffViewArrow – points back to the pad when it is out of view</span>')
+  @ui.label('<span style="color: #60A5FA;">FloorcountOffViewArrow: points back to the pad when it is out of view</span>')
   @ui.separator
   @ui.group_start("References")
   @input

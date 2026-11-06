@@ -1,5 +1,5 @@
 /**
- * FloorcountPadController — the footprint pad on the floor.
+ * FloorcountPadController: the footprint pad on the floor.
  *
  * Owns: the pad's ivory border and parquet grain, the current step's sole prints (one textured
  * quad per floor spot, left solid and right outlined), the turn arc, and their brightness each
@@ -60,6 +60,8 @@ interface SpotView {
   interactable: Interactable
   flashUntil: number
   marked: boolean
+  /** Lost on this count in the last finished session: a fainter ring, there from the start. */
+  markedBefore: boolean
   lit: boolean
   /** Teal is reserved for the print that lands on count 1 (charter law 3). */
   isUno: boolean
@@ -67,7 +69,7 @@ interface SpotView {
 
 @component
 export class FloorcountPadController extends BaseScriptComponent {
-  @ui.label('<span style="color: #60A5FA;">FloorcountPadController – sole prints, pad border and turn arc</span>')
+  @ui.label('<span style="color: #60A5FA;">FloorcountPadController: sole prints, pad border and turn arc</span>')
   @ui.separator
 
   private _onFootprintPinched = new Event<number>()
@@ -157,6 +159,28 @@ export class FloorcountPadController extends BaseScriptComponent {
 
   setMarks(counts: number[]): void {
     for (const v of this.views) v.marked = v.spot.counts.some((c) => counts.indexOf(c) >= 0)
+  }
+
+  /**
+   * The counts lost on this step in the last finished session. Their prints carry a ring at
+   * rest brightness from the start, fainter than a ring earned this session, so the floor
+   * says where it went wrong last time without a word.
+   */
+  setPreviousMarks(counts: number[]): void {
+    for (const v of this.views) v.markedBefore = v.spot.counts.some((c) => counts.indexOf(c) >= 0)
+  }
+
+  /** True while a count's print carries last session's ring and none from this one, for tests. */
+  isPreviousMarkShown(count: number): boolean {
+    return this.views.some((v) => v.spot.counts.indexOf(count) >= 0 && v.markedBefore && !v.marked && v.ringObj.enabled)
+  }
+
+  /** Brightness a count's ring was last drawn at, for tests. 0 if it has none showing. */
+  ringBrightness(count: number): number {
+    for (const v of this.views) {
+      if (v.spot.counts.indexOf(count) >= 0 && v.ringObj.enabled) return v.ringMat.mainPass.baseColor.w
+    }
+    return 0
   }
 
   /** 1 = fully visible, 0 = faded out. Used for the two-count fade between steps. */
@@ -251,9 +275,10 @@ export class FloorcountPadController extends BaseScriptComponent {
 
       setLook(v.visualMat, v.isUno ? TINT_TEAL : TINT_IVORY, alpha * this.fade)
 
-      const ringOn = v.marked
+      const ringOn = v.marked || v.markedBefore
       if (v.ringObj.enabled !== ringOn) v.ringObj.enabled = ringOn
-      if (ringOn) setLook(v.ringMat, v.isUno ? TINT_TEAL : TINT_IVORY, BORDER * this.fade)
+      // A ring from this session at 50 per cent; one carried over from the last at rest.
+      if (ringOn) setLook(v.ringMat, v.isUno ? TINT_TEAL : TINT_IVORY, (v.marked ? BORDER : REST) * this.fade)
     }
     this.litCounts = lit
 
@@ -320,6 +345,7 @@ export class FloorcountPadController extends BaseScriptComponent {
       interactable,
       flashUntil: 0,
       marked: false,
+      markedBefore: false,
       lit: false,
       isUno,
     }

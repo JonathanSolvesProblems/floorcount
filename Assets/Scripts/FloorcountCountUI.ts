@@ -1,5 +1,5 @@
 /**
- * FloorcountCountUI — the count display above the far edge of the pad: the clave strip, and the
+ * FloorcountCountUI: the count display above the far edge of the pad: the clave strip, and the
  * numeral above it.
  *
  * Owns: eight capsule cells, one per count, filled for the stepping counts and outlined for the
@@ -47,7 +47,7 @@ const NUMERAL_Y_CM = CELL_H_CM / 2 + CELL_GAP_CM * 2 + NUMERAL_CAP_CM / 2
 
 @component
 export class FloorcountCountUI extends BaseScriptComponent {
-  @ui.label('<span style="color: #60A5FA;">FloorcountCountUI – the clave strip and the count numeral</span>')
+  @ui.label('<span style="color: #60A5FA;">FloorcountCountUI: the clave strip and the count numeral</span>')
   @ui.separator
 
   private textComp!: Text

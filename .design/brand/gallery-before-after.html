@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Floorcount gallery: before and after the design rules</title>
+<style>
+/* Devpost gallery slide, 1500 x 1000 (3:2). Two frames from the Lens Studio preview: the first
+   build, and the same Lens after the charter was applied. The floor is the ground (law 1), ivory
+   is the only ink (law 2), every edge is rounded (law 19). No teal here: the 1 is not on show. */
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-Medium.ttf") format("truetype"); font-weight: 500; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-ExtraBold.ttf") format("truetype"); font-weight: 800; }
+html, body { margin: 0; }
+body { width: 1500px; height: 1000px; overflow: hidden; background: #1A1612; color: #F7EEDF;
+  font-family: "Atkinson Hyperlegible Next", sans-serif; font-weight: 500; }
+.head { position: absolute; left: 80px; right: 80px; top: 56px; display: flex; align-items: center; justify-content: space-between; }
+.wordmark { width: 300px; aspect-ratio: 1600 / 242; background: url("export/wordmark-ivory.png") no-repeat left / contain; }
+.title { font-weight: 800; font-size: 40px; }
+.pair { position: absolute; left: 80px; right: 80px; top: 150px; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+.frame { width: 640px; height: 640px; border-radius: 24px; background-color: #1A1612; background-repeat: no-repeat; background-position: center; }
+.before { background-image: url("../../devpost/shots/pad-lit-footprints.png"); background-size: cover; }
+.after { background-image: url("../../devpost/shots/pad-count5-lit.png"); background-size: auto 100%; }
+.label { font-weight: 800; font-size: 34px; margin: 30px 0 0; }
+.note { font-size: 26px; line-height: 1.35; opacity: .75; margin: 10px 0 0; }
+</style>
+</head>
+<body>
+<div class="head">
+  <div class="wordmark" role="img" aria-label="Floorcount"></div>
+  <div class="title">Before and after the design rules</div>
+</div>
+<div class="pair">
+  <div>
+    <div class="frame before" role="img" aria-label="First build: blue and orange cartoon feet under a white number"></div>
+    <p class="label">First build</p>
+    <p class="note">It worked. Cartoon feet, a colour per foot.</p>
+  </div>
+  <div>
+    <div class="frame after" role="img" aria-label="After: sole prints in one ivory ink, the strip of eight cells, the count over the pad"></div>
+    <p class="label">After</p>
+    <p class="note">One ivory ink. Left solid, right outlined, holds empty.</p>
+  </div>
+</div>
+</body>
+</html>

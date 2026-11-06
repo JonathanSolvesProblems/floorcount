@@ -65,7 +65,7 @@
     -
       {}
   InputLines:
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountMain – salsa footwork practice session</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountMain: salsa footwork practice session</span>"}'
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"group_start", "label":"References"}'
     - '// @input AssignableType_1 stepCard {"hint":"Step card UI (Again / Got it / title)."}'

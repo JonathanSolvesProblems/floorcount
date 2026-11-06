@@ -1,5 +1,5 @@
 /**
- * LeafIndex — registers the Floorcount LEAF scenarios, one per done criterion in
+ * LeafIndex: registers the Floorcount LEAF scenarios, one per done criterion in
  * devpost/design-brief.md.
  */
 
@@ -13,7 +13,17 @@ import { FloorcountC5MarkAndSummaryScenario } from "./FloorcountC5MarkAndSummary
 import { FloorcountC6OffViewArrowScenario } from "./FloorcountC6OffViewArrowScenario"
 import { FloorcountC7StepCardScenario } from "./FloorcountC7StepCardScenario"
 import { FloorcountC8AnswerGuardScenario } from "./FloorcountC8AnswerGuardScenario"
+import { FloorcountC9SessionMemoryScenario } from "./FloorcountC9SessionMemoryScenario"
+import { FloorcountC10LeftTurnScenario } from "./FloorcountC10LeftTurnScenario"
+import { FloorcountC11HalvesScenario } from "./FloorcountC11HalvesScenario"
+import { FloorcountC12CountDisplayScenario } from "./FloorcountC12CountDisplayScenario"
+import { FloorcountC13TheAndScenario } from "./FloorcountC13TheAndScenario"
+import { FloorcountC14MarkRingScenario } from "./FloorcountC14MarkRingScenario"
+import { FloorcountC15RestartFromSummaryScenario } from "./FloorcountC15RestartFromSummaryScenario"
+import { FloorcountC16ArcInsidePadScenario } from "./FloorcountC16ArcInsidePadScenario"
+import { FloorcountC17TealLawScenario } from "./FloorcountC17TealLawScenario"
 import { FloorcountHoldOnCountScenario } from "./FloorcountHoldOnCountScenario"
+import { FloorcountCaptureScenario } from "./FloorcountCaptureScenario"
 
 @component
 export class LeafIndex extends BaseScriptComponent {
@@ -30,12 +40,28 @@ export class LeafIndex extends BaseScriptComponent {
     { id: "floorcount-c7-step-card", typename: FloorcountC7StepCardScenario.getTypeName() },
     // The rule behind criteria 3 and 4, with the Lens as it ships: one answer per 8-count.
     { id: "floorcount-c8-answer-guard", typename: FloorcountC8AnswerGuardScenario.getTypeName() },
-    // A capture helper rather than a done criterion: holds the session on one count so a
-    // screenshot can be taken of a known frame.
+    // c9 to c17 each cover a behaviour nothing above asserts. They are not done criteria: the
+    // brief's six are c1 to c6.
+    { id: "floorcount-c9-session-memory", typename: FloorcountC9SessionMemoryScenario.getTypeName() },
+    { id: "floorcount-c10-left-turn", typename: FloorcountC10LeftTurnScenario.getTypeName() },
+    { id: "floorcount-c11-halves", typename: FloorcountC11HalvesScenario.getTypeName() },
+    { id: "floorcount-c12-count-display", typename: FloorcountC12CountDisplayScenario.getTypeName() },
+    { id: "floorcount-c13-the-and", typename: FloorcountC13TheAndScenario.getTypeName() },
+    { id: "floorcount-c14-mark-ring", typename: FloorcountC14MarkRingScenario.getTypeName() },
+    { id: "floorcount-c15-restart-from-summary", typename: FloorcountC15RestartFromSummaryScenario.getTypeName() },
+    { id: "floorcount-c16-arc-inside-pad", typename: FloorcountC16ArcInsidePadScenario.getTypeName() },
+    { id: "floorcount-c17-teal-law", typename: FloorcountC17TealLawScenario.getTypeName() },
+    // Capture helpers rather than done criteria: they hold the Lens on a known frame so a
+    // screenshot can be taken of it.
     {
       id: "floorcount-hold-on-count",
       typename: FloorcountHoldOnCountScenario.getTypeName(),
       parameters: { count: "1" },
+    },
+    {
+      id: "floorcount-capture",
+      typename: FloorcountCaptureScenario.getTypeName(),
+      parameters: { shot: "right-turn-count2" },
     },
   ]
 }

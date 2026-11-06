@@ -4,11 +4,14 @@
 // so it loops seamlessly and count 1 sits at sample 0 (the Lens reads the playback clock).
 const path = require('path');
 const fs = require('fs');
-const m = require(require('path').join(process.env.CLAD_SKILLS_DIR, 'build-music', 'tools'));
+// CLAD's build-music tools live in the ls-clad plugin, not in this repository. Point
+// CLAD_SKILLS_DIR at the plugin's skills folder (for example <plugin folder>/plugins/cache/
+// ls-extensions/ls-clad/1.0.0/skills) to run this again.
+const m = require(path.join(process.env.CLAD_SKILLS_DIR || '.', 'build-music', 'tools'));
 const A = m.audio_primitives;
 const SR = A.SAMPLE_RATE;
 
-const PROJECT_ASSETS_SFX = require('path').join(__dirname, '..', 'Assets', 'GeneratedSFX');
+const PROJECT_ASSETS_SFX = path.join(__dirname, '..', 'Assets', 'GeneratedSFX');
 fs.mkdirSync(PROJECT_ASSETS_SFX, { recursive: true });
 
 const EIGHT_COUNTS = 4;            // phrases per loop

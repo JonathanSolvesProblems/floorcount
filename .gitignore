@@ -1,4 +1,4 @@
-﻿# Shipped by Lens Studio
+# Shipped by Lens Studio
 
 # The lines below are automatically generated and updated by Lens Studio.
 # Please do not modify them manually, as changes will be overwritten each time!
@@ -54,3 +54,8 @@ Support/
 .icon_tmp/
 tempAssetGen/*.wav
 tempAssetGen/import/
+
+# Unit test toolchain
+tests/unit/node_modules/
+tests/unit/.build/
+tests/unit/.breaks/

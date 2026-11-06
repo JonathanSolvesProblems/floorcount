@@ -44,5 +44,5 @@
     -
       {}
   InputLines:
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountCountUI – the clave strip and the count numeral</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountCountUI: the clave strip and the count numeral</span>"}'
     - '// @ui {"widget":"separator"}'

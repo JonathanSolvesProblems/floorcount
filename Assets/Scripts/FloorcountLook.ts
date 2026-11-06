@@ -1,5 +1,5 @@
 /**
- * FloorcountLook — the design tokens and the shared drawing helpers every Floorcount visual uses.
+ * FloorcountLook: the design tokens and the shared drawing helpers every Floorcount visual uses.
  *
  * Owns: the one ink (ivory) and the one accent (teal), the three brightnesses, the strike /
  * "and" / decay curve read off the beat, the imported textures and fonts, the cap-height to
@@ -55,7 +55,10 @@ export function sizeForCapCm(capCm: number): number {
 export const IVORY = new vec3(0.9686, 0.9333, 0.8745)
 /** Leave a texture's own ivory alone: baseColor multiplies the texture. */
 export const TINT_IVORY = new vec3(1, 1, 1)
-/** Ivory texture x this tint reads as #5FB4E8, the teal reserved for the 1. */
+/**
+ * The teal reserved for the 1. Over an ivory texture this tint draws #5FB4DF: the charter's
+ * #5FB4E8 with its blue stopped at ivory's own, since a tint can only darken a channel.
+ */
 export const TINT_TEAL = new vec3(0.3846, 0.7563, 1.0)
 
 // ── Brightness: alpha is the hierarchy (charter laws 2 and 4) ───────────────────────────

@@ -49,7 +49,7 @@
     -
       {}
   InputLines:
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountOffViewArrow – points back to the pad when it is out of view</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountOffViewArrow: points back to the pad when it is out of view</span>"}'
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"group_start", "label":"References"}'
     - "// @input SceneObject cameraObject {\"hint\":\"The camera (the user's head).\"}"

@@ -70,7 +70,7 @@
     -
       {}
   InputLines:
-    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountAudioController – music, clave and cues from the pad</span>"}'
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountAudioController: music, clave and cues from the pad</span>"}'
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"group_start", "label":"References"}'
     - '// @input Asset.AudioTrackAsset musicSlow {"hint":"Practice loop at Slow tempo. Its length must be a whole number of 8-counts."}'

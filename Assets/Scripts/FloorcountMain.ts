@@ -1,5 +1,5 @@
 /**
- * FloorcountMain — orchestrates the practice session.
+ * FloorcountMain: orchestrates the practice session.
  *
  * Owns: the FloorcountState instance and the per-frame loop: read the beat from the music's
  * playback clock, light the footprints, update the count number, play the clave on counts
@@ -13,7 +13,20 @@
  * Must not: build UI or text (the *UI modules do), or own footwork data (FloorcountSteps).
  */
 
-import { FloorcountState, Phase, TEMPO_NAMES, TEMPO_FULL } from "./FloorcountState"
+import {
+  countsInWords,
+  FloorcountState,
+  parseSaved,
+  Phase,
+  serializeSession,
+  StepSummary,
+  summaryRowText,
+  TEMPO_NAMES,
+  TEMPO_FULL,
+} from "./FloorcountState"
+
+/** Where a finished session is kept so the next practice can pick up from it. */
+const SAVE_KEY = "floorcount.lastSession"
 import { COUNTS_PER_PHRASE, STEPS } from "./FloorcountSteps"
 import { FloorcountStepCardUI } from "./FloorcountStepCardUI"
 import { FloorcountCountUI } from "./FloorcountCountUI"
@@ -23,7 +36,7 @@ import { FloorcountOffViewArrow } from "./FloorcountOffViewArrow"
 
 @component
 export class FloorcountMain extends BaseScriptComponent {
-  @ui.label('<span style="color: #60A5FA;">FloorcountMain – salsa footwork practice session</span>')
+  @ui.label('<span style="color: #60A5FA;">FloorcountMain: salsa footwork practice session</span>')
   @ui.separator
   @ui.group_start("References")
   @input
@@ -122,8 +135,51 @@ export class FloorcountMain extends BaseScriptComponent {
     this.startSession()
   }
 
+  /**
+   * Forget the last finished session, in storage and in this one. The scenarios call it so each
+   * starts from a first-session state; nothing in the Lens itself offers it, because a finished
+   * session simply replaces the one before.
+   */
+  clearSaved(): void {
+    const store = this.saveStore()
+    try {
+      if (store) store.remove(SAVE_KEY)
+    } catch (e) {
+      print("Floorcount: could not clear the saved session: " + e)
+    }
+    this.state.setPrevious(null)
+    this.pad.setPreviousMarks([])
+  }
+
+  /** The Lens's persistent store, or null where there is none. */
+  private saveStore(): GeneralDataStore | null {
+    const system = global.persistentStorageSystem
+    return system && system.store ? system.store : null
+  }
+
+  /** What the last finished session left, or null. A bad or missing save is a first session. */
+  private loadSaved(): StepSummary[] | null {
+    try {
+      const store = this.saveStore()
+      return store ? parseSaved(store.getString(SAVE_KEY)) : null
+    } catch (e) {
+      print("Floorcount: could not read the saved session: " + e)
+      return null
+    }
+  }
+
+  private saveSession(rows: StepSummary[]): void {
+    try {
+      const store = this.saveStore()
+      if (store) store.putString(SAVE_KEY, serializeSession(rows))
+    } catch (e) {
+      print("Floorcount: could not save the session: " + e)
+    }
+  }
+
   private startSession(): void {
     this.state.reset()
+    this.state.setPrevious(this.loadSaved())
     this.ignoredAnswers = 0
     this.pad.setFloorVisible(true)
     this.stepCard.showPractice()
@@ -138,6 +194,8 @@ export class FloorcountMain extends BaseScriptComponent {
     this.pad.loadStep(s.step)
     this.pad.setCountFilter((c) => s.isCountShown(c))
     this.pad.setMarks(s.lostMarks[s.displayStepIndex])
+    // The counts lost on this step last practice carry a faint ring from the start.
+    this.pad.setPreviousMarks(s.previousLostCounts(s.displayStepIndex))
     this.pad.setFade(1)
     this.restartMusic()
     this.refreshCard()
@@ -188,6 +246,11 @@ export class FloorcountMain extends BaseScriptComponent {
     }
     if (s.segment === "first") return "Counts 1 to 4 only"
     if (s.segment === "second") return "Counts 5 to 8 only"
+    // Until the first answer on a step, say where it was lost last practice.
+    const lostBefore = s.previousLostCounts(s.displayStepIndex)
+    if (s.phase === "learning" && !s.answeredThisStep && lostBefore.length > 0) {
+      return "Last time: lost it on " + countsInWords(lostBefore)
+    }
     if (s.tempo === TEMPO_FULL) return s.fullGotItStreak + " of " + this.gotItsToAdvance + " clean at Full"
     return "Whole step"
   }
@@ -196,20 +259,13 @@ export class FloorcountMain extends BaseScriptComponent {
     this.audio.stopMusic()
     this.pad.setFloorVisible(false)
     this.countDisplay.setShown(false)
-    const rows = this.state.summary().map((r) => {
-      let line = r.name + ": " + r.agains + (r.agains === 1 ? " Again" : " Agains")
-      if (r.lostCounts.length > 0) line += ", lost it on " + this.countsInWords(r.lostCounts)
-      return line
-    })
+    const finished = this.state.summary()
+    // Each row is compared with the session before, then this one takes its place for next time.
+    const rows = finished.map((r, i) => summaryRowText(r, this.state.previousAgains(i)))
+    this.saveSession(finished)
     this.stepCard.showSummary(rows, "Pinch the title to practise again")
     this.stepCard.setAnswerWindow(false)
     print("Floorcount: session complete. " + rows.join(" | "))
-  }
-
-  /** "2", "2 and 5", "2, 5 and 7": counts the way the teacher says them (voice.md). */
-  private countsInWords(counts: number[]): string {
-    if (counts.length <= 1) return counts.join("")
-    return counts.slice(0, -1).join(", ") + " and " + counts[counts.length - 1]
   }
 
   // ---------------------------------------------------------------- input

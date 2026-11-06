@@ -160,15 +160,15 @@ These are in the build but no assertion covers them:
 
 Three edits were needed to get the scene running. Nothing else in the behaviour scripts changed.
 
-1. `FloorcountMain.ts` — the phase is now read into a local at the top of `tick()`. TypeScript
+1. `FloorcountMain.ts`: the phase is now read into a local at the top of `tick()`. TypeScript
    narrowed `state.phase` to `"fading"` and then rejected the later comparison against
    `"summary"`, which failed the build.
-2. `FloorcountAudioController.ts` — `startMusic` and `stopMusic` now check `audioTrack` before
+2. `FloorcountAudioController.ts`: `startMusic` and `stopMusic` now check `audioTrack` before
    calling `isPlaying()` / `isPaused()`. On the first start there is no track yet and those
    calls threw `[AudioComponent] Audio player is not enabled`, which killed the session before
    the first beat.
-3. `FloorcountAudioController.ts` — the beat clock was rewritten. See below.
-4. `FloorcountMain.ts` — added a public `restart()` that calls the existing `startSession()`,
+3. `FloorcountAudioController.ts`: the beat clock was rewritten. See below.
+4. `FloorcountMain.ts`: added a public `restart()` that calls the existing `startSession()`,
    so the tests can begin from a known session state. The summary's title button now calls it
    too, instead of calling `startSession()` directly.
 
@@ -225,12 +225,12 @@ and the sizes are all as written.
 
 ## Screenshot
 
-`devpost/shots/pad-lit-footprints.png` — the pad on the floor with its outline, the basic step's
+`devpost/shots/pad-lit-footprints.png`: the pad on the floor with its outline, the basic step's
 footprints, the left foot lit in cool blue on count 1 with the other three spots dim, and the
 count number reading 1 above the far edge of the pad. Captured from the Interactive Preview on
 the SPECS 27 profile, 1590 x 1590.
 
-`devpost/shots/step-card-and-arrow.png` — a second shot showing the step card with the title,
+`devpost/shots/step-card-and-arrow.png`: a second shot showing the step card with the title,
 "Step 1 of 3", "Slow tempo, 140 BPM", the focus line and the Again and Got it buttons, with the
 off-view arrow visible at the bottom pointing back down to the pad.
 
