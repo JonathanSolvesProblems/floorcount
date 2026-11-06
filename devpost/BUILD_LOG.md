@@ -8,7 +8,7 @@ The first session, on 1 November, ran inside the planning chat and its transcrip
 |---|---|---|---|---|---|
 | 1 Nov | First build | Scripts, generated music and sound. Scene lost, not counted. | n/a | not kept | not kept |
 | 2 Nov, 14:19 | Build | Rebuilt the scene from the brief on the scripts and audio of 1 November, wrote six LEAF scenarios, rewrote the beat clock. | 48 | 224 | 112 |
-| 2 Nov, 15:09 | Design pass (cut off) | Brought the fonts and textures in, then stopped at a usage limit before touching the scene. | 7 | 43 | 3 |
+| 2 Nov, 15:10 | Design pass (cut off) | Brought the fonts and textures in, then stopped at a usage limit before touching the scene. | 6 | 43 | 3 |
 | 2 Nov, 15:19 | Design pass | Applied the design notes: sole prints, the clave strip, one ink, the brightness curve, the card without a panel. | 52 | 266 | 94 |
 | 2 Nov, 16:13 | Step card fix (cut off) | Started the card fix, stopped at a usage limit with one script half-written and nothing saved. | 14 | 55 | 10 |
 | 3 Nov, 07:42 | Step card fix | One left edge, fitted capsules, the paused line in words, a seventh scenario. | 39 | 209 | 97 |
@@ -17,31 +17,34 @@ The first session, on 1 November, ran inside the planning chat and its transcrip
 | 6 Nov, 09:53 | Fresh-clone test (stopped) | Cloned the repository, checked it for Git LFS pointers and opened it in Lens Studio. The editor was waiting on a plugin trust prompt the session could not see, so I stopped it and answered the prompt by hand. See clean-clone-test.md. | 33 | 45 | 6 |
 | 6 Nov, 10:30 | Session memory and coverage (cut off) | Verified the session memory and the arc fix in the Lens and wrote nine new scenarios, all passing. Stopped at a usage limit while chasing a race in C4. | 43 | 174 | 73 |
 | 6 Nov, 13:53 | Coverage, finished | Ran the whole sweep after the C4 fix, took the captures, checked a saved session across a real preview reset. | 38 | 190 | 79 |
-| | **Counted total** | 10 sessions | 344 | **1519** | **603** |
+| 6 Nov, 14:34 | Preview capture (stopped) | Stopped by hand a few minutes in, before any clip was recorded. | 11 | 73 | 9 |
+| 6 Nov, 16:30 | Preview capture (cut off) | Recorded the seven clips of the Lens and retook the summary still. Stopped at its turn limit. | 47 | 227 | 51 |
+| 6 Nov, 17:18 | Capture, finished | Recorded the two clips of Lens Studio itself, cleared the saved session, wrote the clip notes. | 8 | 52 | 14 |
+| | **Counted total** | 13 sessions | 409 | **1871** | **677** |
 
 ## What the Lens Studio MCP was used for
 
 | MCP tool | Calls |
 |---|---|
-| `run_leaf_scenario` | 163 |
-| `MovePreviewCamera` | 85 |
-| `PreviewPanelTool` | 84 |
-| `ExecuteEditorCode` | 58 |
-| `RecompileTypeScriptTool` | 52 |
-| `RunAndCollectLogsTool` | 51 |
+| `run_leaf_scenario` | 179 |
+| `MovePreviewCamera` | 105 |
+| `PreviewPanelTool` | 91 |
+| `ExecuteEditorCode` | 70 |
+| `RecompileTypeScriptTool` | 54 |
+| `RunAndCollectLogsTool` | 53 |
 | `asset-graphql` | 38 |
+| `list_leaf_scenarios` | 19 |
 | `scene-graphql` | 16 |
-| `list_leaf_scenarios` | 16 |
-| `CapturePanelScreenshotTool` | 11 |
-| `open_leaf_panel` | 7 |
+| `CapturePanelScreenshotTool` | 15 |
+| `open_leaf_panel` | 11 |
 | `VirtualScene` | 6 |
+| `ListAllPanels` | 5 |
 | `ListInstalledPackagesTool` | 4 |
-| `ListAllPanels` | 3 |
+| `set_leaf_execution_target` | 3 |
 | `SearchLensStudioAssetLibrary` | 2 |
 | `QueryRuntimeSceneTool` | 2 |
 | `InjectPreviewGesture` | 2 |
 | `InstallLensStudioPackage` | 1 |
 | `PreviewInteractTool` | 1 |
-| `set_leaf_execution_target` | 1 |
 
-Three sessions were cut off by a usage limit partway through, and one was stopped by hand. All four are listed and counted, because a count that leaves out the runs that went wrong is not a count. Each session after a cut-off began by reading what the last one had written.
+Four sessions were cut off partway through by a usage or turn limit, and two were stopped by hand. All six are listed and counted, because a count that leaves out the runs that went wrong is not a count. Each session after a cut-off began by reading what the last one had written.

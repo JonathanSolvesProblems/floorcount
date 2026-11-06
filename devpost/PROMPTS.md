@@ -230,3 +230,55 @@ Do, in this order:
 
 If usage or time runs short, the order of priority is: the sweep, then step 5, then step 6, then the captures. Save before stopping, and write down what is missing in the report section. If Lens Studio stops answering, a modal dialog may be open: say so and stop, do not wait on it.
 ```
+
+## 6 November: preview capture for the video
+
+```text
+Capture preview footage of the Floorcount Lens for the submission video. Do not change how the Lens looks or behaves.
+
+Read first: DEMO_SCRIPT.md (the shots), devpost/design-pass-report.md (sections "Things worth knowing", "Polish, 3 November 2026" and "Session memory and coverage, 6 November 2026"), broll/SHOTLIST.md.
+
+Rules for this project: packages are pinned (SIK 2.0, UI Kit 2.0, LEAF 2.0.2); install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool (both silently install packages that break the build). Do not edit Assets/Scripts/. Assets/Tests/FloorcountCaptureScenario.ts already exists and may be extended. Do not edit the brief, the notes, PHASE0.md, README.md or the submission. Do not run git. Do not start a shell command with `cd`: the working directory is already the project. Delete any "* 2.*" OneDrive duplicates in Assets/ before compiling. Save the project through the Editor API if you add a scenario.
+
+Goal: real screen recordings of the preview, saved in broll/ (git-ignored), named preview-NN-what.mp4:
+1. preview-01-basic-slow.mp4: the pad from the start position, about two 8-counts of the basic at Slow, prints lighting on their counts, the strip and numeral in frame.
+2. preview-02-again-half.mp4: Again twice (use the capture scenario to press), the tempo drops, only counts 1 to 4 lit.
+3. preview-03-next-step.mp4: Got it three times at Full, the two-count fade, the right turn loads with its arc on counts 2 and 3.
+4. preview-04-step-card.mp4: the card during the answer window, from where the dancer stands.
+5. preview-05-right-turn-clean.mp4: one full right-turn 8-count, nothing else on screen but the Lens in the room, for the final shot.
+6. preview-06-second-session.mp4: a real second session. First finish a session in the preview with three Agains on the basic and the count-5 print pinched (drive it with the capture scenario, which may be extended for this; do not write the saved data by hand). The second session then has one Again on the basic, so the summary shows a real improvement. Then start again with the saved session kept and film the pad with the faint ring on the count-5 print, then the card reading "Last time: lost it on 5".
+7. preview-07-summary-last-time.mp4: the end of that second session, the summary card with rows ending "last time". Hold 5 seconds. Retake the still devpost/shots/summary-last-time.png from this same held frame (1280 x 720 with tmp/compose_shot.py, as before): its basic row should read "Basic step: 1 Again, 3 last time".
+8. preview-08-leaf-run.mp4: the whole Lens Studio window with the LEAF panel visible while three or four scenarios run and report PASS. This is the one clip where the editor UI should be in frame.
+9. preview-09-lens-studio-wide.mp4: the whole Lens Studio window with the preview running the basic step, 8 seconds, for the line "all of this is the Lens Studio preview".
+When the clips are done, clear the saved session (FloorcountMain.clearSaved) so the project is left as a first session, and save.
+
+Method: write a capture-only LEAF scenario that drives each path by pressing the same SIK interactables the other scenarios press, with holds long enough to film. Record with ffmpeg (installed), capturing only the Lens Studio window or the preview panel region with gdigrab (title= or a fixed region of that window), never the whole desktop, the webcam or a microphone. If another window covers Lens Studio, bring Lens Studio forward; if it still cannot be captured, stop and report. Crop to the preview. 30 fps, H.264, yuv420p. Use the camera position from the Polish report: the start position over clear floor, Lens reset there, then aim. Keep the Lens Studio UI, the LEAF result banner and any cursor out of the crop if you can.
+
+Audio: there is no loopback device listed. If you can capture system audio with a method that needs no install, do so. Otherwise record silent and write down, per clip, the frame where the music loop starts, so the WAV in Assets/GeneratedSFX/ can be laid in during the edit.
+
+Look at one extracted frame from each clip before moving on. If a capture method does not work after two honest attempts, stop and report what failed; do not fake a clip from stills.
+
+Finish by writing broll/PREVIEW-CLIPS.md: each file, its duration, what it shows, the camera position, audio status, and anything wrong with it. Plain language, no em-dashes.
+
+If Lens Studio stops answering, a modal dialog may be open: say so and stop, do not wait on it.
+
+Two things learned today: LEAF's panel prints "Loaded 19 scenario(s) from preview" when it is ready, and a run dispatched before that line is silently lost. If the preview goes silent, check PreviewPanelTool getConfig: "Preview is Paused" needs a refresh, resume does not revive it. A Quest 3S and a phone may be attached over adb, so pin LEAF to the preview first. Leave the project as a first session (clear the saved session) and save.
+```
+
+## 6 November: finishing the capture
+
+```text
+Finish a capture job an earlier session started. Keep this short: you have about 50 tool calls. Do not change how the Lens looks or behaves.
+
+Project root: this folder (ARSpec.esproj). Lens Studio is open on it; the lens-studio MCP server is connected. Clips preview-01 to preview-07 are already in broll/ and are good: do not redo them.
+
+Rules: install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not edit anything under Assets/Scripts/, README.md, PHASE0.md or devpost/submission.md. Do not move or click the mouse, and do not use tmp/mouse.ps1. LEAF's panel prints "Loaded 19 scenario(s) from preview" when it is ready, and a run dispatched before that line is lost. Pin LEAF to the preview, not a device. If the preview goes silent, check PreviewPanelTool getConfig: "Preview is Paused" needs a refresh. Do not record the webcam, a microphone or the whole desktop: capture the Lens Studio window only, with ffmpeg gdigrab using title= or a fixed region of that window.
+
+Do these, in order:
+1. broll/preview-08-leaf-run.mp4: start a window recording in the background, then run floorcount-c1-start, floorcount-c3-again and floorcount-c7-step-card with run_leaf_scenario. The whole Lens Studio window in frame, with the preview running. If the LEAF panel is not visible and cannot be shown with the MCP tools (open_leaf_panel), film it anyway and say so. 25 to 40 seconds. H.264, yuv420p, 30 fps.
+2. broll/preview-09-lens-studio-wide.mp4: the whole Lens Studio window with the preview running the basic step, 8 seconds, same settings.
+3. Look at one extracted frame from each. Retake once if the window was covered. If it is still covered, stop and report; nothing else depends on these two.
+4. Clear the saved session so the project is left as a first session: run floorcount-c9-session-memory, which ends by clearing it, on a fresh preview. Its result may have to be read from the log.
+5. Save through the Editor API.
+6. Write broll/PREVIEW-CLIPS.md: each file preview-01 to preview-09, its duration (use ffprobe), what it shows, audio status (all silent, the music is laid in during the edit), and anything wrong with it. Note for clips 01 to 07 that they were driven by the floorcount-capture scenario through the Lens's real answer guard. Plain language, no em-dashes, no local user paths.
+```

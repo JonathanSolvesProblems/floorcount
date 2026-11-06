@@ -16,6 +16,28 @@
  *
  * It asserts only that the frame it is holding is the one that was asked for, so a screenshot
  * taken after it cannot be of the wrong thing.
+ *
+ * The `film-*` shots are for the submission video rather than for a screenshot. They leave the
+ * session RUNNING instead of frozen, because what the camera has to see is the music playing and
+ * the prints lighting, so each one ends by handing a live session back.
+ *
+ * Each is a single run, setup and filmed action together, because LEAF resets the Lens before
+ * every run and the reset re-pins the floor layout to wherever the preview camera is standing.
+ * A clip whose action has to be filmed as it happens is therefore recorded across the whole run
+ * and trimmed afterwards. The ones that press answer through `answerWhenDue`, which waits for
+ * the Lens's own one-answer-per-8-count guard, so what is on camera is the Lens as it ships
+ * rather than the test kit's unguarded pressing.
+ *
+ *  - `film-basic`: a first session at Slow with nothing answered.
+ *  - `film-half`: a Got it up to Medium, then Again twice, which drops the tempo back to Slow
+ *    and leaves counts 1 to 4 on the floor.
+ *  - `film-full`: two Got its up to Full, then three clean ones, the two-count fade, and the
+ *    right turn loading with its arc.
+ *  - `film-session-a`: plays and finishes a whole first session that takes three Agains on the
+ *    basic step and loses count 5, then pinches the summary's title to start the next practice,
+ *    so the second session has read its memory back off persistent storage.
+ *  - `film-session-b-finish`: one Again on the basic step and then out to the summary, so every
+ *    row carries last session's number. Run it only after `film-session-a`.
  */
 
 import { Scenario } from "Leaf.lspkg/Scenarios/scenario/Scenario"
@@ -36,8 +58,10 @@ import {
   pinch,
   restartSession,
   unfreeze,
+  watchPhases,
   waitForStepIndex,
 } from "./FloorcountTestKit"
+import { TEMPO_FULL, TEMPO_MEDIUM, TEMPO_NAMES, TEMPO_SLOW } from "../Scripts/FloorcountState"
 
 /** How far into the count a freeze may land, in beats. The strike decays fast. */
 const MAX_FRAC = 0.06
@@ -52,6 +76,16 @@ export class FloorcountCaptureScenario extends Scenario {
     if (shot === "right-turn-count2") await this.rightTurnCount2(io)
     else if (shot === "last-time-rings") await this.lastTimeRings(io)
     else if (shot === "summary-last-time") await this.summaryLastTime(io)
+    else if (shot === "film-basic") await this.filmBasic()
+    else if (shot === "film-half") {
+      await this.filmHalfSetup(io)
+      await this.filmHalfPress(io)
+    } else if (shot === "film-full") {
+      await this.filmFullSetup(io)
+      await this.filmFullPress(io)
+    }
+    else if (shot === "film-session-a") await this.filmSessionA(io)
+    else if (shot === "film-session-b-finish") await this.filmSessionBFinish(io)
     else throw new Error("unknown shot '" + shot + "'")
   }
 
@@ -121,6 +155,179 @@ export class FloorcountCaptureScenario extends Scenario {
     expect(c.isSummary).toBe(true)
     for (const row of rows) expect(row.indexOf("last time") > 0).toBe(true)
     expect(rows[0]).toBe("Basic step: 1 Again, 0 last time")
+  }
+
+  // ---------------------------------------------------------------- the film shots
+
+  /** A first session at Slow, nothing answered, left running for the camera. */
+  private async filmBasic(): Promise<void> {
+    const m = main()
+    await restartSession(true)
+    await sleep(900)
+    print("[capture] film-basic: " + m.state.step.name + " at " + TEMPO_NAMES[m.state.tempo] + ", count " + m.currentCount)
+    expect(m.state.step.id).toBe("basic")
+    expect(m.state.tempo).toBe(TEMPO_SLOW)
+    expect(m.state.segment).toBe("full")
+  }
+
+  /** One Got it, which takes the music to Medium. The tempo can only drop from above Slow. */
+  private async filmHalfSetup(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    await restartSession(true)
+    await sleep(600)
+    await this.answerWhenDue("GotItButton", io)
+    await sleep(900)
+    print("[capture] film-half-setup: " + TEMPO_NAMES[m.state.tempo] + ", segment " + m.state.segment)
+    expect(m.state.tempo).toBe(TEMPO_MEDIUM)
+  }
+
+  /** Again twice: the tempo drops a level and the floor keeps counts 1 to 4 only. */
+  private async filmHalfPress(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    const p = pad()
+    expect(m.state.tempo).toBe(TEMPO_MEDIUM)
+    await this.answerWhenDue("AgainButton", io)
+    print("[capture] film-half-press: first Again, " + TEMPO_NAMES[m.state.tempo] + ", segment " + m.state.segment)
+    await this.answerWhenDue("AgainButton", io)
+    await sleep(900)
+    print(
+      "[capture] film-half-press: second Again, " + TEMPO_NAMES[m.state.tempo] + ", segment " +
+        m.state.segment + ", counts shown " + [1, 2, 3, 5, 6, 7].filter((c) => m.state.isCountShown(c)).join(""),
+    )
+    expect(m.state.tempo).toBe(TEMPO_SLOW)
+    expect(m.state.segment).toBe("first")
+    expect(p.isFloorVisible).toBe(true)
+    // Hold the session on screen for the rest of the take.
+    await sleep(14000)
+  }
+
+  /** Two Got its, which take the music Slow to Medium to Full. */
+  private async filmFullSetup(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    await restartSession(true)
+    await sleep(600)
+    await this.answerWhenDue("GotItButton", io)
+    await this.answerWhenDue("GotItButton", io)
+    await sleep(900)
+    print("[capture] film-full-setup: " + TEMPO_NAMES[m.state.tempo] + ", " + m.state.fullGotItStreak + " clean at Full")
+    expect(m.state.tempo).toBe(TEMPO_FULL)
+    expect(m.state.stepIndex).toBe(0)
+  }
+
+  /** Three clean 8-counts at Full: the prints fade over two counts and the right turn loads. */
+  private async filmFullPress(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    const p = pad()
+    expect(m.state.tempo).toBe(TEMPO_FULL)
+    const watch = watchPhases()
+    for (let i = 0; i < 3; i++) await this.answerWhenDue("GotItButton", io)
+    expect(await waitForStepIndex(1, 15000)).toBe(true)
+    print("[capture] film-full-press: phases " + watch.stop().join(" > ") + ", step " + m.state.step.id)
+    expect(m.state.step.id).toBe("rightTurn")
+
+    // The arc is a per-frame flag, so which counts carry it has to be sampled, the way C4 does.
+    const arcOn: boolean[] = [false, false, false, false, false, false, false, false, false]
+    const deadline = getTime() + 9
+    while (getTime() < deadline) {
+      const n = m.currentCount
+      if (n >= 1 && n <= 8 && p.arcVisible) arcOn[n] = true
+      await sleep(30)
+    }
+    const onCounts: number[] = []
+    for (let i = 1; i <= 8; i++) if (arcOn[i]) onCounts.push(i)
+    print("[capture] film-full-press: turn arc on counts " + onCounts.join(", "))
+    expect(onCounts.length > 0).toBe(true)
+    for (const n of onCounts) expect(n === 2 || n === 3).toBe(true)
+    // Hold the right turn on screen for the rest of the take.
+    await sleep(6000)
+  }
+
+  /**
+   * A whole first session that takes three Agains on the basic step and loses count 5, then the
+   * summary's own title button to start the next practice. What the second session knows it has
+   * read back out of persistent storage, the same way it would the next time the Lens is opened.
+   */
+  private async filmSessionA(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    const p = pad()
+    const c = card()
+    // The guard is off for the drive: nothing in this part is filmed, and with it on the three
+    // steps would take an 8-count per answer. The filmed shots put it back on.
+    await restartSession(false)
+    await sleep(900)
+
+    // Lose count 5 first, while the whole step is still on the floor.
+    expect(await freezeOnCount(5)).toBe(true)
+    await pinch("Footprint_C5", io)
+    await sleep(250)
+    expect(m.state.lostMarks[0].join(",")).toBe("5")
+    unfreeze()
+    await sleep(500)
+
+    for (let i = 0; i < 3; i++) {
+      await pinch("AgainButton", io)
+      await sleep(250)
+    }
+    expect(m.state.againCounts[0]).toBe(3)
+
+    expect(await finishSession(io)).toBe(true)
+    await sleep(700)
+    expect(c.isSummary).toBe(true)
+    print("[capture] film-session-a: first session " + [c.lineText(0), c.lineText(1), c.lineText(2)].join(" | "))
+
+    // Pinch the summary's title, which is how the Lens itself starts the next practice.
+    await pinch("TitleButton", io)
+    await sleep(1500)
+    m.answerGuard = true
+    print(
+      "[capture] film-session-a: second session, previous lost " + m.state.previousLostCounts(0).join(" and ") +
+        ", previous Agains " + m.state.previousAgains(0) + ", focus '" + c.lineText(2) + "', ring on 5 " +
+        p.ringBrightness(5).toFixed(2),
+    )
+    expect(m.state.phase).toBe("learning")
+    expect(m.state.stepIndex).toBe(0)
+    expect(m.state.previousAgains(0)).toBe(3)
+    expect(p.isPreviousMarkShown(5)).toBe(true)
+    expect(p.isPreviousMarkShown(1)).toBe(false)
+    expect(c.lineText(2)).toBe("Last time: lost it on 5")
+  }
+
+  /** One Again on the basic step, then out to the summary, which now reads against last time. */
+  private async filmSessionBFinish(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    const c = card()
+    expect(m.state.previousAgains(0)).toBe(3)
+    m.answerGuard = false
+    await pinch("AgainButton", io)
+    await sleep(300)
+    expect(m.state.againCounts[0]).toBe(1)
+
+    expect(await finishSession(io)).toBe(true)
+    await sleep(900)
+    const rows = [c.lineText(0), c.lineText(1), c.lineText(2)]
+    print("[capture] film-session-b-finish: " + rows.join(" | "))
+    expect(c.isSummary).toBe(true)
+    for (const row of rows) expect(row.indexOf("last time") > 0).toBe(true)
+    expect(rows[0]).toBe("Basic step: 1 Again, 3 last time")
+    // The summary is a still frame; hold it while the camera is on it.
+    await sleep(12000)
+  }
+
+  /**
+   * Answer the way a dancer does with the Lens as it ships: wait until the one-answer-per-8-count
+   * guard would take it, then pinch. Without the wait the guard drops the press and the clip
+   * shows a button being pinched and nothing happening.
+   */
+  private async answerWhenDue(
+    name: string,
+    io: DefaultLeafInteractor,
+    timeoutMs: number = 20000,
+  ): Promise<void> {
+    const m = main()
+    const deadline = getTime() + timeoutMs / 1000
+    while (getTime() < deadline && !m.canAnswer) await sleep(40)
+    expect(m.canAnswer).toBe(true)
+    await pinch(name, io)
   }
 
   // ---------------------------------------------------------------- shared setup
