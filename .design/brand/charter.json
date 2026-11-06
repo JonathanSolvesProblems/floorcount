@@ -1,0 +1,16 @@
+{
+  "allow_fonts": ["Atkinson Hyperlegible Next", "Atkinson Hyperlegible"],
+  "banned_fonts": [],
+  "banned_words": ["Great job", "Nice!", "Awesome", "Perfect!", "Let's go", "Let's dance", "You've got this", "Master", "mastery", "unlock", "level up", "Welcome to Floorcount", "Your journey", "Lesson", "Level 1"],
+  "banned_hex": ["#000000", "#ff00ff", "#e91e63", "#7c3aed", "#f97316", "#ec6a45", "#FF4F00", "#E8B830", "#38bdf8", "#22d3ee", "#06b6d4"],
+  "allow_hex": ["#F7EEDF", "#5FB4E8", "#0C0B09"],
+  "title_punctuation": "forbid",
+  "max_tracked_caps_rules": 0,
+  "allow_long_dashes": false,
+  "forbid_regex": [
+    {"pattern": "!", "why": "no exclamation marks: the teacher counts, the dancer works"},
+    {"pattern": "(?i)class=\"[^\"]*eyebrow", "why": "no eyebrow labels above titles"},
+    {"pattern": "(?i)(linear|radial)-gradient\\([^)]*(#7c3aed|#ec4899|#a855f7|#6366f1)", "why": "no indigo-to-violet or pink wash"},
+    {"pattern": "(?i)box-shadow:[^;]*0 0 \\d+px[^;]*#5FB4E8", "why": "teal is a light on the 1, never a glow of importance"}
+  ]
+}

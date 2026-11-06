@@ -1,0 +1,30 @@
+MIT License
+
+Copyright (c) 2026 Jonathan Andrei
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+This licence covers the Floorcount scripts, tests, generated audio, textures
+and documents in this repository. It does not cover:
+- Packages/ (Spectacles Interaction Kit, Spectacles UI Kit, LEAF, Icons, Motion),
+  which are Snap Inc.'s and stay under their own terms.
+- Assets/Fonts/ and .design/brand/fonts/ (Atkinson Hyperlegible Next, Braille
+  Institute), under the SIL Open Font License in OFL.txt beside them.
+- .design/refs/graded/ (photos adapted from Wikimedia Commons), under
+  CC BY-SA 4.0 as credited in .design/refs/credits.json.

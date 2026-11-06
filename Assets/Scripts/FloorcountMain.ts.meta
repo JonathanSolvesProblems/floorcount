@@ -1,0 +1,86 @@
+- !<AssetImportMetadata/5d3702c0-856b-4564-80a1-b44cfa5348b3>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 43dbbd09-14d0-49ab-8143-ff96414d66dd
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 43dbbd09-14d0-49ab-8143-ff96414d66dd
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> 32128f99-8fe7-4c4a-8e3f-10dea3ed5b19
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/32128f99-8fe7-4c4a-8e3f-10dea3ed5b19>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 81762c6d-10fe-471b-a65a-6e5743cc99c5
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    againsToDrop: false
+    answerWindowCounts: false
+    audio: false
+    cameraObject: false
+    countDisplay: false
+    fadeCounts: false
+    gotItsToAdvance: false
+    offViewArrow: false
+    pad: false
+    recenterOnStart: false
+    stepCard: false
+    worldRoot: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - stepCard: !<MappingBased.AssignableType_1> 00000000-0000-0000-0000-000000000000
+      countDisplay: !<MappingBased.AssignableType_2> 00000000-0000-0000-0000-000000000000
+      pad: !<MappingBased.AssignableType_3> 00000000-0000-0000-0000-000000000000
+      audio: !<MappingBased.AssignableType_4> 00000000-0000-0000-0000-000000000000
+      offViewArrow: !<MappingBased.AssignableType_5> 00000000-0000-0000-0000-000000000000
+      cameraObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      worldRoot: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      recenterOnStart: true
+      answerWindowCounts: !<float> 2.000000
+      fadeCounts: !<float> 2.000000
+      againsToDrop: !<float> 2.000000
+      gotItsToAdvance: !<float> 3.000000
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountMain – salsa footwork practice session</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"group_start", "label":"References"}'
+    - '// @input AssignableType_1 stepCard {"hint":"Step card UI (Again / Got it / title)."}'
+    - '// @input AssignableType_2 countDisplay {"hint":"Floating count number above the pad."}'
+    - '// @input AssignableType_3 pad {"hint":"Footprint pad controller."}'
+    - '// @input AssignableType_4 audio {"hint":"Music, clave and cue playback; also the beat clock."}'
+    - '// @input AssignableType_5 offViewArrow {"hint":"Arrow that points back to the pad when neither the pad nor the step card is in view."}'
+    - "// @input SceneObject cameraObject {\"hint\":\"The camera (the user's head at the start position).\"}"
+    - '// @input SceneObject worldRoot {"hint":"Root of the floor layout; moved to the start position when the Lens starts."}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"group_start", "label":"Settings"}'
+    - '// @input bool recenterOnStart = true {"hint":"Move the layout so the pad is in front of where the user stands when the Lens starts."}'
+    - '// @input float answerWindowCounts = 2 {"hint":"Counts after each 8-count during which the buttons are bright (waiting for an answer).", "widget":"slider", "min":1, "max":4, "step":1}'
+    - '// @input float fadeCounts = 2 {"hint":"Counts the footprints take to fade out before the next step loads.", "widget":"slider", "min":1, "max":4, "step":1}'
+    - '// @input float againsToDrop = 2 {"hint":"Agains in a row that drop the tempo and split the step into halves.", "widget":"slider", "min":1, "max":5, "step":1}'
+    - '// @input float gotItsToAdvance = 3 {"hint":"Got its in a row at Full tempo that move on to the next step.", "widget":"slider", "min":1, "max":6, "step":1}'
+    - '// @ui {"widget":"group_end"}'

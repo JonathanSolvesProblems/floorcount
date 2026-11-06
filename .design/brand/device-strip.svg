@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 585 30" width="585" height="30">
+  <!-- The clave strip: eight capsule cells, one per count. Holds (4, 8) are empty cells.
+       The 1 is teal. The current count is at full brightness; every other cell rests at 35%.
+       Shown here with count 1 current. Cell 60 x 30 (6 x 3 cm), gap 15 (1.5 cm). -->
+  <g fill="#F7EEDF" fill-opacity="0.35">
+    <rect x="0"   y="0" width="60" height="30" rx="15" fill="#5FB4E8" fill-opacity="1"/>
+    <rect x="75"  y="0" width="60" height="30" rx="15"/>
+    <rect x="150" y="0" width="60" height="30" rx="15"/>
+    <rect x="225" y="1.5" width="57" height="27" rx="13.5" fill="none" stroke="#F7EEDF" stroke-opacity="0.35" stroke-width="3"/>
+    <rect x="300" y="0" width="60" height="30" rx="15"/>
+    <rect x="375" y="0" width="60" height="30" rx="15"/>
+    <rect x="450" y="0" width="60" height="30" rx="15"/>
+    <rect x="525" y="1.5" width="57" height="27" rx="13.5" fill="none" stroke="#F7EEDF" stroke-opacity="0.35" stroke-width="3"/>
+  </g>
+</svg>

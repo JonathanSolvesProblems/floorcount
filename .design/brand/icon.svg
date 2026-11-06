@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Lens icon: the two sole prints on the dark floor, the clave strip below them with
+       the 1 lit. Ground is the walnut-dark floor, never black. Parquet grain faint. -->
+  <defs>
+    <path id="forefoot" d="M58 4 C24 8 6 48 9 95 C11 125 26 148 30 165 C32 178 44 184 52 184 C62 184 72 178 72 165 C74 150 86 128 92 95 C97 52 86 8 58 4 Z"/>
+    <path id="heel" d="M30 200 C24 200 20 206 20 214 L20 250 C20 262 36 270 53 270 C70 270 86 262 86 250 L86 214 C86 206 82 200 76 200 Z"/>
+    <pattern id="grain" width="150" height="150" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#F7EEDF" stroke-opacity="0.08" stroke-width="2">
+        <rect x="0" y="0" width="75" height="25"/><rect x="0" y="25" width="75" height="25"/><rect x="0" y="50" width="75" height="25"/>
+        <rect x="75" y="0" width="25" height="75"/><rect x="100" y="0" width="25" height="75"/><rect x="125" y="0" width="25" height="75"/>
+        <rect x="0" y="75" width="25" height="75"/><rect x="25" y="75" width="25" height="75"/><rect x="50" y="75" width="25" height="75"/>
+        <rect x="75" y="75" width="75" height="25"/><rect x="75" y="100" width="75" height="25"/><rect x="75" y="125" width="75" height="25"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="#1A1612"/>
+  <rect width="512" height="512" rx="96" fill="url(#grain)"/>
+  <!-- left foot, solid, lit (count 1 is the left foot forward) -->
+  <g fill="#5FB4E8" transform="translate(118,70) scale(1.0)">
+    <use href="#forefoot"/>
+    <use href="#heel"/>
+  </g>
+  <!-- right foot, outlined, at rest -->
+  <g fill="none" stroke="#F7EEDF" stroke-opacity="0.45" stroke-width="15" stroke-linejoin="round" transform="translate(394,70) scale(-1,1)">
+    <use href="#forefoot"/>
+    <use href="#heel"/>
+  </g>
+  <!-- the clave strip, count 1 lit -->
+  <g transform="translate(62,392)">
+    <rect x="0"   y="0" width="40" height="24" rx="12" fill="#5FB4E8"/>
+    <rect x="50"  y="0" width="40" height="24" rx="12" fill="#F7EEDF" fill-opacity="0.35"/>
+    <rect x="100" y="0" width="40" height="24" rx="12" fill="#F7EEDF" fill-opacity="0.35"/>
+    <rect x="151.5" y="1.5" width="37" height="21" rx="10.5" fill="none" stroke="#F7EEDF" stroke-opacity="0.35" stroke-width="3"/>
+    <rect x="200" y="0" width="40" height="24" rx="12" fill="#F7EEDF" fill-opacity="0.35"/>
+    <rect x="250" y="0" width="40" height="24" rx="12" fill="#F7EEDF" fill-opacity="0.35"/>
+    <rect x="300" y="0" width="40" height="24" rx="12" fill="#F7EEDF" fill-opacity="0.35"/>
+    <rect x="351.5" y="1.5" width="37" height="21" rx="10.5" fill="none" stroke="#F7EEDF" stroke-opacity="0.35" stroke-width="3"/>
+  </g>
+</svg>

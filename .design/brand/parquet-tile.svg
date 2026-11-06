@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300">
+  <!-- Basket-weave parquet grain, one 30 cm tile (1 unit = 1 mm), tiles seamlessly.
+       Four 15 cm blocks of three planks, alternating direction, like the portable floor in
+       the class photo. Ivory at 12%: faint on purpose, it is there to hide the display's
+       unevenness and to say "floor", never to be read. -->
+  <g fill="none" stroke="#F7EEDF" stroke-opacity="0.12" stroke-width="2.5">
+    <!-- block A: horizontal planks -->
+    <rect x="0" y="0" width="150" height="50"/>
+    <rect x="0" y="50" width="150" height="50"/>
+    <rect x="0" y="100" width="150" height="50"/>
+    <!-- block B: vertical planks -->
+    <rect x="150" y="0" width="50" height="150"/>
+    <rect x="200" y="0" width="50" height="150"/>
+    <rect x="250" y="0" width="50" height="150"/>
+    <!-- block C: vertical planks -->
+    <rect x="0" y="150" width="50" height="150"/>
+    <rect x="50" y="150" width="50" height="150"/>
+    <rect x="100" y="150" width="50" height="150"/>
+    <!-- block D: horizontal planks -->
+    <rect x="150" y="150" width="150" height="50"/>
+    <rect x="150" y="200" width="150" height="50"/>
+    <rect x="150" y="250" width="150" height="50"/>
+  </g>
+</svg>

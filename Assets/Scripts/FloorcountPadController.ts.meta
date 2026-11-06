@@ -1,0 +1,48 @@
+- !<AssetImportMetadata/7c54ea64-16cb-40e9-b41e-9642cb2134e3>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> c495b71b-d517-4480-bdc4-e69c3f58724a
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> c495b71b-d517-4480-bdc4-e69c3f58724a
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> eb21a84c-4c42-4fcf-b39b-f04e7d47ff5a
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/eb21a84c-4c42-4fcf-b39b-f04e7d47ff5a>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 1736ff54-a146-42b8-aa49-0ee3dd4ed93b
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountPadController – sole prints, pad border and turn arc</span>"}'
+    - '// @ui {"widget":"separator"}'

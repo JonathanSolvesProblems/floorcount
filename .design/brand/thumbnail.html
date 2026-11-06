@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Floorcount thumbnail</title>
+<style>
+/* Devpost thumbnail, 1500 x 1000 (3:2). The floor is the ground, the pad is the one object,
+   the wordmark carries the 1. Count 1 is struck: the teal print and the teal cell at full. */
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-Medium.ttf") format("truetype"); font-weight: 500; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-ExtraBold.ttf") format("truetype"); font-weight: 800; }
+html, body { margin: 0; }
+body { width: 1500px; height: 1000px; overflow: hidden; background: #1A1612; color: #F7EEDF;
+  font-family: "Atkinson Hyperlegible Next", sans-serif; font-weight: 500; }
+.wrap { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 560px; gap: 70px; align-items: center; padding: 0 90px; }
+.wordmark { width: 700px; aspect-ratio: 1600 / 242; background: url("export/wordmark-ivory.png") no-repeat left / contain; }
+.line { font-size: 42px; line-height: 1.2; margin: 44px 0 0; white-space: nowrap; }
+.sub { font-size: 26px; opacity: .75; margin: 22px 0 0; }
+.right { display: flex; flex-direction: column; align-items: center; gap: 34px; }
+.numeral { font-weight: 800; font-size: 150px; line-height: .9; }
+.strip { display: flex; gap: 14px; }
+.strip i { display: block; width: 56px; height: 28px; border-radius: 999px; background: #F7EEDF; opacity: .35; }
+.strip i.uno { background: #5FB4E8; opacity: 1; }
+.strip i.hold { background: none; border: 4px solid #F7EEDF; opacity: .35; }
+.pad { position: relative; width: 520px; height: 520px; border-radius: 24px; border: 8px solid rgba(247,238,223,.5);
+  background: #1A1612 url("parquet-tile.svg") center / 173px 173px; }
+.pad img { position: absolute; width: 69px; height: 168px; transform: translate(-50%, -50%); opacity: .35; }
+.pad img.uno { opacity: 1; filter: brightness(0) saturate(100%) invert(67%) sepia(28%) saturate(900%) hue-rotate(170deg) brightness(100%); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <div class="wordmark" role="img" aria-label="Floorcount"></div>
+    <p class="line">The salsa count, on your own floor.</p>
+    <p class="sub">A practice Lens for SPECS</p>
+  </div>
+  <div class="right">
+    <div class="numeral">1</div>
+    <div class="strip" aria-hidden="true"><i class="uno"></i><i></i><i></i><i class="hold"></i><i></i><i></i><i></i><i class="hold"></i></div>
+    <div class="pad" aria-hidden="true">
+      <img src="export/fp-left-solid.png" alt="" class="uno" style="left:38.9%;top:20%">
+      <img src="export/fp-left-solid.png" alt="" style="left:38.9%;top:54%">
+      <img src="export/fp-right-outline.png" alt="" style="left:61.1%;top:54%">
+    </div>
+  </div>
+</div>
+</body>
+</html>

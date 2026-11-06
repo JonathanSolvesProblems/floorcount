@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Floorcount end card</title>
+<style>
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-Medium.ttf") format("truetype"); font-weight: 500; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-ExtraBold.ttf") format("truetype"); font-weight: 800; }
+html, body { margin: 0; }
+body { width: 1920px; height: 1080px; overflow: hidden; background: #1A1612 url("parquet-page-dark.svg") center / 240px 240px;
+  color: #F7EEDF; font-family: "Atkinson Hyperlegible Next", sans-serif; font-weight: 500; }
+.card { position: absolute; inset: 0; display: grid; grid-template-columns: 420px 1fr; gap: 100px; align-items: center; padding: 0 180px; }
+.icon { width: 420px; height: 420px; border-radius: 18%; background: url("export/icon-512.png") center / cover; }
+.wordmark { width: 820px; aspect-ratio: 1600 / 242; background: url("export/wordmark-ivory.png") no-repeat left / contain; }
+.line { font-size: 44px; line-height: 1.25; max-width: 1000px; margin: 40px 0 0; }
+.sub { font-size: 30px; opacity: .75; margin: 24px 0 0; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon" role="img" aria-label="Floorcount icon"></div>
+  <div>
+    <div class="wordmark" role="img" aria-label="Floorcount"></div>
+    <p class="line">Planned with the Devpost skill pack. Built by CLAD in Lens Studio through the MCP. Six done criteria, six LEAF tests.</p>
+    <p class="sub">Learn AR with SPECS, November 2026</p>
+  </div>
+</div>
+</body>
+</html>

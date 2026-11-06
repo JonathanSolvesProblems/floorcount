@@ -1,0 +1,48 @@
+- !<AssetImportMetadata/22b7179b-584d-4f4f-a224-82c550eea9ae>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 48370c5d-0529-4ee9-aa40-83827a06859b
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 48370c5d-0529-4ee9-aa40-83827a06859b
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> d0677cf2-1960-415f-bbe1-8ffb870f946d
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/d0677cf2-1960-415f-bbe1-8ffb870f946d>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 75b5cb5c-9924-48f5-8c63-79a04648543d
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    {}
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    -
+      {}
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountCountUI – the clave strip and the count numeral</span>"}'
+    - '// @ui {"widget":"separator"}'

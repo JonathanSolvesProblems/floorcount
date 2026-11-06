@@ -1,0 +1,29 @@
+[
+  {
+    "file": "graded/claves-hornbeam.jpg",
+    "title": "Claves hornbeam wood.jpg",
+    "author": "Hnidopichwiki",
+    "licence": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Claves_hornbeam_wood.jpg",
+    "changes": "Resized and colour-graded (desaturated, warm tint). This adapted image is shared under the same licence."
+  },
+  {
+    "file": "graded/class-floor.jpg",
+    "title": "Clase de salsa en Iberoconf 2023.jpg",
+    "author": "Luis Alvaz",
+    "licence": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Clase_de_salsa_en_Iberoconf_2023.jpg",
+    "changes": "Cropped to the dance floor and colour-graded (desaturated, warm tint). This adapted image is shared under the same licence."
+  },
+  {
+    "file": "graded/studio.jpg",
+    "title": "Namahn Open Space.jpg",
+    "author": "Namahni",
+    "licence": "CC BY-SA 4.0",
+    "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Namahn_Open_Space.jpg",
+    "changes": "Resized and colour-graded (desaturated, warm tint). This adapted image is shared under the same licence."
+  }
+]

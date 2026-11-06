@@ -1,0 +1,92 @@
+- !<AssetImportMetadata/aa00df55-ecdf-48a6-9ed5-13ca7ba9d116>
+  ImportedAssetIds:
+    TypeScriptAsset: !<reference> 541fd48d-f0fc-4058-9091-a7f070c0bdf5
+  ImporterName: TypeScriptAssetImporter
+  PrimaryAsset: !<reference> 541fd48d-f0fc-4058-9091-a7f070c0bdf5
+  PackageType: NotAPackage
+  LegacyPackagePolicy: ~
+  ExtraData:
+    {}
+  AssetDataMap:
+    TypeScriptAsset: !<own> bee6c6cf-bf04-4155-b132-3022497d31e7
+  DependentFiles:
+    []
+  ImporterSettings: !<AssetImporterSettings>
+    {}
+  CompressionSettings: !<own> 00000000-0000-0000-0000-000000000000
+- !<TypeScriptAssetData/bee6c6cf-bf04-4155-b132-3022497d31e7>
+  SvgIcon: ""
+  SetupScript:
+    code: ""
+  Description: ""
+  VersionMajor: 0
+  VersionMinor: 0
+  VersionPatch: 0
+  VersionPrerelease: ""
+  UpdateOrder: 0
+  ComponentUid: 3d7fef6f-5ef2-406f-ab28-f036ca5065a4
+  ExportUid: 00000000-0000-0000-0000-000000000000
+  PackagePolicy: CanBeUnpacked
+  ScriptInputsHidden:
+    cardSpeaker: false
+    claveClick: false
+    claveVolume: false
+    cueVolume: false
+    musicFull: false
+    musicMedium: false
+    musicSlow: false
+    musicVolume: false
+    padSpeaker: false
+    spatialFromPad: false
+    stepMastered: false
+    tempoBpm: false
+    uiTap: false
+  ScriptTypesHidden:
+    {}
+  ReadMe: !<reference> 00000000-0000-0000-0000-000000000000
+  DeclarationFile: !<reference> 00000000-0000-0000-0000-000000000000
+  Tags:
+    []
+  Attachments:
+    []
+  DefaultScriptInputs:
+    - musicSlow: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      musicMedium: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      musicFull: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      claveClick: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      uiTap: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      stepMastered: !<reference.AudioTrackAsset> 00000000-0000-0000-0000-000000000000
+      padSpeaker: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      cardSpeaker: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
+      tempoBpm: !<float[]>
+        - 140.000000
+        - 170.000000
+        - 190.000000
+      musicVolume: 0.700000
+      claveVolume: 0.600000
+      cueVolume: 0.600000
+      spatialFromPad: true
+  ScriptTypes:
+    -
+      {}
+  InputLines:
+    - '// @ui {"widget":"label", "label":"<span style=\"color: #60A5FA;\">FloorcountAudioController – music, clave and cues from the pad</span>"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"group_start", "label":"References"}'
+    - '// @input Asset.AudioTrackAsset musicSlow {"hint":"Practice loop at Slow tempo. Its length must be a whole number of 8-counts."}'
+    - '// @input Asset.AudioTrackAsset musicMedium {"hint":"Practice loop at Medium tempo."}'
+    - '// @input Asset.AudioTrackAsset musicFull {"hint":"Practice loop at Full tempo."}'
+    - '// @input Asset.AudioTrackAsset claveClick {"hint":"Clave click played on counts 1 and 5."}'
+    - '// @input Asset.AudioTrackAsset uiTap {"hint":"Short tap played when a button or footprint is pinched."}'
+    - '// @input Asset.AudioTrackAsset stepMastered {"hint":"Cue played when a step is mastered."}'
+    - '// @input SceneObject padSpeaker {"hint":"Object on the pad the music and clave play from."}'
+    - '// @input SceneObject cardSpeaker {"hint":"Object the button taps play from (the step card)."}'
+    - '// @ui {"widget":"group_end"}'
+    - '// @ui {"widget":"separator"}'
+    - '// @ui {"widget":"group_start", "label":"Settings"}'
+    - '// @input float[] tempoBpm = {140,170,190} {"hint":"Beats per minute of the Slow, Medium and Full loops. Must match the audio files."}'
+    - '// @input float musicVolume = 0.7 {"hint":"Music volume.", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @input float claveVolume = 0.6 {"hint":"Clave click volume (counts 1 and 5).", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @input float cueVolume = 0.6 {"hint":"Volume of button taps and the step-mastered cue.", "widget":"slider", "min":0, "max":1, "step":0.05}'
+    - '// @input bool spatialFromPad = true {"hint":"Play the music and clave as spatial sound from the pad."}'
+    - '// @ui {"widget":"group_end"}'

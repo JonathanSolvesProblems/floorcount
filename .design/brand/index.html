@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Floorcount brand sheet</title>
+<link rel="icon" href="favicon.svg">
+<style>
+/* Design code: the clave written on the floor. Everything drawn is light that strikes on the count
+   and decays like struck hardwood (additive display; the clave keeps salsa's time). Ivory is the only
+   ink, brightness the only hierarchy, teal reserved for the 1 (finding the 1 is the job). Left feet
+   solid, right feet outlined (one pair, two roles). No frosted panel, two targets. Parquet only on
+   floor surfaces: the pad, the count band, the icon. Laws: CHARTER.md */
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-Medium.ttf") format("truetype"); font-weight: 500; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-Bold.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "Atkinson Hyperlegible Next"; src: url("fonts/AtkinsonHyperlegibleNext-ExtraBold.ttf") format("truetype"); font-weight: 800; }
+:root {
+  --floor: #1A1612; --strike: #F7EEDF; --uno: #5FB4E8;
+  --ink: var(--strike); --ground: var(--floor);
+  --rule: rgba(247,238,223,.5); --panel: rgba(247,238,223,.3);
+  --wordmark: url("export/wordmark-ivory.png");
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+  --ink: #1A1612; --ground: #F7EEDF; --rule: rgba(26,22,18,.5); --panel: rgba(26,22,18,.12);
+  --wordmark: url("export/wordmark-dark-ink.png");
+} }
+:root[data-theme="light"] {
+  --ink: #1A1612; --ground: #F7EEDF; --rule: rgba(26,22,18,.5); --panel: rgba(26,22,18,.12);
+  --wordmark: url("export/wordmark-dark-ink.png");
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--ground); color: var(--ink);
+  font-family: "Atkinson Hyperlegible Next", sans-serif; font-weight: 500;
+  font-size: 18px; line-height: 1.45;
+  padding: 48px 16px 64px;
+}
+main { max-width: 1140px; margin: 0 auto; }
+h2 { font-weight: 800; letter-spacing: -0.01em; font-size: 22px; margin: 0 0 16px; }
+p { max-width: 62ch; margin: 0 0 12px; text-wrap: pretty; }
+.quiet { opacity: .75; }
+section { margin-top: 80px; }
+
+/* hero */
+.wordmark { width: min(640px, 100%); aspect-ratio: 1600 / 242; background: var(--wordmark) no-repeat left / contain; margin: 0 0 24px; }
+.lede { font-size: 22px; max-width: 46ch; }
+
+/* the count: the one loud specimen, full width, on the floor in both themes */
+.count { display: grid; grid-template-columns: auto 1fr; gap: 56px; align-items: end;
+  background: #1A1612 url("parquet-tile.svg") center / 180px 180px; border-radius: 36px; border: 6px solid rgba(247,238,223,.5); padding: 18px 50px 34px; color: #F7EEDF; margin-top: 56px; }
+.numeral { font-weight: 800; font-size: 220px; line-height: 1; min-height: 220px; min-width: 1.1ch; font-variant-numeric: tabular-nums; }
+.strip { display: flex; gap: 15px; padding-bottom: 40px; }
+.strip i { display: block; width: 60px; height: 30px; border-radius: 999px; background: #F7EEDF; opacity: .35; }
+.strip i.uno { background: #5FB4E8; }
+.strip i.hold { background: none; border: 3px solid #F7EEDF; opacity: .35; }
+.motion { margin-top: 20px; }
+
+/* the scene: the pad, the card, and the two photos that decided them */
+.scene { display: grid; grid-template-columns: 540px 1fr; gap: 48px; align-items: start;
+  margin-left: calc(-1 * clamp(0px, (100vw - 1140px) / 2 - 16px, 60px)); }
+.pad { position: relative; width: 540px; height: 540px; border-radius: 24px; border: 6px solid rgba(247,238,223,.5);
+  background: #1A1612 url("parquet-tile.svg") center / 180px 180px; }
+.pad img { position: absolute; width: 72px; height: 174px; transform: translate(-50%, -50%); opacity: .35; }
+.pad img.uno { filter: brightness(0) saturate(100%) invert(67%) sepia(28%) saturate(900%) hue-rotate(170deg) brightness(100%); }
+.card .name { font-size: 34px; font-weight: 800; }
+.card .prog { font-size: 24px; font-weight: 800; }
+.card .tempo { font-size: 20px; font-weight: 800; }
+.credit { font-size: 14px; margin-top: 14px; max-width: none; }
+.credit a { color: inherit; }
+.buttons { display: flex; gap: 16px; margin: 16px 0 12px; }
+.buttons span { display: inline-block; padding: 10px 28px; border-radius: 999px; background: var(--panel); font-weight: 800; font-size: 24px; }
+.more p { max-width: 36ch; }
+.because { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 32px; }
+figure { margin: 0; }
+figure img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 16px; display: block; }
+figcaption { font-size: 16px; margin-top: 8px; opacity: .75; }
+
+/* the spec row: palette, type, icon, quiet */
+.spec { display: grid; grid-template-columns: 1.5fr 1fr .7fr; gap: 48px; align-items: start; }
+.swatches { display: grid; gap: 10px; }
+.swatch { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; }
+.swatch .chip { height: 40px; border-radius: 999px; background: #1A1612; border: 1px solid var(--ink); padding: 5px; display: flex; gap: 5px; }
+.swatch .chip i { display: block; height: 100%; flex: 1; border-radius: 999px; background: var(--c); }
+:root[data-theme="light"] .swatch .chip i { background: var(--cl, var(--c)); }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .swatch .chip i { background: var(--cl, var(--c)); } }
+.swatch span { font-size: 16px; }
+.swatch b { font-weight: 800; }
+.digits { display: flex; align-items: center; gap: .18em; font-weight: 800; font-size: 84px; line-height: 1; font-variant-numeric: tabular-nums; }
+.digits i { display: block; width: .62em; height: .34em; border-radius: 999px; border: 3px solid var(--ink); opacity: .35; }
+.glyphs { font-weight: 800; font-size: 84px; line-height: 1; letter-spacing: .06em; margin-top: 8px; opacity: .55; }
+.typeline { font-size: 16px; margin-top: 16px; }
+.icons { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
+.icons img { display: block; border-radius: 18%; outline: 1px solid var(--ink); outline-offset: -1px; }
+.icons img.small { border-radius: 7px; }
+
+/* voice and laws */
+.voice { margin: 0; padding-left: 22px; }
+.voice li { font-size: 20px; margin-bottom: 6px; }
+.laws { font-size: 18px; max-width: 62ch; margin: 0; padding-left: 22px; }
+.laws li { margin-bottom: 8px; }
+.colophon { margin-top: 64px; font-size: 15px; opacity: .7; border-top: 1px solid var(--rule); padding-top: 12px; }
+.colophon a { color: inherit; }
+
+.scene .pad { grid-row: 1 / 3; }
+.scene .more { grid-column: 2; grid-row: 2; align-self: start; }
+@media (max-width: 1040px) {
+  .scene .pad { grid-row: auto; }
+  .scene { grid-template-columns: 1fr; margin-left: 0; gap: 20px; align-items: start; }
+  .pad { width: 100%; max-width: 540px; height: auto; aspect-ratio: 1; }
+  .pad img { width: 13.3%; height: 32.2%; }
+  .scene .more { grid-column: 1; grid-row: auto; }
+  .spec { grid-template-columns: 1fr; gap: 48px; }
+}
+@media (max-width: 720px) {
+  .count { grid-template-columns: 1fr; gap: 8px; padding: 12px 20px 20px; border-radius: 24px; }
+  .numeral { font-size: 140px; min-height: 140px; }
+  .strip { gap: 8px; padding-bottom: 0; } .strip i { width: 36px; height: 18px; } .strip i.hold { border-width: 2px; }
+  .buttons { margin: 14px 0 4px; }
+  .because { grid-template-columns: 1fr; }
+  .digits { font-size: 44px; } .glyphs { font-size: 44px; letter-spacing: .02em; }
+  .icons img.small { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .strip i, .pad img { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="wordmark" role="img" aria-label="Floorcount"></div>
+    <p class="lede">The clave written on the floor. The pad is the clave's grid, each footprint a struck note, the light the strike, decaying like hardwood. Holds are rests.</p>
+    <p class="quiet">Brand sheet, 2 November 2026. A salsa practice Lens for SPECS.</p>
+    <div class="count">
+      <div class="numeral" id="numeral">1</div>
+      <div class="strip" id="strip" aria-hidden="true">
+        <i class="uno"></i><i></i><i></i><i class="hold"></i><i></i><i></i><i></i><i class="hold"></i>
+      </div>
+    </div>
+    <p class="motion">A cell rises a step half a beat before its count, strikes on the count with no attack, and decays over one beat to rest. The 1 is teal. 4 and 8 are holds: the cell is empty and the numeral is blank. Running at 170.</p>
+  </header>
+
+  <section>
+    <h2>The one screen, in plan</h2>
+    <div class="scene">
+      <div class="pad" id="pad" aria-label="Basic step footprints">
+        <img src="export/fp-left-solid.png" alt="" data-counts="1" class="uno" style="left:38.9%;top:16.7%">
+        <img src="export/fp-left-solid.png" alt="" data-counts="3,6" style="left:38.9%;top:50%">
+        <img src="export/fp-right-outline.png" alt="" data-counts="2,7" style="left:61.1%;top:50%">
+        <img src="export/fp-right-outline.png" alt="" data-counts="5" style="left:61.1%;top:83.3%">
+      </div>
+      <div class="card">
+        <div class="name">Basic step</div>
+        <div class="prog">Step 1 of 3</div>
+        <div class="tempo">Medium, 170 BPM</div>
+        <div class="tempo">Whole step</div>
+        <div class="buttons"><span>Again</span><span>Got it</span></div>
+      </div>
+      <div class="more">
+        <p>The basic step on the pad, from above. The step card reads at hip height: text on the air and two targets of equal weight on purpose, because the dancer reports and the Lens does not nudge.</p>
+      </div>
+    </div>
+    <div class="because">
+      <figure><img src="../refs/graded/claves-hornbeam.jpg" alt="A pair of pale wooden claves, crossed"><figcaption>One pair, two roles: one clave is held, the other strikes it. So the left foot is solid and the right is outlined.</figcaption></figure>
+      <figure><img src="../refs/graded/class-floor.jpg" alt="The parquet square of a salsa class, laid over the hall's carpet"><figcaption>The class floor is a parquet square laid on the room, with an edge. So the pad is one.</figcaption></figure>
+      <figure><img src="../refs/graded/studio.jpg" alt="A whitewashed studio with a pale oak floor"><figcaption>The studio wall is the brightest thing in the room. So it is the ink; the teal is the ceiling wash in the class photo.</figcaption></figure>
+    </div>
+    <p class="quiet credit">Photos adapted from Wikimedia Commons, CC BY-SA 4.0: <a href="https://commons.wikimedia.org/wiki/File:Claves_hornbeam_wood.jpg">claves</a> by Hnidopichwiki, <a href="https://commons.wikimedia.org/wiki/File:Clase_de_salsa_en_Iberoconf_2023.jpg">salsa class</a> by Luis Alvaz, <a href="https://commons.wikimedia.org/wiki/File:Namahn_Open_Space.jpg">studio</a> by Namahni. Cropped and colour-graded.</p>
+  </section>
+
+  <section class="spec">
+    <div>
+      <h2>Palette</h2>
+      <div class="swatches">
+        <div class="swatch three"><div class="chip"><i style="--c:#F7EEDF"></i><i style="--c:rgba(247,238,223,.6)"></i><i style="--c:rgba(247,238,223,.35)"></i></div><span><b>strike, and, rest</b> #F7EEDF at 100%, 60% and 35%: the current count, the half-beat before it, everything unstruck</span></div>
+        <div class="swatch"><div class="chip"><i style="--c:#5FB4E8; --cl:#4486B2"></i></div><span><b>uno</b> #5FB4E8, the 1 and nothing else; #4486B2 on ivory</span></div>
+        <div class="swatch"><div class="chip"><i style="--c:#1A1612"></i></div><span><b>floor</b> #1A1612, icon, video and page, never inside the Lens</span></div>
+      </div>
+    </div>
+    <div>
+      <h2>Type</h2>
+      <div class="digits"><span>1</span><span>2</span><span>3</span><i></i><span>5</span><span>6</span><span>7</span><i></i></div>
+      <div class="glyphs">1 7 I l</div>
+      <p class="typeline">Atkinson Hyperlegible Next. ExtraBold for everything inside the Lens, because a lighter stroke washes out against a bright room; Medium for long text on a page. 4 and 8 are holds: an empty cell, no numeral.</p>
+    </div>
+    <div>
+      <h2>Icon</h2>
+      <div class="icons">
+        <img src="export/icon-512.png" width="160" height="160" alt="Lens icon: two sole prints over the clave strip, the 1 lit">
+        <img src="export/icon-180.png" width="72" height="72" alt="">
+        <img src="export/favicon-32.png" width="32" height="32" alt="Favicon: the teal dot on the walnut square" class="small">
+      </div>
+      <p class="typeline">At 32 px only the 1 survives, so the favicon is the teal dot alone.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Voice</h2>
+    <ul class="voice">
+      <li>On the 1.</li>
+      <li>Again, from 5.</li>
+      <li>Slower. Counts 1 to 4 only.</li>
+      <li>Three clean at Full. Next: right turn.</li>
+      <li>Right turn: 4 Agains, lost it on 2 and 5.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Laws</h2>
+    <ol class="laws">
+      <li>Inside the Lens nothing is darker than 40% luminance and black is never a colour; the walnut floor is a ground for icon, video and page only.</li>
+      <li>Ivory is the only ink. Brightness is the hierarchy.</li>
+      <li>Teal is on exactly one thing at a time: the 1.</li>
+      <li>Holds are rests: nothing lights, the cell is empty, the numeral is blank.</li>
+      <li>Left feet solid, right feet outlined, always.</li>
+      <li>The pad is a bordered parquet square and nothing else, and parquet appears only on floor surfaces.</li>
+      <li>Rise on the and, strike on the count, decay over a beat. Nothing else moves.</li>
+      <li>Every edge is a capsule or a rounded end.</li>
+    </ol>
+  </section>
+
+  <p class="colophon"><a href="CHARTER.md">Charter</a>, <a href="voice.md">voice</a>, <a href="../manifest.json">manifest</a>, <a href="../refs/credits.json">photo credits</a>.</p>
+</main>
+<script>
+(function () {
+  var bpm = 170, beat = 60000 / bpm, phrase = beat * 8;
+  var cells = Array.prototype.slice.call(document.querySelectorAll('#strip i'));
+  var prints = Array.prototype.slice.call(document.querySelectorAll('#pad img'));
+  var numeral = document.getElementById('numeral');
+  var holds = [4, 8];
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function brightness(countOf, t) {
+    var b = 0.35;
+    for (var i = 0; i < countOf.length; i++) {
+      var c = countOf[i], at = c - 1, dt = t - at;
+      if (dt < 0) dt += 8;
+      if (dt >= 0 && dt < 1) b = Math.max(b, 0.35 + 0.65 * Math.exp(-4 * dt));
+      var pre = at - t; if (pre < 0) pre += 8;
+      if (pre > 0 && pre <= 0.5) b = Math.max(b, 0.6);
+    }
+    return b;
+  }
+  var start = performance.now();
+  function frame(now) {
+    var t = ((now - start) % phrase) / beat;
+    var count = Math.floor(t) + 1;
+    numeral.textContent = holds.indexOf(count) >= 0 ? '' : String(count);
+    cells.forEach(function (el, i) {
+      var c = i + 1;
+      if (holds.indexOf(c) >= 0) return;
+      el.style.opacity = brightness([c], t);
+    });
+    prints.forEach(function (el) {
+      var cs = el.getAttribute('data-counts').split(',').map(Number);
+      el.style.opacity = brightness(cs, t);
+    });
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  if (reduce) { frame(start); } else { requestAnimationFrame(frame); }
+})();
+</script>
+</body>
+</html>

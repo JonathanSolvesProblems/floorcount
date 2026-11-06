@@ -1,0 +1,56 @@
+﻿# Shipped by Lens Studio
+
+# The lines below are automatically generated and updated by Lens Studio.
+# Please do not modify them manually, as changes will be overwritten each time!
+# If you want to make changes to this file, please put them either above or below this section.
+
+Cache/**
+PluginsUserPreferences/**
+Support/**
+BackUp/**
+Workspaces/**
+.vscode/**
+/jsconfig.json
+/tsconfig.json
+.DS_Store
+/spk_debug_key.pem
+*.lock
+
+# Shipped by Lens Studio
+# BEGIN Lens Studio managed Agents-Docs block
+.mcp.json
+.cursor/mcp.json
+.vscode/mcp.json
+.codex/config.toml
+# END Lens Studio managed Agents-Docs block
+
+# Lens Studio local state
+Cache/
+Workspaces/
+PluginsUserPreferences/
+*.esproj.*.lock
+
+# Scratch (downloaded event pages)
+tmp/
+
+# Added by Lens Studio (LEAF plugin)
+leaf_plugin_settings.json
+
+# Raw footage for the submission video (large, local only)
+broll/
+
+# Brand-sheet critique rounds (screenshots)
+.design/shots/
+
+# Signing keys Lens Studio generates (never commit)
+*.pem
+
+# Raw reference photos stay local; the three graded ones the brand sheet shows are in .design/refs/graded/ with credits
+.design/refs/*.jpg
+
+# Generated or scratch
+Support/
+.virtual-scene.json
+.icon_tmp/
+tempAssetGen/*.wav
+tempAssetGen/import/

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 280" width="240" height="280">
+  <!-- Dance-shoe sole prints, 27 x 10 cm each (1 unit = 1 mm), toes up.
+       A Latin shoe has a suede forefoot sole and a separate Cuban heel, so the print is two
+       pieces with a gap at the shank. Left foot: solid (the striker). Right foot: outlined
+       (the held). Both shown at rest brightness (35%). The lit state is the same shape at
+       100%, set at runtime by the material, never by a second texture. -->
+  <defs>
+    <path id="forefoot" d="M58 4 C24 8 6 48 9 95 C11 125 26 148 30 165 C32 178 44 184 52 184 C62 184 72 178 72 165 C74 150 86 128 92 95 C97 52 86 8 58 4 Z"/>
+    <path id="heel" d="M30 200 C24 200 20 206 20 214 L20 250 C20 262 36 270 53 270 C70 270 86 262 86 250 L86 214 C86 206 82 200 76 200 Z"/>
+  </defs>
+  <!-- left foot, solid -->
+  <g id="left-solid" fill="#F7EEDF" fill-opacity="0.35" transform="translate(10,4)">
+    <use href="#forefoot"/>
+    <use href="#heel"/>
+  </g>
+  <!-- right foot, outlined: mirrored, stroke 1.5 cm -->
+  <g id="right-outline" fill="none" stroke="#F7EEDF" stroke-opacity="0.35" stroke-width="15" stroke-linejoin="round" transform="translate(230,4) scale(-1,1)">
+    <use href="#forefoot"/>
+    <use href="#heel"/>
+  </g>
+</svg>
