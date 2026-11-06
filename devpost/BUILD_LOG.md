@@ -20,27 +20,28 @@ The first session, on 1 November, ran inside the planning chat and its transcrip
 | 6 Nov, 14:34 | Preview capture (stopped) | Stopped by hand a few minutes in, before any clip was recorded. | 11 | 73 | 9 |
 | 6 Nov, 16:30 | Preview capture (cut off) | Recorded the seven clips of the Lens and retook the summary still. Stopped at its turn limit. | 47 | 227 | 51 |
 | 6 Nov, 17:18 | Capture, finished | Recorded the two clips of Lens Studio itself, cleared the saved session, wrote the clip notes. | 8 | 52 | 14 |
-| | **Counted total** | 13 sessions | 409 | **1871** | **677** |
+| 6 Nov, 17:59 | Fresh-clone sweep | Ran all 17 LEAF scenarios on a fresh clone of the public repository: 17 of 17, no retries. | 8 | 40 | 35 |
+| | **Counted total** | 14 sessions | 417 | **1911** | **712** |
 
 ## What the Lens Studio MCP was used for
 
 | MCP tool | Calls |
 |---|---|
-| `run_leaf_scenario` | 179 |
+| `run_leaf_scenario` | 196 |
 | `MovePreviewCamera` | 105 |
-| `PreviewPanelTool` | 91 |
-| `ExecuteEditorCode` | 70 |
-| `RecompileTypeScriptTool` | 54 |
-| `RunAndCollectLogsTool` | 53 |
+| `PreviewPanelTool` | 95 |
+| `ExecuteEditorCode` | 73 |
+| `RunAndCollectLogsTool` | 61 |
+| `RecompileTypeScriptTool` | 55 |
 | `asset-graphql` | 38 |
 | `list_leaf_scenarios` | 19 |
 | `scene-graphql` | 16 |
 | `CapturePanelScreenshotTool` | 15 |
-| `open_leaf_panel` | 11 |
+| `open_leaf_panel` | 12 |
 | `VirtualScene` | 6 |
 | `ListAllPanels` | 5 |
 | `ListInstalledPackagesTool` | 4 |
-| `set_leaf_execution_target` | 3 |
+| `set_leaf_execution_target` | 4 |
 | `SearchLensStudioAssetLibrary` | 2 |
 | `QueryRuntimeSceneTool` | 2 |
 | `InjectPreviewGesture` | 2 |

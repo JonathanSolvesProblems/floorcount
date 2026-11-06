@@ -59,7 +59,7 @@ It changes with how I'm doing. Two Agains slow the music and cut the step in hal
 
 I planned it with the Devpost skill pack. `plan-lens` wrote `devpost/design-brief.md` with one spatial moment, where each thing lives and six done criteria I could check in the preview.
 
-Snap's CLAD built it from that brief in Lens Studio 5.23.2 through the Lens Studio MCP: 13 sessions and 677 MCP calls, counted from the sessions' own transcripts in `devpost/BUILD_LOG.md`, with every prompt in `devpost/PROMPTS.md`. Spectacles Interaction Kit handles every pinch, `build-music` and `build-sfx` made the audio, and the sound plays spatially from the pad.
+Snap's CLAD built it from that brief in Lens Studio 5.23.2 through the Lens Studio MCP: 14 sessions and 712 MCP calls, counted from the sessions' own transcripts in `devpost/BUILD_LOG.md`, with every prompt in `devpost/PROMPTS.md`. Spectacles Interaction Kit handles every pinch, `build-music` and `build-sfx` made the audio, and the sound plays spatially from the pad.
 
 LEAF runs one scenario per done criterion, then eleven more for what the criteria leave out, like the session memory and the rule that only the 1 is ever teal: 17 of 17 pass in the preview. The beat test sampled the Lens 154 times over 8 seconds and found no wrong print, nothing lit on a hold, and 140.5 BPM against the 140 BPM loop.
 
@@ -136,7 +136,7 @@ lens-studio, clad, lens-studio-mcp, spectacles-interaction-kit, leaf, typescript
 ## Links
 
 ```
-Repository: [X]
+Repository: https://github.com/JonathanSolvesProblems/floorcount
 Video (public YouTube, under 3 minutes): [X]
 ```
 

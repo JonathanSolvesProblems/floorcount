@@ -38,4 +38,4 @@ A fresh clone looked like it hung for half an hour on "Loading Icon Atlas". It w
 
 Write "done" as something a test can check, before any code. Then move whatever logic you can out of the engine and test it without the engine. The preview tells you the Lens runs. It doesn't tell you the Lens is right.
 
-Code and the build log: [X]
+Code and the build log: https://github.com/JonathanSolvesProblems/floorcount

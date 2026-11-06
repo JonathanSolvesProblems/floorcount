@@ -282,3 +282,20 @@ Do these, in order:
 5. Save through the Editor API.
 6. Write broll/PREVIEW-CLIPS.md: each file preview-01 to preview-09, its duration (use ffprobe), what it shows, audio status (all silent, the music is laid in during the edit), and anything wrong with it. Note for clips 01 to 07 that they were driven by the floorcount-capture scenario through the Lens's real answer guard. Plain language, no em-dashes, no local user paths.
 ```
+
+## 6 November: LEAF on a fresh clone of the public repository
+
+```text
+Run the LEAF scenarios on a fresh clone of the public repository. Keep this tight: about 50 tool calls. Change nothing in the Lens.
+
+Lens Studio is already open on the fresh clone at <fresh clone>/ (cloned from GitHub minutes ago) and the lens-studio MCP server is connected. Work only in that folder. Do not touch the working project.
+
+Rules: install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse. Do not save the project: it is a throwaway clone. Do not edit any file.
+
+LEAF's panel prints "Loaded 19 scenario(s) from preview" when it is ready, and a run dispatched before that line is lost. Pin LEAF to the preview, not a device (a phone and a headset may be attached). The preview slows down the longer it runs, so refresh it before the timing-sensitive scenarios (c2, c5, c8, c9, c13). If it goes silent, check PreviewPanelTool getConfig: "Preview is Paused" needs a refresh. A run that outlasts the MCP timeout may still have finished: read the result from the log.
+
+1. Confirm the open project is the clone (Editor API project path) and that it compiled clean. If the wrong project is open, stop and say so.
+2. Start the preview and confirm "Floorcount: session started" with no Floorcount errors.
+3. Run floorcount-c1-start through floorcount-c17-teal-law once each, in order. Do not retry a failure more than once, and report any retry with its reason.
+4. Finish with a plain report: the project path, the compile result, each scenario PASS or FAIL, and C2's sample count and BPM. Write nothing to disk.
+```
