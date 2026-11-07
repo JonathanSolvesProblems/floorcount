@@ -1281,3 +1281,17 @@ scenario's `canAnswer` false check failed. The 2.94 s the run spent there is tha
 now looks at the 8-count straight after the answer, wherever the pinch left the session, and also
 asserts that it is still inside the six-beat window. The fresh-clone sweep in
 `devpost/clean-clone-test.md` runs it on the commit that is public.
+
+**Final sweep on a fresh clone of the public repository, commit 222c26d.** 17 of 17, no retries, and
+`floorcount-c8-answer-guard` three times out of three. C2: 121 samples over 8.05 s, 140.6 BPM, every
+content counter zero. c8's three runs took the late answer on beats 23.41, 23.30 and 23.51 and dropped
+the next on beats 24.92, 25.14 and 25.25, between 1.52 and 1.84 beats apart against the 6 the guard
+asks for. The check that had raced now passes every time.
+
+**One known quirk, left alone on purpose.** Those same runs paused on beat 30.4 and resumed on beat
+96, 32 and 64. A pause in the last two seconds of a loop can make the clock credit one or two false
+loop wraps as the player's position settles on resume. Each adds exactly 32 beats, a whole number of
+8-counts, so the count on screen and the lit print stay right. The worst case is one answer taken
+sooner than the guard would like after that pause, or a fade paused there finishing early. A change
+to the beat clock this close to submission is a bigger risk than the quirk.
+

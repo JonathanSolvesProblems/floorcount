@@ -345,3 +345,37 @@ Do, in order:
 
 If usage or time runs short: the sweep and the saves come first, then the report, then step 4, then the c8 extension (say so if it is missing).
 ```
+
+## 6 November: answer-guard rerun
+
+```text
+Rerun one LEAF scenario on the Floorcount Lens now that the GPU is free, and record the result. About 25 tool calls. Change nothing in the Lens.
+
+Project root: this folder (ARSpec.esproj). Lens Studio is open on it; the lens-studio MCP server is connected. Read the "Review fixes, 6 November 2026" section at the end of devpost/design-pass-report.md first: it explains that c8 failed only because the preview was throttled.
+
+Rules: install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse. Do not edit anything except the report section named below. LEAF's panel prints "Loaded 19 scenario(s) from preview" when ready; a run dispatched before that is lost. Pin LEAF to the preview. A run that outlasts the MCP timeout may still have finished; read its result from the log.
+
+1. Refresh the preview, wait for the panel's ready line, run floorcount-c2-beat and read its sample count from the log. If it is under 90 samples the preview is still throttled: write that number into the report section as "GPU still busy, c8 not rerun" and stop.
+2. Otherwise refresh, then run floorcount-c8-answer-guard twice, refreshing between runs. Read every "[C8]" print from the Lens Studio log for both runs.
+3. Append to the "Review fixes, 6 November 2026" section of devpost/design-pass-report.md a short subsection "c8 rerun" with the C2 sample count, each c8 run's result and its printed lines (the beats of the late answer and the dropped one, and the paused check). If c8 fails on a healthy preview, quote the failing assertion and say which part failed; do not edit the scenario or the Lens.
+4. Clear the saved session if any scenario left one (floorcount-c9-session-memory clears it) and save through the Editor API.
+```
+
+## 6 November: final LEAF sweep on a fresh clone
+
+```text
+Run the LEAF scenarios on a fresh clone of the public repository. Keep this tight: about 60 tool calls. Change nothing in the Lens.
+
+Lens Studio is already open on the fresh clone at <fresh clone>/ (cloned from GitHub minutes ago) and the lens-studio MCP server is connected. Work only in that folder. Do not touch the working project.
+
+Rules: install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse. Do not save the project: it is a throwaway clone. Do not edit any file.
+
+LEAF's panel prints "Loaded 19 scenario(s) from preview" when it is ready, and a run dispatched before that line is lost. Pin LEAF to the preview, not a device. The preview slows down the longer it runs, so refresh it before the timing-sensitive scenarios (c2, c5, c8, c9, c13). If it goes silent, check PreviewPanelTool getConfig: "Preview is Paused" needs a refresh. Check that the Lens Studio window is not minimised (IsIconic from PowerShell; restore with ShowWindow(handle, 9)), because a minimised window throttles rendering. A run that outlasts the MCP timeout may still have finished: read the result from the log.
+
+1. Confirm the open project is the clone (Editor API `projectFile` or `projectDirectory`) and that it compiled clean. If the wrong project is open, stop and say so.
+2. Start the preview and confirm "Floorcount: session started" with no Floorcount errors.
+3. Run floorcount-c1-start through floorcount-c17-teal-law once each, in order, reading C2's sample count. If that count is under 90 the preview is throttled: say so.
+4. Then run floorcount-c8-answer-guard twice more, three runs in all, refreshing before each. Read its "[C8]" prints for every run. It was changed today, so three runs matter here.
+5. Do not retry any other failure more than once, and report any retry with its reason.
+6. Finish with a plain report: the project path, the compile result, each scenario PASS or FAIL, C2's sample count and BPM, and for each c8 run the beats of the late answer and the dropped one. Write nothing to disk.
+```
