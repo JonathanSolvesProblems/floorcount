@@ -17,87 +17,73 @@ The salsa count lights up on your own floor, so you stop walking back to the vid
 ## About the project
 
 ```markdown
-Floorcount is a salsa practice Lens for SPECS. It draws a step's footprints on your own floor at real size and lights each one on its count, so you practise from where you stand instead of from a video that faces you.
+Floorcount is a salsa practice Lens for SPECS. It draws a step's footprints on the floor in front of you at real size and lights each one on its beat, so you practise from where you stand, not from a video that faces you.
 
 ## Inspiration
 
-I've done salsa for a few years, several classes at once for a while, then a phase of socials. At home my practice list is short: left turn, right turn, the basic, and "understanding salsa music beats", which has been on that list for a long time.
+I've done salsa for a few years: several classes a week for a while, then a phase of going out to social dance nights. At home my practice list is short: left turn, right turn, the basic, and "understanding salsa music beats", which has been on that list for a long time.
 
-Practising alone means a tutorial on the phone. The video faces you, so every step is mirrored and you flip it in your head. You lose the count, walk over, scrub back and start again.
+A class shows you a step once a week. The rest of the week it's me and a tutorial on my phone. The video faces me, so every step is mirrored and I flip it in my head. I lose the count, walk over, scrub back and start again.
 
 ## What it does
 
-Salsa is counted 1 to 8, and in the On1 style you step on 1, 2, 3, hold 4, step 5, 6, 7, hold 8. Floorcount puts that count where your feet go. A 90 cm square sits on your floor with the step's sole prints on it at real size, left feet solid and right feet outlined. Each print lights on its count, nothing lights on 4 and 8 because those are holds, and a clave-stick click marks 1 and 5 from the floor. Above the far edge there's one large numeral and a strip of eight cells, with the 1 in teal.
+Salsa is counted in eights. In the On1 style you step on 1, 2, 3, hold on 4, step on 5, 6, 7 and hold on 8. Floorcount puts that count where your feet go: a 90 cm square on the floor with the step's sole prints at real size, left feet solid and right feet outlined. Each print lights on its count and nothing lights on the holds. A wooden click marks 1 and 5 from the floor, and above the far edge a large numeral and a strip of eight cells show where you are, with the 1 in blue.
 
-After each 8-count you pinch Again or Got it, and the Lens takes one answer per 8-count. Two Agains in a row slow the music one level and show only counts 1 to 4 until you get them, then 5 to 8, then the whole step. Three clean 8-counts at Full move to the next step. You can also pinch the print for the count you lost. At the end, the step with the most Agains comes back once, then the floor clears and you get a count of Agains per step.
+After each 8-count you pinch Again or Got it while the capsules are lit, one answer per 8-count. Two Agains in a row drop the music one tempo (Slow is 140 BPM, Medium 170, Full 190) and show only counts 1 to 4, then 5 to 8, then the whole step. Three clean 8-counts at Full move you on. A Got it hides the numeral and the strip and an Again brings them back, because the aim is dancing to the music with your eyes up. Pinch the print for a count you lost and it keeps a ring. At the end, the step you struggled with most comes back once, then you see your Agains per step.
 
-The Lens keeps your last practice. Next time, the counts you lost carry a fainter ring, the card says "Last time: lost it on 2 and 5" until you answer, and the end card puts each step's Agains beside last time's.
+The Lens remembers your last practice. Next time the counts you lost carry a fainter ring, the card names them until your first answer, and the summary puts each step beside last time.
 
-The number hides once you have a step, because the aim is dancing to the music with your eyes up, not reading the floor. If you look away from both the pad and the card, a small arrow points back to the floor.
+Three steps so far: the basic and the right and left turns, all for the leader, the partner who steps forward on 1. The music is generated, so there's no licensed track.
 
-Three steps for now, the basic, the right turn and the left turn, all On1 and all the leader's part. The music is generated at 140, 170 and 190 BPM, so there's no licensed track.
+## The view from where you stand
 
-## Who it's for
+A phone has nowhere to go when you're dancing. It sits on a shelf facing you, and you walk back to it. On glasses the step is on the floor in front of you, facing the way you face, and both hands are free.
 
-People learning partner-dance footwork who practise alone between classes. That's me. A class shows you the step once a week. The rest of the week you're on your own with a phone.
+The angle matters. In a preregistered PLOS ONE study this year, 32 dancers learned a routine from video filmed behind the dancer, in front, and in front mirrored. The view from behind did best, most of all for less trained dancers (Versace et al., 2026, doi.org/10.1371/journal.pone.0355860). Tutorials are filmed from the front. Footprints at your feet show the step the way the behind view does.
 
-## Why glasses
+The display is about 37 by 32 degrees and a pad at your feet sits about 65 degrees below a level gaze, so the pad, the numeral and the card never fit in view together. The Lens is built around that: the click comes from the floor, the count hides once you don't need it, and if you look away from everything an arrow points back to the pad.
 
-Dancing uses the whole body, so a phone has nowhere to go. It sits on a shelf facing me and I walk back to it. The glasses put the step on the floor from where I'm standing, at real size, facing the way I face, with both hands free.
+## What's new about it
 
-Where you watch from matters. A preregistered study in PLOS ONE this year had 32 dancers learn a choreography from video in three views. The view from behind the dancer, which is the learner's own view, beat both front views, mirrored or not, and helped the less trained dancers most (Versace et al., 2026, doi.org/10.1371/journal.pone.0355860). A tutorial facing you is a front view. The pad is the view from where you stand.
-
-The display is small, about 37 by 32 degrees, and a pad at my feet is about 65 degrees below a level gaze. I can't see the pad, the count and the card at once, so the Lens doesn't ask me to. The click comes from the floor and the count hides once I stop needing it. If I look away from everything, an arrow points back to the pad.
-
-## How it's different
-
-Footprints on the floor are a hundred years old. Arthur Murray sold them by mail from about 1920: numbered paper prints you laid out at home. In 2017 an iPhone app, Dance Reality, drew animated footprints on the floor through the phone's camera (I know it from its App Store listing and launch coverage, I haven't used it). Paper can't keep time, and a phone has to be held up between your eyes and your feet while you dance.
-
-Floorcount is worn, so the prints are on the floor and nothing is in my hands. It also counts the way salsa is counted: on 4 and 8 no print lights and the cell stays an outline.
-
-It changes with how I'm doing. Two Agains slow the music and cut the step in half, and three clean 8-counts at full tempo move on. Once I have a step the numeral and the strip hide, because the goal is dancing to the music with my eyes up, not following lights.
+Footprints on the floor are about a century old as a way to teach dance: Arthur Murray mailed numbered paper footprints to students from around 1920. In 2017 an iPhone app, Dance Reality, put animated footprints on the floor through the phone's camera (I know it from launch coverage; it's no longer on the App Store and I haven't used it). Paper can't keep time, and a phone has to be held up between you and your feet. Floorcount is worn, keeps time with the music, treats the holds as rests, and changes the practice from what you tell it.
 
 ## How I built it
 
-I planned it with the Devpost skill pack. `plan-lens` wrote `devpost/design-brief.md` with one spatial moment, where each thing lives and six done criteria I could check in the preview.
+I planned it with the Devpost Learn skill pack. The `plan-lens` interview turned my answers into `devpost/design-brief.md`: one moment, where everything sits, and six done criteria I could check in the preview.
 
-Snap's CLAD built it from that brief in Lens Studio 5.23.2 through the Lens Studio MCP: 19 sessions and 839 MCP calls, counted from the sessions' own transcripts in `devpost/BUILD_LOG.md`, with every prompt in `devpost/PROMPTS.md`. Spectacles Interaction Kit handles every pinch (its `Interactable` on each print and each answer capsule, and `Billboard` on the card), `build-music` and `build-sfx` made the audio, and the sound plays spatially from the pad.
+Snap's CLAD built it from that brief in Lens Studio 5.23.2 through the Lens Studio MCP: 23 sessions and 940 MCP calls, counted from the sessions' own transcripts in `devpost/BUILD_LOG.md`, with every prompt in `devpost/PROMPTS.md`. What the MCP was used for most: `run_leaf_scenario` 286 times, `PreviewPanelTool` 120, `MovePreviewCamera` 120, `RunAndCollectLogsTool` 104, `ExecuteEditorCode` 93 (scene edits and every save) and `RecompileTypeScriptTool` 64. CLAD's `specs-experience-builder` agent did the first build; the CLAD skills on the record are `scene-construction`, `editor-api` and `materials` for the scene, the LEAF skills for the tests, and `build-music` and `build-sfx` for the audio. Spectacles Interaction Kit's `Interactable` takes every pinch, and the sound plays from the pad's position.
 
-What the MCP was used for most: `run_leaf_scenario` 251 times, `MovePreviewCamera` 112, `PreviewPanelTool` 102, `ExecuteEditorCode` 86 (scene edits and every save), `RunAndCollectLogsTool` 85 and `RecompileTypeScriptTool` 60. The CLAD skills on the record are `specs-experience-builder` for the first build, `scene-construction`, `editor-api` and `materials` for the scene, the LEAF skills for installing, writing and running the tests, and `build-music` and `build-sfx`. The Lens is nine TypeScript scripts under `Assets/Scripts/`; CLAD wrote them from the brief, and I edited the session rules and the footwork data by hand when the unit tests found the arcs off the pad.
+CLAD caught a mistake in my brief on the first build. I'd asked for the count to float "40 cm above the far edge of the pad, a little below eye level". It pointed out those can't both be true, since 40 cm off the floor is about 110 cm below a standing eye, kept the measurement, and wrote the conflict into its report.
 
-LEAF runs one scenario per done criterion, then eleven more for what the criteria leave out, like the session memory and the rule that only the 1 is ever teal: 17 of 17 pass in the preview. The beat test, run on a fresh clone of the repository, sampled the Lens 121 times over 8 seconds and found no wrong print, nothing lit on a hold, and 140.6 BPM against the 140 BPM loop.
+LEAF runs one scenario per done criterion plus eleven for what the criteria miss, such as the memory of the last practice and the rule that the blue is only ever on the 1. All 17 pass on a fresh clone of the repository. The beat test sampled the Lens 121 times over 8 seconds and found no wrong print, nothing lit on a hold, and 140.6 BPM against the 140 BPM loop. The session rules and the footwork data also run without Lens Studio: 78 unit tests on every push, plus a script that slips 54 deliberate bugs into that code one at a time and fails if any gets through. None does.
 
-The rules of a session (when to slow down, when to halve the step, when to move on) and the footwork data are plain TypeScript with no Lens Studio in them, so 78 unit tests run on every push. I also planted 54 bugs in that code, one at a time, to check the tests catch each one. They catch all 54.
-
-The first build worked and looked like a default: blue and orange cartoon feet, a frosted panel, stock icons. So I wrote design rules, in `.design/brand/`, and had CLAD apply them as design notes. The look comes from the clave, the pair of wooden sticks that keep time in salsa: the pad is laid out like its rhythm grid, each print is a struck note, and the light fades over one beat the way a struck clave rings out. On this display black is transparent and alpha is brightness, so there's one ivory ink at three brightnesses and one teal for the 1.
+The first build worked and looked generic: blue and orange cartoon feet, a frosted panel, stock icons. I wrote design rules (`.design/brand/`) and CLAD applied them. The look comes from the clave, the two wooden sticks that keep time in salsa. The pad is laid out like its grid, and a print flares on its beat and dims over the next one, like a struck note. On this display black is see-through and brightness is opacity, so everything is one ivory at a few set brightnesses, with blue only for the 1.
 
 ## Challenges
 
-The preview reports a stale audio position for about a second after play, and that was read as the loop wrapping. The count ran at up to 620 BPM against a 140 BPM track until CLAD rewrote the beat clock.
+The preview reports a stale audio position for about a second after the music starts, and the first beat clock read that as the loop restarting. The count ran at up to 620 BPM against a 140 BPM track until CLAD rewrote the clock.
 
-A pad 70 cm ahead on the floor is about 65 degrees below a level gaze and the glasses see about 37 by 32 degrees, so the pad, the numeral and the card are never all in view at once. That's why the arrow exists.
+The first build was never saved and its scene was lost, so every session since saves at each milestone.
 
-The first build was never saved, and the scene was lost. Every CLAD session since saves through the Editor API at each milestone.
-
-One scenario started failing on every run while the Lens was fine. At full tempo the fade between steps lasts 0.63 seconds and a simulated pinch takes about 0.95 seconds, so the fade could start and finish inside the pinch, and the test only looked once, afterwards. Now it watches every frame and checks the order: learning, fading, next step.
+One scenario failed on every run while the Lens was fine. At Full, the fade between steps lasts 0.63 seconds and a simulated pinch takes about 0.95, so the fade started and ended inside the pinch, and the test looked only once, afterwards. It now watches every frame.
 
 ## What I learned
 
-Write "done" as something a test can check. The brief said you answer "after an 8-count", and nothing enforced it until a scenario pinched twice in a row and both pinches counted. Now the Lens takes one answer per 8-count and a test holds it there.
+The brief said you answer "after an 8-count", and nothing enforced it until a scenario pinched twice in a row and both counted. Now the Lens takes one answer per 8-count and a scenario checks it.
 
-Tests in the preview don't see everything. A unit test on the footwork data found both turn arcs running 5 cm past the pad's edge, which eight preview scenarios had passed over.
+Preview scenarios miss things a plain unit test catches. A unit test on the footwork data found both turn arcs running 5 cm past the pad's edge, which the eight scenarios that existed then had passed over.
 
 ## What's next
 
-Testing on real glasses, which I haven't done. After that, shines like the Suzie Q, then bachata.
+Trying it on real glasses. Then shines (solo footwork like the Suzie Q), then bachata.
 
-## Limits
+## What it can't do yet
 
-Every Lens shot in the video is the Lens Studio preview with simulated hand input: a mouse click, or a LEAF scenario pressing the same targets. It hasn't run on SPECS hardware, so comfort over a session, real hand tracking and the hand-over from looking down at the pad to dancing eyes up are unproven. The Lens doesn't watch my feet: Again and Got it are my own report, so it responds to what I tell it and can't tell me I'm wrong. Nobody has danced with it on glasses yet; so far it has been driven in the preview. The click on 1 and 5 marks the two counts the phrase hangs on, it isn't the full clave pattern. It covers the leader's part only, On1, three steps.
+It has only run in the Lens Studio preview, driven by mouse clicks or by LEAF pressing the same buttons; nobody has danced with it on glasses. Comfort, real hand tracking and the switch from looking down at the pad to dancing eyes up are untested. It doesn't see your feet: Again and Got it are your word, so it can't tell you you're wrong. The pad is placed from a fixed 150 cm eye height, not a tracked floor. The click marks 1 and 5 and isn't the full clave rhythm. It covers three steps, the leader's part, On1.
 
-## Created by
+## Who did what
 
-Solo project. The idea and the steps are mine, they're my own practice list, and I made the calls on what to keep. I worked with AI coding agents throughout. The planning interview, the design rules and the prompts were written in sessions I directed, and Snap's CLAD built and tested the Lens in Lens Studio through the MCP.
+I chose the idea and the steps (my own practice list), set the design rules and decided what stayed. I worked with AI coding agents throughout: the planning interview, the design rules and every prompt came out of sessions I directed, and Snap's CLAD built and tested the Lens in Lens Studio through the MCP.
 ```
 
 ## Built with
@@ -113,28 +99,28 @@ lens-studio, clad, lens-studio-mcp, spectacles-interaction-kit, leaf, typescript
    (thumbnail, 3:2, no caption)
 
 2. devpost/shots/pad-count1-teal.png
-   Count 1: the left foot's print strikes in teal, the only colour in the Lens (Lens Studio preview).
+   Count 1. The 1 is the only blue in the Lens: the left foot's print and the first cell. Lens Studio preview.
 
 3. devpost/shots/pad-count5-lit.png
-   Count 5. Left feet are solid, right feet outlined, and nothing lights on 4 and 8 because they are holds.
+   Count 5. Left feet solid, right feet outlined; the cells for 4 and 8 stay empty because those are holds. Lens Studio preview.
 
 4. devpost/shots/right-turn-arc.png
-   The right turn on count 2. The arc shows only on the counts that turn.
+   The right turn on count 2. The arc appears only on the two counts that turn. Lens Studio preview.
 
 5. devpost/shots/step-card-answer-window.png
-   After each 8-count: Again or Got it. Two Agains slow the music and show half the step.
+   After each 8-count you answer Again or Got it. Two Agains slow the music and halve the step. Lens Studio preview.
 
 6. devpost/shots/last-time-rings.png
-   The next practice: the card says which counts were lost last time, and those prints carry a fainter ring.
+   The next practice opens with last time's lost counts ringed and named on the card. Lens Studio preview.
 
 7. devpost/shots/summary-last-time.png
-   The end of a practice, each step against last time.
+   The end of the second practice: each step's Agains next to last time's. Lens Studio preview.
 
 8. .design/brand/export/cards/gallery-before-after-1500x1000.png
    The first build worked and looked like a default. The second is after the design rules were applied.
 
 9. .design/brand/export/cards/gallery-how-it-was-made-1500x1000.png
-   Planned with the Devpost Learn skill pack, built by CLAD through the Lens Studio MCP, tested in the preview and on every push.
+   From brief to tests: six done criteria first, then the MCP calls that built it, then the scenarios and unit tests that check it.
 ```
 
 ## Links
@@ -147,16 +133,5 @@ Video (public YouTube, under 3 minutes): [X]
 ## Disclosure of pre-existing work
 
 ```
-Created during the Submission Period. Pre-existing parts: Snap's Spectacles Interaction Kit, Spectacles UI Kit, LEAF, Icons and Motion packages, the Lens Studio SPECS Base Template, and the Atkinson Hyperlegible Next typeface (SIL Open Font License).
+Created during the Submission Period. Pre-existing parts: Snap's Spectacles Interaction Kit, Spectacles UI Kit, LEAF, Icons, Motion and Bitmoji 3D packages, the Lens Studio SPECS Base Template, and the Atkinson Hyperlegible Next typeface (SIL Open Font License).
 ```
-
-## Sources for the page's claims
-
-Not a Devpost field. Kept here so each claim on the page can be traced.
-
-- Viewing perspective study: Versace et al., "Enhancing dance learning by optimising instructional perspective: A preregistered study on the effect of dancers' viewing perspective, cognitive load and expertise", PLOS ONE 21(9), 2026. https://doi.org/10.1371/journal.pone.0355860
-- Arthur Murray's mail-order footprints, about 1920: https://www.fundinguniverse.com/company-histories/arthur-murray-international-inc-history/
-- Dance Reality, 2017: https://www.geekwire.com/2017/dance-reality-app-helps-users-get-footwork-augmented-reality-thanks-apples-arkit/ and https://apps.apple.com/us/app/dance-reality/id1277367395
-- Session and MCP call counts: `devpost/BUILD_LOG.md`, regenerated from the session transcripts.
-- LEAF results: `devpost/design-pass-report.md`, section "Session memory and coverage, 6 November 2026".
-- Unit tests and planted breaks: `npm test` and `npm run breaks` in `tests/unit/`.

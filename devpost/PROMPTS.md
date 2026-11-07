@@ -379,3 +379,59 @@ LEAF's panel prints "Loaded 19 scenario(s) from preview" when it is ready, and a
 5. Do not retry any other failure more than once, and report any retry with its reason.
 6. Finish with a plain report: the project path, the compile result, each scenario PASS or FAIL, C2's sample count and BPM, and for each c8 run the beats of the late answer and the dropped one. Write nothing to disk.
 ```
+
+## 7 November: gallery recapture
+
+```text
+Retake two screenshots of the Floorcount Lens for the Devpost gallery. About 70 tool calls. Do not change how the Lens looks or behaves.
+
+Project root: this folder (ARSpec.esproj). Lens Studio is open on it; the lens-studio MCP server is connected. Read first: the "Session memory and coverage, 6 November 2026" section of devpost/design-pass-report.md (camera positions, how the earlier captures were framed and why last-time-rings was a compromise), and Assets/Tests/FloorcountCaptureScenario.ts (the capture helper: shots `last-time-rings`, `summary-last-time`, `film-session-a`, `film-session-b-finish`).
+
+Rules: install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse. Do not edit anything under Assets/Scripts/. You may extend Assets/Tests/FloorcountCaptureScenario.ts with new shots only. LEAF's panel prints "Loaded 19 scenario(s) from preview" when ready; a run dispatched before that is lost. Pin LEAF to the preview. Refresh the preview before each capture. Check the Lens Studio window is not minimised (IsIconic from PowerShell; restore with ShowWindow(handle, 9)); a minimised window throttles rendering. If the preview goes silent, PreviewPanelTool getConfig: "Preview is Paused" needs a refresh. Compose frames at 1280 x 720 with tmp/compose_shot.py as before. Look at every image before keeping it.
+
+1. devpost/shots/summary-last-time.png, retaken. The summary of a second practice where every row carries a real comparison and no row reads "0 Agains, 0 last time". Add a capture shot `summary-real` that plays a first session with Agains on all three steps (for example 3 on the basic, 2 on the right turn, 2 on the left turn; Agains change tempo and halves, so drive each step to done with the existing helpers, guard off for the unfilmed setup), finishes it, starts the next practice from the summary title, plays a second session with fewer Agains on each step (for example 1, 1, 0), finishes it, and holds on the summary. Frame the card large and centred, as little empty wall as the framing allows. Expected rows like "Basic step: 1 Again, 3 last time", "Right turn: 1 Again, 2 last time", "Left turn: 0 Agains, 2 last time"; print the actual rows.
+2. devpost/shots/last-time-rings.png, retaken. A second practice on the basic step with last time's rings on counts 2 and 5, held on a count where both ringed prints are at rest so the rings are easy to see. This time the card's title "Basic step" must be in frame, the strip whole, and both rings visible. Try camera positions further back and higher than last time; if the pad and the card cannot both fit legibly, make two frames instead: devpost/shots/last-time-rings.png on the pad (rings large and clear, numeral and strip in frame) and devpost/shots/last-time-card.png on the card with its "Last time: lost it on 2 and 5" line and title. Say which you did.
+3. Clear the saved session (floorcount-c9-session-memory ends by clearing it, or call clearSaved from the scenario) so the project is left as a first session, and save through the Editor API.
+4. Append a short section "Gallery recapture, 7 November 2026" to devpost/design-pass-report.md: the camera positions, the rows printed, what each frame shows, the save time. Plain language, no em-dashes, no local user paths.
+```
+
+## 7 November: the answer window
+
+```text
+Verify one change to the Floorcount Lens's answer guard and run the whole LEAF sweep. About 100 tool calls. Do not redesign anything; fix compile errors with the smallest change.
+
+Project root: this folder (ARSpec.esproj). Lens Studio is open on it; the lens-studio MCP server is connected. Read the "Review fixes, 6 November 2026" section and its "c8 rerun" subsection near the end of devpost/design-pass-report.md first.
+
+Rules: packages pinned; install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse. Delete any "* 2.*" OneDrive duplicates in Assets/ before compiling. Do not edit README.md, devpost/submission.md, devpost/design-brief.md, devpost/design-notes.md, anything under .design/ or tests/. Do not edit Assets/Scripts/ unless a scenario proves a bug in the change below, and if so say exactly what and why. LEAF's panel prints "Loaded 19 scenario(s) from preview" when ready; a run dispatched before that is lost. Pin LEAF to the preview. Check the Lens Studio window is not minimised (IsIconic from PowerShell; restore with ShowWindow(handle, 9)). Refresh the preview before c2, c5, c8, c9 and c13. If the preview goes silent, PreviewPanelTool getConfig: "Preview is Paused" needs a refresh. A run that outlasts the MCP timeout may still have finished; read the result from the log. Save through the Editor API after a clean compile, after the sweep, and at the end.
+
+The change, already on disk, from a second independent code review:
+- FloorcountMain.ts `canAnswer`: an answer is now taken only in the first `answerWindowCounts + ANSWER_GRACE_COUNTS` counts (2 + 2) of an 8-count numbered 1 or later, once per 8-count, never while paused. This replaces the six-beat spacing (`answeredBeat`, now removed), which left anyone answering late with capsules that never lit and could drop a legitimate answer. The capsules light from `waiting && canAnswer` as before.
+- FloorcountAudioController.ts: `useFallbackClock` is reset per track only once the player has been seen reporting a moving position (`sawPosition`).
+- Assets/Tests/FloorcountC8AnswerGuardScenario.ts: the late-answer section now asserts that a pinch late in an 8-count is dropped with the capsules at rest, and that the next 8-count opens with the capsules bright and takes an answer.
+- c8 also tests the grace now: it aims a pinch so the release lands in counts 3 to 4 after the capsules have gone to rest, and asserts that answer is taken (up to four aims, using the lag it measures). And it pauses inside an open window of an unanswered 8-count, so the paused check proves the pause shut it.
+- FloorcountAudioController.ts also keeps reading the player's position while on the wall clock, so `sawPosition` can still become true after one slow first start.
+
+Do, in order:
+1. Recompile; confirm "Floorcount: session started" with no Floorcount errors; save.
+2. Run c1 to c17 and the hold-on-count helper, once each in order. Run c8 three times in all, refreshing before each, and record its "[C8]" prints each time (the beat of the dropped late pinch, the next answer taken, each grace aim, and the paused beat). Report C2's sample count and BPM; under 90 samples means the preview is throttled, say so. A failure is reported with its print; do not loosen any assertion.
+3. Clear the saved session (floorcount-c9-session-memory ends by clearing it) so the project is left as a first session, and save.
+4. Append a section "Answer window, 7 November 2026" to devpost/design-pass-report.md: the change in two sentences, the LEAF table PASS or FAIL for every scenario with any retry and its reason, c8's printed beats for each run, C2's numbers, and the last save time. Plain language, no em-dashes, no local user paths.
+```
+
+## 7 November: answer guard off the loop seam
+
+```text
+Rerun one LEAF scenario after a one-line test change, and record it. About 30 tool calls. Change nothing in the Lens or the scenario.
+
+Project root: this folder (ARSpec.esproj). Lens Studio is open on it; the lens-studio MCP server is connected. Read the "Answer window, 7 November 2026" section at the end of devpost/design-pass-report.md first: c8 failed once there because its pause landed on the loop seam.
+
+Change on disk: Assets/Tests/FloorcountC8AnswerGuardScenario.ts now pauses in an 8-count whose index is not a multiple of four, so the pause never lands on the loop's seam.
+
+Rules: install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse. Only edit devpost/design-pass-report.md. LEAF's panel prints "Loaded 19 scenario(s) from preview" when ready; a run dispatched before that is lost. Pin LEAF to the preview. Check the Lens Studio window is not minimised. A run that outlasts the MCP timeout may still have finished; read the result from the log.
+
+1. Recompile and confirm it is clean.
+2. Refresh, run floorcount-c2-beat, read its sample count (under 90 means throttled: say so and stop).
+3. Run floorcount-c8-answer-guard four times, refreshing before each. Read every "[C8]" print of each run.
+4. Run floorcount-c9-session-memory (it clears any saved session) and save through the Editor API.
+5. Append a subsection "c8 off the seam" to the "Answer window, 7 November 2026" section: C2's numbers, each c8 run's result and its paused beat and phrase. A failure is quoted with its assertion; do not edit any code.
+```

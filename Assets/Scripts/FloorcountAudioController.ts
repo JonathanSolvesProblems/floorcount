@@ -80,6 +80,8 @@ export class FloorcountAudioController extends BaseScriptComponent {
   private fallbackStart = 0
   private fallbackPausedBeats = 0
   private useFallbackClock = false
+  /** Whether the player has ever reported a moving position, so this device has one. */
+  private sawPosition = false
   private stuckFrames = 0
 
   onAwake(): void {
@@ -130,9 +132,11 @@ export class FloorcountAudioController extends BaseScriptComponent {
     this.music.play(-1)
     this.playing = true
     this.paused = false
-    // Each track gets its own chance to sync to the player: the fallback is for a device with
-    // no audio position at all, not for one slow start.
-    this.useFallbackClock = false
+    // On a device whose player has reported a moving position, each track gets its own chance to
+    // sync to it: one slow start should not leave the whole session on the wall clock. A device
+    // that has never reported one stays on the wall clock, rather than freezing and skipping at
+    // every tempo change while the stuck check runs again.
+    if (this.sawPosition) this.useFallbackClock = false
     this.lastPosition = 0
     this.loops = 0
     this.resync = true
@@ -177,7 +181,12 @@ export class FloorcountAudioController extends BaseScriptComponent {
    */
   currentBeat(): number {
     if (!this.playing) return 0
-    if (this.useFallbackClock) return this.paused ? this.fallbackPausedBeats : this.fallbackBeat()
+    if (this.useFallbackClock) {
+      // Keep watching the player: if this was one slow start on a device that does report a
+      // position, the next track start goes back to the music's own clock.
+      if (!this.paused && this.music.position > 0.0001) this.sawPosition = true
+      return this.paused ? this.fallbackPausedBeats : this.fallbackBeat()
+    }
     const pos = this.music.position
     const duration = this.music.duration
     if (this.resync) {
@@ -200,6 +209,7 @@ export class FloorcountAudioController extends BaseScriptComponent {
         }
       } else {
         this.stuckFrames = 0
+        if (pos > 0.0001) this.sawPosition = true
       }
       if (duration > 0 && pos + 1 < this.lastPosition && this.lastPosition > duration - 2) this.loops++
       this.lastPosition = pos

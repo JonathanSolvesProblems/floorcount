@@ -4,7 +4,7 @@
  * Holds the session on one count so a screenshot can be taken of a known frame. It waits for
  * the strike of the count given in the `count` parameter, then pauses the music, which freezes
  * the beat clock: the pad, the clave strip and the step card all keep drawing that one beat,
- * so the lit footprint stays lit and the answer window stays open. Refresh the preview to
+ * so the lit footprint stays lit and the answer capsules rest while the beat is held (the Lens takes no answer while paused). Refresh the preview to
  * start the session running again.
  *
  * Asserts nothing about the design. It does check that the frame it froze on is the one that

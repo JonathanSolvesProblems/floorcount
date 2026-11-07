@@ -9,9 +9,9 @@
  *
  * It also covers the two things the guard learned from the code review:
  *
- *  - An answer taken late in an 8-count is not followed by one at the top of the next, a beat
- *    later, with nothing danced between them: the guard keeps a whole window's worth of counts
- *    between answers, and the capsules stay at rest while it does.
+ *  - An answer is taken in the first counts of an 8-count only, so a pinch late in one cannot be
+ *    followed a beat later by another at the top of the next, and a late pincher still finds
+ *    the next 8-count open with the capsules bright.
  *  - Paused is paused. While the music is held nothing is being danced, so nothing is answered,
  *    and the guard opens again once the session goes on.
  *
@@ -23,7 +23,7 @@ import { Scenario } from "Leaf.lspkg/Scenarios/scenario/Scenario"
 import { expect } from "Leaf.lspkg/Utils/common/Expect"
 import { nextFrame, sleep } from "Leaf.lspkg/Utils/common/Utils"
 import { COUNTS_PER_PHRASE } from "../Scripts/FloorcountSteps"
-import { FloorcountMain } from "../Scripts/FloorcountMain"
+import { ANSWER_GRACE_COUNTS, FloorcountMain } from "../Scripts/FloorcountMain"
 import { audio, card, interactor, main, pinch, restartSession, waitForBeat, waitForCount } from "./FloorcountTestKit"
 
 /** Which 8-count since the music last started the session is in. */
@@ -195,106 +195,106 @@ export class FloorcountC8AnswerGuardScenario extends Scenario {
     expect(m.state.tempo).toBe(0)
     expect(m.state.segment).toBe("first")
 
-    // ---------------------------------------------------------------- late answer, then the next window
+    // ---------------------------------------------------------------- late answers
     //
-    // An answer may be pinched anywhere in an 8-count, so one taken on count 7 or 8 must not be
-    // followed by another at the top of the next 8-count one beat later: that would be two
-    // "in a row" with nothing danced between them. The guard keeps
-    // COUNTS_PER_PHRASE - answerWindowCounts beats between answers, and the capsules read from
-    // the same rule, so they stay at rest while an answer would be dropped.
-    //
-    // The tempo drop above restarted the music, so the 8-count numbering starts over and the
-    // second 8-count is again the first that can be answered.
-    //
-    // A pinch is aimed rather than assumed. SIK's hover, select and release take several frames,
-    // so the Lens takes an answer well after the scenario asks for it: about one and a half
-    // beats on a preview that is keeping up, over four on one that is not. Each attempt reads
-    // the beat the Lens actually took its answer on, takes that lag off the next attempt's
-    // starting position, and stops once one lands late enough in an 8-count for the top of the
-    // next 8-count to still be inside the guard's window. An extra Again at Slow with the step
-    // already split moves nothing but its own count.
+    // An answer is about the 8-count just danced, so it is taken in the first counts of the next
+    // one: while the capsules are bright and for ANSWER_GRACE_COUNTS after, for a pinch released
+    // late. A pinch later in the 8-count is dropped and the capsules are at rest, so it cannot be
+    // followed a beat later by a second answer at the top of the next 8-count. And a dancer who
+    // pinched late is not locked out: the next 8-count opens with the capsules bright.
     const watch = answerWatcher(m)
-    /** Where in the 8-count the answer should land: late in count 8. */
-    const LANDING = 7.4
-    const window = COUNTS_PER_PHRASE - m.answerWindowCounts
-    let lag = 1.5
-    let lateBeat = -1
-    let latePhrase = -1
-    let streakAfterLate = -1
-    let againsAfterLate = -1
-    let droppedBeforeLate = 0
-    for (let attempt = 1; attempt <= 4 && lateBeat < 0; attempt++) {
-      expect(await waitForCanAnswer(14000)).toBe(true)
-      expect(await waitForPhrasePosition(Math.max(0.1, LANDING - lag), 1.2, 14000)).toBe(true)
-      const calledBeat = m.currentBeat
-      const takenBefore = watch.taken.length
-      droppedBeforeLate = m.ignoredAnswers
-      await pinch("AgainButton", io)
-      await sleep(200)
-      // Wherever it landed, the guard had to take it: an 8-count has played and the last answer
-      // is further back than the window.
-      expect(watch.taken.length).toBe(takenBefore + 1)
-      expect(m.ignoredAnswers).toBe(droppedBeforeLate)
-      const beat = watch.taken[watch.taken.length - 1]
-      const phrase = Math.floor(beat / COUNTS_PER_PHRASE)
-      const pos = beat - phrase * COUNTS_PER_PHRASE
-      lag = Math.max(0.2, beat - calledBeat)
-      print(
-        "[C8] aim " + attempt + ": pinched on beat " + calledBeat.toFixed(2) + ", taken on beat " +
-          beat.toFixed(2) + " (count " + countOfBeat(beat) + " of 8-count " + phrase + "), lag " +
-          lag.toFixed(2) + " beats",
-      )
-      if (pos >= 7 && COUNTS_PER_PHRASE - pos + lag < window) {
-        lateBeat = beat
-        latePhrase = phrase
-        streakAfterLate = m.state.againStreak
-        againsAfterLate = m.state.againCounts[0]
-      }
-    }
-    expect(lateBeat >= 0).toBe(true)
-    expect(countOfBeat(lateBeat) >= 7).toBe(true)
-
-    // The very next 8-count, a beat or two of music after the answer, so the next one is dropped
-    // and the capsules are at rest even though this may be the two-count answer window. A pinch
-    // can use up that whole beat or two by itself, so this looks at the 8-count straight after
-    // the answer, wherever in it the pinch left the session. Waiting for the top of an 8-count
-    // can miss this one and land on the one after, 8 beats on, where the guard has rightly
-    // opened again.
-    while (Math.floor(m.currentBeat / COUNTS_PER_PHRASE) <= latePhrase) await nextFrame()
-    await nextFrame() // let the capsules take this frame's answer window
-    expect(Math.floor(m.currentBeat / COUNTS_PER_PHRASE)).toBe(latePhrase + 1)
-    expect(m.currentBeat - lateBeat < window).toBe(true)
-    expect(m.canAnswer).toBe(false)
-    expect(c.buttonsBright).toBe(false)
-    const droppedBeforeTop = m.ignoredAnswers
+    const accept = m.answerWindowCounts + ANSWER_GRACE_COUNTS
+    // Aim at count 6. A simulated pinch lands about one to two beats after it is called on a
+    // preview that is keeping up, so it lands on count 7 or 8 of the same 8-count.
+    expect(await waitForPhrasePosition(accept + 1, 0.6, 14000)).toBe(true)
+    const latePhrase = phraseOf(m)
+    const againsBeforeLate = m.state.againCounts[0]
+    const streakBeforeLate = m.state.againStreak
+    const droppedBeforeLate = m.ignoredAnswers
     await pinch("AgainButton", io)
-    await sleep(200)
-    const topBeat = watch.dropped.length > 0 ? watch.dropped[watch.dropped.length - 1] : -1
+    await sleep(150)
+    const lateBeat = watch.dropped.length > 0 ? watch.dropped[watch.dropped.length - 1] : -1
     print(
-      "[C8] late answer taken on beat " + lateBeat.toFixed(2) + " (count " + countOfBeat(lateBeat) +
-        " of 8-count " + latePhrase + "), the next one dropped on beat " + topBeat.toFixed(2) +
-        " (count " + countOfBeat(topBeat) + " of 8-count " + Math.floor(topBeat / COUNTS_PER_PHRASE) +
-        "), " + (topBeat - lateBeat).toFixed(2) + " beats apart against the " +
-        (COUNTS_PER_PHRASE - m.answerWindowCounts) + " the guard asks for",
+      "[C8] late pinch dropped on beat " + lateBeat.toFixed(2) + " (count " + countOfBeat(lateBeat) +
+        " of 8-count " + Math.floor(lateBeat / COUNTS_PER_PHRASE) + "), answers taken in counts 1 to " + accept,
     )
-    expect(m.ignoredAnswers).toBe(droppedBeforeTop + 1)
-    expect(m.state.againCounts[0]).toBe(againsAfterLate)
-    expect(m.state.againStreak).toBe(streakAfterLate)
+    expect(m.ignoredAnswers).toBe(droppedBeforeLate + 1)
+    expect(Math.floor(lateBeat / COUNTS_PER_PHRASE)).toBe(latePhrase)
+    expect(lateBeat - latePhrase * COUNTS_PER_PHRASE >= accept).toBe(true)
+    expect(m.state.againCounts[0]).toBe(againsBeforeLate)
+    expect(m.state.againStreak).toBe(streakBeforeLate)
     expect(m.state.tempo).toBe(0)
     expect(m.state.segment).toBe("first")
-    // The two answers landed in different 8-counts, so only the window between them can have
-    // dropped the second: the old rule, one answer per 8-count, would have taken it.
-    expect(Math.floor(topBeat / COUNTS_PER_PHRASE)).toBe(latePhrase + 1)
-    expect(topBeat - lateBeat < window).toBe(true)
 
-    // Later in the same 8-count the window has been danced through and the guard opens again.
-    expect(await waitForCount(7, 12000)).toBe(true)
+    // The top of the next 8-count: the window is open, the capsules are bright, and an answer is taken.
+    expect(await waitForPhraseStart(latePhrase + 1, 12000)).toBe(true)
+    await nextFrame() // let the capsules take this frame's answer window
     expect(m.canAnswer).toBe(true)
+    expect(c.buttonsBright).toBe(true)
+    const calledTop = m.currentBeat
+    await pinch("AgainButton", io)
+    await sleep(200)
+    const topBeat = watch.taken.length > 0 ? watch.taken[watch.taken.length - 1] : -1
+    print(
+      "[C8] next 8-count: answer taken on beat " + topBeat.toFixed(2) + " (count " + countOfBeat(topBeat) +
+        " of 8-count " + Math.floor(topBeat / COUNTS_PER_PHRASE) + ")",
+    )
+    expect(m.state.againCounts[0]).toBe(againsBeforeLate + 1)
+    expect(Math.floor(topBeat / COUNTS_PER_PHRASE)).toBe(latePhrase + 1)
+    expect(topBeat - (latePhrase + 1) * COUNTS_PER_PHRASE < accept).toBe(true)
+
+    // ---------------------------------------------------------------- the grace
+    //
+    // A pinch is taken on release, so one started while the capsules are bright can land after
+    // they have gone to rest. That answer must still be taken. Aim each attempt so the release
+    // lands just after the bright window, using the lag the Lens just showed, and keep the one
+    // that landed in the grace.
+    const window = m.answerWindowCounts
+    let lag = Math.max(0.2, topBeat - calledTop)
+    let graceBeat = -1
+    let phraseNow = Math.floor(topBeat / COUNTS_PER_PHRASE)
+    for (let attempt = 1; attempt <= 4 && graceBeat < 0; attempt++) {
+      expect(await waitForPhraseStart(phraseNow + 1, 12000)).toBe(true)
+      phraseNow = phraseOf(m)
+      expect(await waitForPhrasePosition(Math.max(0.05, window + 0.5 - lag), 0.6, 8000)).toBe(true)
+      const called = m.currentBeat
+      const takenBefore = watch.taken.length
+      const droppedBefore = watch.dropped.length
+      await pinch("AgainButton", io)
+      await sleep(200)
+      const tookIt = watch.taken.length > takenBefore
+      const beat = tookIt ? watch.taken[watch.taken.length - 1] : watch.dropped[watch.dropped.length - 1]
+      const pos = beat - Math.floor(beat / COUNTS_PER_PHRASE) * COUNTS_PER_PHRASE
+      lag = Math.max(0.2, beat - called)
+      print(
+        "[C8] grace aim " + attempt + ": " + (tookIt ? "taken" : "dropped") + " on beat " + beat.toFixed(2) +
+          " (count " + countOfBeat(beat) + ", " + pos.toFixed(2) + " into the 8-count), lag " + lag.toFixed(2),
+      )
+      if (pos >= window && pos < accept && Math.floor(beat / COUNTS_PER_PHRASE) === phraseNow) {
+        // The capsules were at rest when this landed, and the Lens took it anyway.
+        expect(tookIt).toBe(true)
+        expect(watch.dropped.length).toBe(droppedBefore)
+        graceBeat = beat
+      }
+    }
+    expect(graceBeat >= 0).toBe(true)
     watch.stop()
 
     // ---------------------------------------------------------------- paused
     //
-    // Nothing is being danced while the session is held, so nothing is being answered.
+    // Nothing is being danced while the session is held, so nothing is being answered. Pause
+    // inside an open window of an 8-count nobody has answered, so the pause is the only thing
+    // that can shut it.
+    //
+    // Not on the loop's seam. Each practice loop is exactly four 8-counts, and pausing right as
+    // it wraps can make the beat clock count one wrap too many on resume (a known quirk, written
+    // up in devpost/design-pass-report.md: it adds exactly 32 beats, so the count on screen stays
+    // right). This check is about the guard, so it pauses in an 8-count that does not start a loop.
+    expect(await waitForPhraseStart(phraseNow + 1, 12000)).toBe(true)
+    if (phraseOf(m) % 4 === 0) expect(await waitForPhraseStart(phraseOf(m) + 1, 12000)).toBe(true)
+    const pausePhrase = phraseOf(m)
+    expect(pausePhrase % 4 === 0).toBe(false)
+    expect(m.canAnswer).toBe(true)
     const tempoBeforePause = m.state.tempo
     const segmentBeforePause = m.state.segment
     const droppedBeforePause = m.ignoredAnswers
@@ -302,6 +302,9 @@ export class FloorcountC8AnswerGuardScenario extends Scenario {
     await sleep(250)
     expect(a.isPaused).toBe(true)
     expect(c.isPaused).toBe(true)
+    // The beat is held, and it is held inside the open part of an unanswered 8-count.
+    expect(phraseOf(m)).toBe(pausePhrase)
+    expect(m.currentBeat - pausePhrase * COUNTS_PER_PHRASE < accept).toBe(true)
     expect(m.canAnswer).toBe(false)
     expect(c.buttonsBright).toBe(false)
     await pinch("GotItButton", io)

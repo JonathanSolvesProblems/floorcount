@@ -1295,3 +1295,351 @@ loop wraps as the player's position settles on resume. Each adds exactly 32 beat
 sooner than the guard would like after that pause, or a fade paused there finishing early. A change
 to the beat clock this close to submission is a bigger risk than the quirk.
 
+
+## Gallery recapture, 7 November 2026
+
+Two of the three gallery screenshots retaken, because both were compromises. No design work, no scene
+change and no change to `Assets/Scripts/`: the Lens looks and behaves exactly as it did before. The
+only code written was three new shots in the capture helper, `Assets/Tests/FloorcountCaptureScenario.ts`.
+All times are local time on 7 November.
+
+### The two frames
+
+Preview-camera coordinates again, the ones the Inspector and `MovePreviewCamera` use. For both shots
+the Lens was reset with the camera at the usual start position, (-120, 0, -215) facing -Z, so the
+layout pinned over the clear rug before the camera was aimed. The helper now prints where it pinned:
+pad at (-120, -150, -285), card at (-66, -55, -279) facing (-0.64, 0, 0.76), which is straight at the
+dancer. Those three numbers are what the camera positions below were calculated from, by
+`tmp/frame_check.py`, instead of being found by trial and error.
+
+| Path | Camera | What it shows |
+|---|---|---|
+| `devpost/shots/last-time-rings.png` | (-100, 30, -20), looking at (-100, -95, -285), about 25 degrees down | A second practice of the basic step held on count 1. The card title "Basic step" is in frame with all four lines under it, including "Last time: lost it on 2 and 5"; the whole eight-cell clave strip is in frame with cell 1 teal; the numeral reads 1; counts 2 and 5 both carry last time's ring, and both of those prints are at rest. |
+| `devpost/shots/summary-last-time.png` | (-158.6, -55, -207.6), looking at (-66, -51.7, -279), level with the card | The summary of a second practice, filling the frame: "Practise again", then "Basic step: 1 Again, 3 last time", "Right turn: 1 Again, 2 last time", "Left turn: 0 Agains, 2 last time", then "Pinch the title to practise again". |
+
+**One frame, not two.** The 6 November note says the card and the whole pad do not fit in one frame
+and calls `last-time-rings` a compromise, with the title cropped off the top and the left end of the
+strip off the side. Standing further back and higher up fits both: at 293 cm from the middle of the
+two, 25 degrees down, the worst point of either sits at 0.80 of the way to the frame edge. The pad is
+smaller in the frame than it was, which is the price, and the rings are still plainly rings. A closer
+version was taken and rejected: 15 per cent nearer put "lost it on 2 and" at the right edge with the
+5 outside it.
+
+**Both ringed prints at rest.** A print strikes at 100 per cent on its count and decays back to its
+35 per cent rest over one beat. The ringed prints are counts 2 and 5, and in the basic step count 7
+is danced on count 2's spot, so count 1 is the only count where neither has been struck for two
+beats. The capture froze 0.019 of a beat past count 1's strike and printed both at 0.35, with count
+1's own print at 0.95. The old frame held count 2, which is one of the two ringed counts, so that
+ring sat under a print at full brightness.
+
+### The rows, played rather than arranged
+
+`summary-last-time` used to be built from a first session with no Agains at all, so two of its three
+rows read "0 Agains, 0 last time" and compared nothing. The new `summary-real` shot plays both
+practices in full: three Agains on the basic step, two on each turn, finish; then the summary's own
+title to start the next practice, which reads last session back off persistent storage; then one
+Again on the basic step, one on the right turn, none on the left turn, and finish again. The Lens
+logged the two sessions as
+
+```text
+Floorcount: session complete. Basic step: 3 Agains | Right turn: 2 Agains | Left turn: 2 Agains
+Floorcount: session complete. Basic step: 1 Again, 3 last time | Right turn: 1 Again, 2 last time | Left turn: 0 Agains, 2 last time
+```
+
+and the three rows in the photographed frame are the second line, word for word. Every row compares
+two numbers that were earned, and the left turn row shows the shape that matters most: nothing wrong
+this time, two Agains last time.
+
+### What was added to the capture helper
+
+Three shots, no change to any existing one:
+
+- `summary-real`, above. It drives both sessions with the answer guard off, because none of the
+  setup is filmed and with the guard on each of the forty-six answers would wait out an 8-count.
+- `rings-at-rest`, the rings frame held on count 1 instead of count 2.
+- `clear-saved`, no frame at all: it clears the saved session and asserts `previous` is null, so the
+  project can be put back to a first session without running a whole scenario for it.
+
+Both picture shots end by printing where the pad, the card and the camera actually are, which is what
+made the framing arithmetic possible.
+
+### The runs
+
+LEAF pinned to the preview, the preview refreshed before each run, and every run dispatched only
+after the panel's own "Loaded 19 scenario(s) from preview" line. The Lens Studio window was checked
+with `IsIconic` and was not minimised.
+
+| Run | Result | Note |
+|---|---|---|
+| `floorcount-capture`, `rings-at-rest` | **PASS** | 22.9 s, frozen 0.019 of a beat past count 1 |
+| `floorcount-capture`, `summary-real` | **PASS** | 41.6 s, all three row texts asserted exactly |
+| `floorcount-capture`, `clear-saved` | **PASS** | 1.6 s, "previous is now null" |
+
+TypeScript recompiled cleanly before the first run. Nothing was installed; `QueryRuntimeSceneTool`
+and `PreviewInteractTool` were not called. Packages are the pinned set they were.
+
+### Left as a first session
+
+The saved session the two memory shots leave behind was cleared with the `clear-saved` shot, and the
+clear was then confirmed on a cold Lens the way 6 November confirmed it: after a preview refresh the
+card measures itself at startup and printed `Card 39.5 cm wide` with line widths
+`39.5 / 28.9 / 33.1 / 25.7 cm`, the fourth line being "Whole step" rather than a "Last time" line. A
+saved session would have printed 62.1 cm.
+
+### Saves
+
+Saved through the Editor API (`model.project.save()`) once, at **18:09:06**. `ARSpec.esproj` and
+`Assets/Scene.scene` were both written at 18:09:06 by that save; no scene object, material, texture,
+font or sound was edited in this session, and no `@input` was wired or changed.
+
+### Files
+
+Changed: `devpost/shots/last-time-rings.png` and `devpost/shots/summary-last-time.png`, both
+retaken; `Assets/Tests/FloorcountCaptureScenario.ts`, three new shots; `tmp/frame_check.py`, new, a
+scratch tool that says where the pad and the card land in the frame for a candidate camera; and this
+section. The Lens name in `ARSpec.esproj` is still `SpecsBaseTemplate` and remains a by-hand go-live
+step in Project Settings.
+
+
+## Answer window, 7 November 2026
+
+Verifying one change to the answer guard, left on disk by a second independent code review, and
+running the whole LEAF sweep. No design work, no scene change and no change to `Assets/Scripts/`:
+nothing in the sweep proved a bug in the change. All times are local time on 7 November.
+
+### The change
+
+`canAnswer` in `FloorcountMain.ts` now takes an answer only in the first four counts of an 8-count
+numbered 1 or later, the two counts the capsules are bright plus two counts of grace, at most once
+per 8-count and never while the session is held. That replaces the six-beat spacing between
+answers, which left anyone answering late with capsules that never lit and could drop an answer
+that deserved to be taken. Alongside it, `FloorcountAudioController.ts` now waits until the audio
+player has been seen reporting a moving position before letting a new track clear
+`useFallbackClock`, and keeps reading that position while on the wall clock, so one slow first
+start no longer strands the whole session there.
+
+### Compile and start
+
+The recompile succeeded, and the preview started with `Floorcount: session started, Basic step at
+Slow (140 BPM)` and no Floorcount errors. The only line on the error channel all session was
+LEAF's own "Skipping plugin state save", which comes from the plugin and not from the Lens.
+`Assets/` was checked for OneDrive "* 2.*" duplicates before compiling; there were none. The Lens
+Studio window was confirmed not minimised before any timing-sensitive run.
+
+### The LEAF sweep
+
+One sweep in the Lens Studio preview through the LEAF panel, 18:16 to 18:45, pinned to the preview
+rather than to a device. The preview was refreshed before c2, c5, c9, c13 and before each of c8's
+three runs, and every run was dispatched only after the panel's "Loaded 19 scenario(s) from
+preview". **No scenario was retried.** c8 was run three times on purpose, as asked; every other
+scenario passed on its first and only attempt.
+
+| # | Scenario | Result | Retry |
+|---|---|---|---|
+| 1 | `floorcount-c1-start` | **PASS** | none |
+| 2 | `floorcount-c2-beat` | **PASS** | none |
+| 3 | `floorcount-c3-again` | **PASS** | none |
+| 4 | `floorcount-c4-next-step` | **PASS** | none |
+| 5 | `floorcount-c5-mark-and-summary` | **PASS** | none, where 6 November needed a second attempt |
+| 6 | `floorcount-c6-off-view-arrow` | **PASS** | none |
+| 7 | `floorcount-c7-step-card` | **PASS** | none |
+| 8 | `floorcount-c8-answer-guard` | **PASS, PASS, FAIL** over three runs | none; the three runs were planned, not retries |
+| 9 | `floorcount-c9-session-memory` | **PASS** | none, and **PASS** again at the end as the clearing step |
+| 10 | `floorcount-c10-left-turn` | **PASS** | none |
+| 11 | `floorcount-c11-halves` | **PASS** | none |
+| 12 | `floorcount-c12-count-display` | **PASS** | none |
+| 13 | `floorcount-c13-the-and` | **PASS** | none |
+| 14 | `floorcount-c14-mark-ring` | **PASS** | none |
+| 15 | `floorcount-c15-restart-from-summary` | **PASS** | none |
+| 16 | `floorcount-c16-arc-inside-pad` | **PASS** | none |
+| 17 | `floorcount-c17-teal-law` | **PASS** | none |
+| helper | `floorcount-hold-on-count` | **PASS** | none, where 6 November needed a second attempt |
+
+### The preview was keeping up
+
+`floorcount-c2-beat` is the frame-rate meter, and it reported **130 samples over 8.01 s**, well
+above the 90 that would say the preview is throttled, against 136 on the free-GPU rerun of
+6 November and 21 to 43 on the throttled one. **139.7 BPM** against the 140 BPM loop, and every
+content counter zero:
+
+```text
+[C2] 130 samples over 8.01 s, 18.64 beats (139.7 BPM), litMismatch=0 holdLit=0 numberMismatch=0 holdCellLit=0 outOfRange=0 brightestOwnCell=0.99
+```
+
+### c8, three runs
+
+**Run 1, PASS in 26.17 s**, ending 18:37:18. Every check reached, and the grace taken on the first
+aim.
+
+```text
+[C8] first 8-count: tempo 0, dropped 1
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 10.9, 8-count 1 -> 1
+[C8] late pinch dropped on beat 13.44 (count 6 of 8-count 1), answers taken in counts 1 to 4
+[C8] next 8-count: answer taken on beat 16.58 (count 1 of 8-count 2)
+[C8] grace aim 1: taken on beat 26.66 (count 3, 2.66 into the 8-count), lag 0.54
+[C8] paused on beat 32.40: canAnswer false, dropped 1, tempo 0, segment first
+[C8] resumed on beat 33.92, canAnswer back on beat 33.92
+[C8] passed: one answer per 8-count, a window between answers, none while paused
+```
+
+**Run 2, PASS in 26.15 s**, ending 18:38:04. The same beats to within a third of a count.
+
+```text
+[C8] first 8-count: tempo 0, dropped 1
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 11.1, 8-count 1 -> 1
+[C8] late pinch dropped on beat 13.44 (count 6 of 8-count 1), answers taken in counts 1 to 4
+[C8] next 8-count: answer taken on beat 16.36 (count 1 of 8-count 2)
+[C8] grace aim 1: taken on beat 26.55 (count 3, 2.55 into the 8-count), lag 0.33
+[C8] paused on beat 32.29: canAnswer false, dropped 1, tempo 0, segment first
+[C8] resumed on beat 33.81, canAnswer back on beat 33.81
+[C8] passed: one answer per 8-count, a window between answers, none while paused
+```
+
+**Run 3, FAIL at 24.33 s**, 18:38:37. It got through the late-answer check and the grace, and
+stopped in the paused section.
+
+```text
+[C8] first 8-count: tempo 0, dropped 1
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 10.9, 8-count 1 -> 1
+[C8] late pinch dropped on beat 13.44 (count 6 of 8-count 1), answers taken in counts 1 to 4
+[C8] next 8-count: answer taken on beat 16.47 (count 1 of 8-count 2)
+[C8] grace aim 1: taken on beat 26.66 (count 3, 2.66 into the 8-count), lag 0.43
+FAILED: floorcount-c8-answer-guard - AssertionError: Expected: "4" - Received: "7"
+```
+
+So the new checks did run, and they hold. The late pinch on count 6 was dropped with the capsules
+at rest, the next 8-count took its answer on count 1, and the grace took an answer on count 3,
+after the capsules had gone to rest, on the first aim in all three runs.
+
+**What run 3 failed on, and why it is not the guard.** The failure is between the grace print and
+the paused print, and the only assertion in that span comparing two 8-count numbers is
+`expect(phraseOf(m)).toBe(pausePhrase)` (`FloorcountC8AnswerGuardScenario.ts:299`), the scenario's
+own check that the pause held the beat inside the 8-count it paused in. It expected 8-count 4, the
+one it had just waited for, and read 8-count 7.
+
+The clock is what moved, not the guard. Run 3 spent 2.18 s between the grace print and the
+failure, which at 140 BPM is about 5 counts of music, but the beat it read had jumped 24 to 32
+counts. The Slow loop is 13.714 s long, measured off the file, which is exactly 32.00 beats at
+140 BPM, so one loop is four 8-counts and a loop wrap is worth exactly 32 beats. The pause section
+waits for the start of 8-count 4, which is beat 32.0, which is exactly the loop boundary. Runs 1
+and 2 landed just past it, on beats 32.40 and 32.29, and were fine. Run 3 landed a shade under it,
+in the last fraction of the loop, where the clock credits a false wrap as the player's position
+settles across `music.pause()`: a beat just under 32 plus 32 is just under 64, which is 8-count 7,
+which is what it read.
+
+That is the beat-clock quirk written up at the end of the 6 November section and deliberately left
+alone there, and the new pause check happens to aim straight at it because it pauses on an 8-count
+boundary. It is not a fault in the answer guard: `canAnswer` returns false while paused whatever
+the beat says, and run 3 never got as far as asserting anything about the guard. Nothing was
+loosened, no assertion was changed, and `Assets/Scripts/` was not touched. The audio controller
+change is also ruled out of it: the Lens never printed "music position is not advancing" in any
+run, so it never used the wall clock, and the lines that changed there only run when it does.
+
+### Left as a first session
+
+`floorcount-c9-session-memory` ran last and ends by clearing the save and asserting `previous` is
+null, so the project is left as a first session.
+
+### Saves
+
+Saved through the Editor API (`model.project.save()`): 18:16:37 after the clean compile, 18:45:02
+after the sweep and after the saved session was cleared, and **18:47:22 last**. The only thing
+written after the last save is this section, which is outside the Lens project's assets, so
+nothing in the project itself has changed since.
+
+### Files
+
+Changed: this section only. Nothing under `Assets/Scripts/` and nothing under `Assets/Tests/` was
+edited, no scene object was added, removed or renamed, no `@input` was wired or changed, and no
+texture, material, font or sound was touched. Packages are the pinned set, Spectacles Interaction
+Kit 2.0.0, Spectacles UI Kit 2.0.0 and LEAF 2.0.2; nothing was installed, and neither
+`QueryRuntimeSceneTool` nor `PreviewInteractTool` was called.
+
+### c8 off the seam
+
+Run 3 above failed on the beat clock, not on the answer guard, because the pause section waited for
+the start of 8-count 4, which is beat 32.0, which is exactly where the Slow loop wraps. The
+scenario now steps past any 8-count whose number is a multiple of four before it pauses
+(`FloorcountC8AnswerGuardScenario.ts:293-296`), so the pause can no longer land on the seam. That
+is a change to the test's aim only: the assertions, the Lens and everything under `Assets/Scripts/`
+are untouched, and the guard is being asked exactly the same questions as before.
+
+Four c8 runs, 18:49 to 18:53 on 7 November, in the Lens Studio preview through the LEAF panel,
+pinned to the preview rather than to a device. The Lens Studio window was confirmed not minimised
+first. The preview was refreshed before every run, and every run was dispatched only after the
+panel's "Loaded 19 scenario(s) from preview". **No run was retried.** The recompile before the
+sweep succeeded, and the preview started with `Floorcount: session started, Basic step at Slow
+(140 BPM)`.
+
+**The preview was keeping up.** `floorcount-c2-beat` **PASSED in 12.01 s**, ending 18:49:39, with
+**154 samples over 8.07 s**, well clear of the 90 that would say the preview is throttled, and
+above both the 130 of the sweep earlier this session and the 136 of the free-GPU rerun on
+6 November. **140.1 BPM** against the 140 BPM loop, and every content counter zero:
+
+```text
+[C2] 154 samples over 8.07 s, 18.85 beats (140.1 BPM), litMismatch=0 holdLit=0 numberMismatch=0 holdCellLit=0 outOfRange=0 brightestOwnCell=0.97
+[C2] clave hits in the window: 5
+```
+
+**Four runs, four passes.** Every run paused in **8-count 5**, which starts at beat 40, eight
+counts past the loop wrap at beat 32 and twenty-three before the next one at 64. Nothing landed
+near a seam, and no run failed, so there is no assertion to quote.
+
+| Run | Result | Ended | Paused on beat | 8-count | Into the 8-count |
+|---|---|---|---|---|---|
+| 1 | **PASS** in 29.49 s | 18:50:32 | 40.53 | 5 | 0.53 |
+| 2 | **PASS** in 29.57 s | 18:51:51 | 40.53 | 5 | 0.53 |
+| 3 | **PASS** in 29.53 s | 18:52:35 | 40.53 | 5 | 0.53 |
+| 4 | **PASS** in 29.48 s | 18:53:17 | 40.31 | 5 | 0.31 |
+
+The runs are about 3.3 s longer than the 26.2 s of the earlier sweep, which is the extra 8-count
+the scenario now waits through to get off the seam. Run 1 in full, and runs 2 and 3 matched it
+beat for beat:
+
+```text
+[C8] first 8-count: tempo 0, dropped 1
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 10.9, 8-count 1 -> 1
+[C8] late pinch dropped on beat 13.44 (count 6 of 8-count 1), answers taken in counts 1 to 4
+[C8] next 8-count: answer taken on beat 16.47 (count 1 of 8-count 2)
+[C8] grace aim 1: taken on beat 26.66 (count 3, 2.66 into the 8-count), lag 0.43
+[C8] paused on beat 40.53: canAnswer false, dropped 1, tempo 0, segment first
+[C8] resumed on beat 42.04, canAnswer back on beat 42.04
+[C8] passed: one answer per 8-count, a window between answers, none while paused
+```
+
+Run 4 drifted by a fraction of a count throughout and still landed in the same 8-count:
+
+```text
+[C8] first 8-count: tempo 0, dropped 1
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 10.7, 8-count 1 -> 1
+[C8] late pinch dropped on beat 13.33 (count 6 of 8-count 1), answers taken in counts 1 to 4
+[C8] next 8-count: answer taken on beat 16.58 (count 1 of 8-count 2)
+[C8] grace aim 1: taken on beat 26.33 (count 3, 2.33 into the 8-count), lag 0.33
+[C8] paused on beat 40.31: canAnswer false, dropped 1, tempo 0, segment first
+[C8] resumed on beat 41.83, canAnswer back on beat 41.83
+[C8] passed: one answer per 8-count, a window between answers, none while paused
+```
+
+So the guard holds four times over, and the one failure of the earlier sweep is accounted for: it
+was the pause landing on the loop wrap, and moving the pause off the wrap removes it. The late
+pinch on count 6 was dropped in all four runs, the next 8-count took its answer on count 1, and the
+grace took an answer on count 3 after the capsules had gone to rest, on the first aim every time.
+The beat-clock quirk itself is untouched and still written up at the end of the 6 November section.
+
+**Left as a first session.** `floorcount-c9-session-memory` ran last, **PASSED in 30.51 s** at
+18:54:01, starting from `previous=null` and ending by clearing the save, so the project is left as
+a first session again.
+
+**The error channel.** Five LEAF "Skipping plugin state save" warnings, one per refresh, which come
+from the plugin and not from the Lens, and one engine line during c9, `E 18:53:54.926 [AudioOutput]
+Can not Set Media Type for Sink Writer`, from Lens Studio's speaker output on the host and not from
+any Floorcount script. c9 passed through it. No Floorcount error was printed in any run.
+
+**Saved** through the Editor API (`model.project.save()`) at **18:54:08**, after the last run and
+after the saved session was cleared. The only thing written since is this subsection, which is
+outside the Lens project's assets.
+
+**Files.** `Assets/Tests/FloorcountC8AnswerGuardScenario.ts` arrived already changed on disk and was
+not edited here; this subsection is the only thing I wrote. No scene change, nothing under
+`Assets/Scripts/`, nothing installed, and neither `QueryRuntimeSceneTool` nor `PreviewInteractTool`
+was called.

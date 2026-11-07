@@ -9,6 +9,12 @@
  *  - `last-time-rings`: a second practice, with last session's rings on counts 2 and 5 of the
  *    basic step and the focus line saying where it went wrong, held on count 2.
  *  - `summary-last-time`: the summary of a second practice, so every row carries a comparison.
+ *  - `summary-real`: the same summary, but with both practices played for real, so every row
+ *    compares two numbers that were both earned and no row reads "0 Agains, 0 last time".
+ *  - `rings-at-rest`: the `last-time-rings` frame held on count 1 instead of count 2, where both
+ *    ringed prints are back at rest and the rings read as rings.
+ *  - `clear-saved`: no frame at all. Clears the saved session and leaves the Lens as a first
+ *    session, for putting the project back after the memory shots.
  *  - `fade-line`: the line the card fades on after the last step, both ways round. A session
  *    with an Again to bring back says "Once more at Full"; one with none says "Three steps
  *    done". It holds the second of the two frames.
@@ -60,6 +66,8 @@ import { DefaultLeafInteractor } from "Leaf.lspkg/Interactors/interactor/Default
 import {
   audio,
   card,
+  cardObject,
+  cameraObject,
   countUI,
   finishSession,
   freezeNearStrikeOf,
@@ -69,6 +77,7 @@ import {
   masterCurrentStep,
   objectNamed,
   pad,
+  padObject,
   pinch,
   restartSession,
   unfreeze,
@@ -90,6 +99,9 @@ export class FloorcountCaptureScenario extends Scenario {
     if (shot === "right-turn-count2") await this.rightTurnCount2(io)
     else if (shot === "last-time-rings") await this.lastTimeRings(io)
     else if (shot === "summary-last-time") await this.summaryLastTime(io)
+    else if (shot === "summary-real") await this.summaryReal(io)
+    else if (shot === "rings-at-rest") await this.ringsAtRest(io)
+    else if (shot === "clear-saved") await this.clearSavedShot()
     else if (shot === "fade-line") await this.fadeLine(io)
     else if (shot === "film-basic") await this.filmBasic()
     else if (shot === "film-half") {
@@ -172,6 +184,140 @@ export class FloorcountCaptureScenario extends Scenario {
     expect(c.isSummary).toBe(true)
     for (const row of rows) expect(row.indexOf("last time") > 0).toBe(true)
     expect(rows[0]).toBe("Basic step: 1 Again, 0 last time")
+  }
+
+  /**
+   * The summary of a second practice where every row compares two numbers that were earned.
+   *
+   * `summary-last-time` plays the first session with no Agains, so its second and third rows read
+   * "0 Agains, 0 last time" and say nothing. Here both practices are played out: the first takes
+   * three Agains on the basic step, two on each turn, and the second takes one, one and none. The
+   * next practice is started from the summary's own title, the way the Lens does it, so the
+   * second session's numbers come back out of persistent storage.
+   */
+  private async summaryReal(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    const c = card()
+
+    // The guard is off for the drive: none of the setup is filmed, and with it on every one of
+    // the twenty-odd answers below would have to wait out an 8-count of music.
+    await restartSession(false)
+    await sleep(900)
+    await this.aSessionWithAgains(io, [3, 2, 2])
+    expect(c.isSummary).toBe(true)
+    print("[capture] summary-real, first session: " + [c.lineText(0), c.lineText(1), c.lineText(2)].join(" | "))
+
+    await pinch("TitleButton", io)
+    await sleep(1500)
+    m.answerGuard = false
+    expect(m.state.phase).toBe("learning")
+    expect(m.state.stepIndex).toBe(0)
+    expect(m.state.previousAgains(0)).toBe(3)
+    expect(m.state.previousAgains(1)).toBe(2)
+    expect(m.state.previousAgains(2)).toBe(2)
+
+    await this.aSessionWithAgains(io, [1, 1, 0])
+    const rows = [c.lineText(0), c.lineText(1), c.lineText(2)]
+    print("[capture] summary-real rows: " + rows.join(" | "))
+    this.printLayout("summary-real")
+    expect(c.isSummary).toBe(true)
+    for (const row of rows) expect(row.indexOf("last time") > 0).toBe(true)
+    expect(rows[0]).toBe("Basic step: 1 Again, 3 last time")
+    expect(rows[1]).toBe("Right turn: 1 Again, 2 last time")
+    expect(rows[2]).toBe("Left turn: 0 Agains, 2 last time")
+  }
+
+  /**
+   * Play one whole session that takes `agains[i]` Agains on step i, and finish it.
+   *
+   * The Agains come first on each step, while it is fresh: they drop the tempo and cut the floor
+   * to one half, and `masterCurrentStep` then takes the step back up through both halves and both
+   * tempo levels to the three clean 8-counts at Full that complete it.
+   */
+  private async aSessionWithAgains(io: DefaultLeafInteractor, agains: number[]): Promise<void> {
+    const m = main()
+    for (let i = 0; i < agains.length; i++) {
+      expect(m.state.stepIndex).toBe(i)
+      for (let a = 0; a < agains[i]; a++) {
+        await pinch("AgainButton", io)
+        await sleep(250)
+      }
+      expect(m.state.againCounts[i]).toBe(agains[i])
+      if (i < agains.length - 1) {
+        await masterCurrentStep(io)
+        expect(await waitForStepIndex(i + 1, 20000)).toBe(true)
+        await sleep(300)
+      }
+    }
+    expect(await finishSession(io)).toBe(true)
+    await sleep(800)
+  }
+
+  /**
+   * The second practice of the basic step held on count 1, where both ringed prints are at rest.
+   *
+   * `last-time-rings` holds count 2, which is one of the two counts carrying a ring, so that
+   * print is struck at full and its ring is the hardest thing in the frame to see. A print decays
+   * back to rest over one beat, and the ringed prints are struck on counts 2, 5 and 7, so count 1
+   * is the furthest either of them gets from a strike while the beat is still running.
+   */
+  private async ringsAtRest(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    const p = pad()
+    const c = card()
+    await this.aFirstSessionLosingTwoAndFive(io)
+
+    await restartSession(false, true)
+    await sleep(2500)
+    expect(p.isPreviousMarkShown(2)).toBe(true)
+    expect(p.isPreviousMarkShown(5)).toBe(true)
+    expect(c.lineText(2)).toBe("Last time: lost it on 2 and 5")
+
+    await this.freezeOnStrikeOf(1)
+    print(
+      "[capture] rings-at-rest: held on count " + m.currentCount + ", prints 2 and 5 at " +
+        p.footBrightness(2).toFixed(2) + " / " + p.footBrightness(5).toFixed(2) + ", their rings at " +
+        p.ringBrightness(2).toFixed(2) + " / " + p.ringBrightness(5).toFixed(2) + ", print 1 at " +
+        p.footBrightness(1).toFixed(2),
+    )
+    this.printLayout("rings-at-rest")
+    expect(m.currentCount).toBe(1)
+    expect(p.isPreviousMarkShown(2)).toBe(true)
+    expect(p.isPreviousMarkShown(5)).toBe(true)
+    expect(c.lineText(2)).toBe("Last time: lost it on 2 and 5")
+  }
+
+  /** No frame: clear the saved session, so the project is left as a first session. */
+  private async clearSavedShot(): Promise<void> {
+    const m = main()
+    m.clearSaved()
+    m.restart()
+    await sleep(600)
+    print("[capture] clear-saved: previous is now " + (m.state.previous === null ? "null" : "still there"))
+    expect(m.state.previous === null).toBe(true)
+    expect(m.state.previousAgains(0)).toBe(-1)
+  }
+
+  /**
+   * Where the pad, the card and the camera actually are, for aiming the preview camera at them.
+   *
+   * The layout is pinned to wherever the camera stood at the Lens reset, so these are the only
+   * numbers that say where a frame has to be taken from.
+   */
+  private printLayout(label: string): void {
+    const pp = padObject().getTransform().getWorldPosition()
+    const cardT = cardObject().getTransform()
+    const cp = cardT.getWorldPosition()
+    const cf = cardT.forward
+    const cam = cameraObject().getTransform().getWorldPosition()
+    const widths = [0, 1, 2, 3].map((i) => card().lineWidthCm(i).toFixed(1)).join(" / ")
+    print(
+      "[capture] " + label + " layout: pad (" + pp.x.toFixed(1) + ", " + pp.y.toFixed(1) + ", " +
+        pp.z.toFixed(1) + "), card (" + cp.x.toFixed(1) + ", " + cp.y.toFixed(1) + ", " + cp.z.toFixed(1) +
+        "), card forward (" + cf.x.toFixed(2) + ", " + cf.y.toFixed(2) + ", " + cf.z.toFixed(2) +
+        "), camera (" + cam.x.toFixed(1) + ", " + cam.y.toFixed(1) + ", " + cam.z.toFixed(1) +
+        "), line widths " + widths + " cm",
+    )
   }
 
   /**

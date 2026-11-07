@@ -28,6 +28,13 @@ import {
 /** Where a finished session is kept so the next practice can pick up from it. */
 const SAVE_KEY = "floorcount.lastSession"
 import { COUNTS_PER_PHRASE, STEPS } from "./FloorcountSteps"
+
+/**
+ * Counts after the bright window during which an answer is still taken. A pinch is taken when
+ * it is released, and a dancer who pinches while the capsules are bright can release a count or
+ * two later, at Full tempo especially.
+ */
+export const ANSWER_GRACE_COUNTS = 2
 import { FloorcountStepCardUI } from "./FloorcountStepCardUI"
 import { FloorcountCountUI } from "./FloorcountCountUI"
 import { FloorcountPadController } from "./FloorcountPadController"
@@ -106,13 +113,6 @@ export class FloorcountMain extends BaseScriptComponent {
 
   /** The 8-count (since the music last started) of the last answer taken; -1 for none. */
   private answeredPhrase = -1
-  /**
-   * The beat the last answer was taken on; -1 for none. An answer is allowed anywhere in an
-   * 8-count, not only while the capsules are bright, so one taken late in an 8-count must not be
-   * followed by another at the top of the next: two Agains a beat apart would halve a step nobody
-   * danced. The next answer waits until a whole window's worth of counts has passed.
-   */
-  private answeredBeat = -1
   private lastBeatIndex = -1
   private fadeStartBeat = 0
   private frame = 0
@@ -213,7 +213,6 @@ export class FloorcountMain extends BaseScriptComponent {
     this.lastBeatIndex = -1
     this.currentBeat = 0
     this.answeredPhrase = -1
-    this.answeredBeat = -1
     this.stepCard.setPaused(false)
   }
 
@@ -225,8 +224,12 @@ export class FloorcountMain extends BaseScriptComponent {
     if (!this.answerGuard) return true
     const phrase = Math.floor(this.currentBeat / COUNTS_PER_PHRASE)
     if (phrase < 1 || phrase === this.answeredPhrase) return false
-    const sinceLast = this.answeredBeat < 0 ? Infinity : this.currentBeat - this.answeredBeat
-    return sinceLast >= COUNTS_PER_PHRASE - this.answerWindowCounts
+    // An answer is about the 8-count just danced, so it is taken in the first counts of the next
+    // one: while the capsules are bright and for a short grace after. A pinch later in the
+    // 8-count is dropped, so a late pinch cannot be followed a beat later by a second one at the
+    // top of the next 8-count, and the capsules never sit dark through a window that is open.
+    const p = this.currentBeat - phrase * COUNTS_PER_PHRASE
+    return p < this.answerWindowCounts + ANSWER_GRACE_COUNTS
   }
 
   /** Take this 8-count's answer, or drop it if one is not due. */
@@ -236,7 +239,6 @@ export class FloorcountMain extends BaseScriptComponent {
       return false
     }
     this.answeredPhrase = Math.floor(this.currentBeat / COUNTS_PER_PHRASE)
-    this.answeredBeat = this.currentBeat
     return true
   }
 
