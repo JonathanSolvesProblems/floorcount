@@ -1122,7 +1122,7 @@ every run was dispatched only after the panel's own "Loaded 19 scenario(s) from 
 | 5 | `floorcount-c5-mark-and-summary` | **PASS** | on the second attempt, 44.2 s |
 | 6 | `floorcount-c6-off-view-arrow` | **PASS** | 4.0 s |
 | 7 | `floorcount-c7-step-card` | **PASS** | 8.0 s |
-| 8 | `floorcount-c8-answer-guard` | **FAIL** | four attempts, all in the pre-existing burst check, above |
+| 8 | `floorcount-c8-answer-guard` | **FAIL** here, on the throttled preview | four attempts, all in the pre-existing burst check; see "c8 rerun" below for the free GPU |
 | 9 | `floorcount-c9-session-memory` | **PASS** | 109.3 s, and again at the end as the clearing step, 83.4 s |
 | 10 | `floorcount-c10-left-turn` | **PASS** | 40.9 s |
 | 11 | `floorcount-c11-halves` | **PASS** | 43.3 s |
@@ -1197,3 +1197,87 @@ after the saved session was cleared. The project is left as a first session:
 `floorcount-c9-session-memory` ran last and ends by clearing the save and asserting `previous` is
 null. The only thing written after the last save is this section, which is outside the Lens
 project's assets, so nothing in the project itself has changed since.
+
+### c8 rerun
+
+Rerun at 20:36 to 20:41, the same evening, with the GPU free. Nothing in the Lens or in the
+scenario was changed: this is the same `floorcount-c8-answer-guard` on a preview that is keeping
+up. LEAF pinned to the preview, refreshed before every run, each run dispatched only after the
+panel's "Loaded 19 scenario(s) from preview".
+
+**The preview is healthy.** `floorcount-c2-beat` **PASSED** in 12.0 s and reported **136 samples**
+over 8.03 s, against 41, 26, 21 and 43 in the throttled session and 125 to 154 on 2, 3 and 6
+November. 140.0 BPM, and every content assertion clean again:
+
+```text
+[C8] 136 samples over 8.03 s, 18.75 beats (140.0 BPM), litMismatch=0 holdLit=0 numberMismatch=0 holdCellLit=0 outOfRange=0 brightestOwnCell=0.99
+```
+
+**The burst check that failed all evening now passes, both runs.** It is the first thing the
+restored frame rate buys: two simulated pinches now fit inside one 8-count, `1 -> 1` where the
+throttled runs read `1 -> 2` or `1 -> 0`.
+
+**Run 1, 20:37: FAIL.** It got past the burst and into the new late-answer check, further than any
+throttled run reached.
+
+```text
+[C8] first 8-count: tempo 0, dropped 1
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 12.0, 8-count 1 -> 1
+[C8] aim 1: pinched on beat 13.98, taken on beat 14.41 (count 7 of 8-count 1), lag 0.43 beats
+[C8] aim 2: pinched on beat 22.97, taken on beat 23.73 (count 8 of 8-count 2), lag 0.76 beats
+FAILED: floorcount-c8-answer-guard - AssertionError: Expected: "false" - Received: "true"
+```
+
+**Run 2, 20:39: PASS**, 20:39:41 to 20:40:05, both new checks included.
+
+```text
+[C8] first 8-count: tempo 0, dropped 1
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 11.6, 8-count 1 -> 1
+[C8] aim 1: pinched on beat 13.98, taken on beat 14.74 (count 7 of 8-count 1), lag 0.76 beats
+[C8] aim 2: pinched on beat 22.65, taken on beat 23.41 (count 8 of 8-count 2), lag 0.76 beats
+[C8] late answer taken on beat 23.41 (count 8 of 8-count 2), the next one dropped on beat 25.36 (count 2 of 8-count 3), 1.95 beats apart against the 6 the guard asks for
+[C8] paused on beat 30.45: canAnswer false, dropped 1, tempo 0, segment first
+[C8] resumed on beat 64.07, canAnswer back on beat 64.07
+[C8] passed: one answer per 8-count, a window between answers, none while paused
+```
+
+So the late answer landed on count 8 of 8-count 2, the next pinch was dropped on count 2 of
+8-count 3, 1.95 beats later against the six the guard asks for, with `againStreak`, `againCounts`,
+the tempo and the segment all unmoved; and paused, a Got it was dropped with `canAnswer` false,
+the capsules at rest and neither the tempo nor the segment moving, the guard coming back on
+resume.
+
+**Where run 1 failed.** In the top-of-the-next-8-count check, between the aim loop and its print,
+so it is one of the two `toBe(false)` assertions there,
+`expect(m.canAnswer).toBe(false)` or `expect(c.buttonsBright).toBe(false)`
+(`FloorcountC8AnswerGuardScenario.ts:261-262`), the guard being shut at count 1 of the 8-count
+after the answer. LEAF's failure line carries no line number and no print followed, so the log
+cannot separate the two; since the capsules light from the same `canAnswer`, the first to throw
+would be `canAnswer`.
+
+What the clock did is measurable. Run 1 spent 2.94 s between the aim 2 print and the failure,
+where passing run 2 spent 0.79 s on the same span, about a whole 8-count more. Run 1's answer
+landed on beat 23.73, 0.27 of a beat short of the 8-count boundary at 24, the closest any attempt
+came to it. The reading that fits is that the wait for the top of the next 8-count did not return
+0.27 beats later as the answer's position implies, and by the time it did the six-beat window had
+been danced through and the guard had correctly reopened, which is `canAnswer` true. That is the
+scenario's aim landing a shade too late, as in run 1 of the throttled sweep, rather than the
+guard taking two answers inside the window. It is a reading and not a proven mechanism: no print
+sits between the aim line and the failure to show the beat the check read. Nothing was loosened
+or changed to get run 2 to pass, and the aim is deliberately retried up to four times because the
+pinch lag is what it is. c8 is a flaky aim at the 8-count boundary, one attempt in two here, and
+the behaviour it asserts passed in full on run 2.
+
+**Saved** through the Editor API at **20:41:47**, after `floorcount-c9-session-memory` ran last
+(**PASS**) and cleared the save, so the project is again left as a first session. Nothing was
+installed, neither `QueryRuntimeSceneTool` nor `PreviewInteractTool` was called, and no file
+outside this section was edited.
+
+**Why run 1 failed, found by reading the scenario afterwards.** It was the scenario, not the guard.
+Its wait for "the top of the next 8-count" accepted any later 8-count. In run 1 the answer landed on
+beat 23.73 and the rest of the simulated pinch used up count 1 of the next 8-count, so the wait ran
+on to beat 32, 8.27 beats after the answer. The guard is open by then, as it should be, and the
+scenario's `canAnswer` false check failed. The 2.94 s the run spent there is that wait. The check
+now looks at the 8-count straight after the answer, wherever the pinch left the session, and also
+asserts that it is still inside the six-beat window. The fresh-clone sweep in
+`devpost/clean-clone-test.md` runs it on the commit that is public.

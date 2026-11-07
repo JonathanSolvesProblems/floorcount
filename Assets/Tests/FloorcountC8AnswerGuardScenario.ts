@@ -254,10 +254,16 @@ export class FloorcountC8AnswerGuardScenario extends Scenario {
     expect(lateBeat >= 0).toBe(true)
     expect(countOfBeat(lateBeat) >= 7).toBe(true)
 
-    // The top of the next 8-count: a beat of music after the answer, so the next one is dropped
-    // and the capsules are at rest even though this is the two-count answer window.
-    expect(await waitForPhraseStart(latePhrase + 1, 12000)).toBe(true)
-    expect(m.currentCount).toBe(1)
+    // The very next 8-count, a beat or two of music after the answer, so the next one is dropped
+    // and the capsules are at rest even though this may be the two-count answer window. A pinch
+    // can use up that whole beat or two by itself, so this looks at the 8-count straight after
+    // the answer, wherever in it the pinch left the session. Waiting for the top of an 8-count
+    // can miss this one and land on the one after, 8 beats on, where the guard has rightly
+    // opened again.
+    while (Math.floor(m.currentBeat / COUNTS_PER_PHRASE) <= latePhrase) await nextFrame()
+    await nextFrame() // let the capsules take this frame's answer window
+    expect(Math.floor(m.currentBeat / COUNTS_PER_PHRASE)).toBe(latePhrase + 1)
+    expect(m.currentBeat - lateBeat < window).toBe(true)
     expect(m.canAnswer).toBe(false)
     expect(c.buttonsBright).toBe(false)
     const droppedBeforeTop = m.ignoredAnswers
