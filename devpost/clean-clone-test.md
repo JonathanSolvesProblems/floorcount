@@ -1,6 +1,6 @@
 # Fresh-clone test
 
-What happens when someone who is not me gets this repository and opens it. Run on 6 November 2026 from the public GitHub repository, on Windows 11 with Lens Studio 5.23.2. Results are for commit `7e5fa87`. It runs again on the commit that is submitted, and this file gets updated.
+What happens when someone who is not me gets this repository and opens it. Run on 6 November 2026 from the public GitHub repository, on Windows 11 with Lens Studio 5.23.2. Results are for commit `7e5fa87`. The commits after it change only documents and this file: the Lens, its tests and the packages are byte for byte the same. It runs again if any of those change before submission.
 
 ## What was done
 

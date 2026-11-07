@@ -44,6 +44,9 @@ export interface StepSummary {
 /** "2", "2 and 5", "2, 5 and 7": counts the way the teacher says them (voice.md). */
 export function countsInWords(counts: number[]): string {
   if (counts.length <= 1) return counts.join("")
+  // Past three counts the list outgrows the card (law 13: nothing longer than two lines at
+  // 1 m), and a dancer who lost four of six counts needs the step again, not the list.
+  if (counts.length > 3) return counts.length + " counts"
   return counts.slice(0, -1).join(", ") + " and " + counts[counts.length - 1]
 }
 
@@ -171,6 +174,12 @@ export class FloorcountState {
 
   get acceptsAnswers(): boolean {
     return this.phase === "learning"
+  }
+
+  /** Whether the end of the last step brings a step back for review: any step with an Again. */
+  get reviewDue(): boolean {
+    for (let i = 0; i < this.againCounts.length; i++) if (this.againCounts[i] > 0) return true
+    return false
   }
 
   again(): StateChange {

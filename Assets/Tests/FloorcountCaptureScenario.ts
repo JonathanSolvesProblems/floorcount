@@ -9,6 +9,9 @@
  *  - `last-time-rings`: a second practice, with last session's rings on counts 2 and 5 of the
  *    basic step and the focus line saying where it went wrong, held on count 2.
  *  - `summary-last-time`: the summary of a second practice, so every row carries a comparison.
+ *  - `fade-line`: the line the card fades on after the last step, both ways round. A session
+ *    with an Again to bring back says "Once more at Full"; one with none says "Three steps
+ *    done". It holds the second of the two frames.
  *
  * The two memory shots build their own first session rather than relying on one being saved, so
  * each is repeatable from any starting state. Both leave a saved session behind; clear it with
@@ -38,14 +41,24 @@
  *    so the second session has read its memory back off persistent storage.
  *  - `film-session-b-finish`: one Again on the basic step and then out to the summary, so every
  *    row carries last session's number. Run it only after `film-session-a`.
+ *  - `film-got-it`: a first session at Slow held long enough for the camera to read the numeral
+ *    and the clave strip, then one Got it taken through the Lens's real answer guard, so the
+ *    count display hides while the prints keep lighting. Left running.
+ *  - `film-left-turn`: the third step, the left turn, left running at Slow with the whole step on
+ *    the floor. The two steps before it are mastered with the guard off, because that part is not
+ *    filmed; the guard goes back on before the session is handed over.
+ *
+ * `film-basic` is the shot for a session that only has to start and keep running, so nothing
+ * extra was added for that.
  */
 
 import { Scenario } from "Leaf.lspkg/Scenarios/scenario/Scenario"
 import { ScenarioConfig } from "Leaf.lspkg/Scenarios/scenario/ScenarioConfig"
 import { expect } from "Leaf.lspkg/Utils/common/Expect"
-import { sleep } from "Leaf.lspkg/Utils/common/Utils"
+import { nextFrame, sleep } from "Leaf.lspkg/Utils/common/Utils"
 import { DefaultLeafInteractor } from "Leaf.lspkg/Interactors/interactor/DefaultLeafInteractor"
 import {
+  audio,
   card,
   countUI,
   finishSession,
@@ -54,6 +67,7 @@ import {
   interactor,
   main,
   masterCurrentStep,
+  objectNamed,
   pad,
   pinch,
   restartSession,
@@ -76,6 +90,7 @@ export class FloorcountCaptureScenario extends Scenario {
     if (shot === "right-turn-count2") await this.rightTurnCount2(io)
     else if (shot === "last-time-rings") await this.lastTimeRings(io)
     else if (shot === "summary-last-time") await this.summaryLastTime(io)
+    else if (shot === "fade-line") await this.fadeLine(io)
     else if (shot === "film-basic") await this.filmBasic()
     else if (shot === "film-half") {
       await this.filmHalfSetup(io)
@@ -86,6 +101,8 @@ export class FloorcountCaptureScenario extends Scenario {
     }
     else if (shot === "film-session-a") await this.filmSessionA(io)
     else if (shot === "film-session-b-finish") await this.filmSessionBFinish(io)
+    else if (shot === "film-got-it") await this.filmGotIt(io)
+    else if (shot === "film-left-turn") await this.filmLeftTurn(io)
     else throw new Error("unknown shot '" + shot + "'")
   }
 
@@ -155,6 +172,79 @@ export class FloorcountCaptureScenario extends Scenario {
     expect(c.isSummary).toBe(true)
     for (const row of rows) expect(row.indexOf("last time") > 0).toBe(true)
     expect(rows[0]).toBe("Basic step: 1 Again, 0 last time")
+  }
+
+  /**
+   * The line the card fades on after the last step, both ways round.
+   *
+   * After the last step it is the worst step that comes back at Full, not a new one, and a
+   * session with no Agains has nothing to bring back. The line is only up for the two-count
+   * fade, 0.63 s at Full, so each run stops the beat the instant the fade starts and holds it.
+   * The no-Agains frame is the one left on screen.
+   */
+  private async fadeLine(io: DefaultLeafInteractor): Promise<void> {
+    const withAgain = await this.heldFadeLine(io, true)
+    print("[capture] fade-line, one Again on the basic step: '" + withAgain + "'")
+    expect(withAgain).toBe("Once more at Full")
+
+    const clean = await this.heldFadeLine(io, false)
+    print("[capture] fade-line, no Agains: '" + clean + "'")
+    expect(clean).toBe("Three steps done")
+  }
+
+  /** One whole session on Got its, plus an Again if asked, with the last fade held. */
+  private async heldFadeLine(io: DefaultLeafInteractor, oneAgain: boolean): Promise<string> {
+    const m = main()
+    const c = card()
+    // The guard is off: nothing here is filmed, and with it on every answer costs an 8-count.
+    await restartSession(false)
+    await sleep(600)
+    if (oneAgain) {
+      await pinch("AgainButton", io)
+      await sleep(250)
+      expect(m.state.againCounts[0]).toBe(1)
+    }
+    for (let i = 0; i < 2; i++) {
+      await masterCurrentStep(io)
+      expect(await waitForStepIndex(i + 1, 15000)).toBe(true)
+      await sleep(300)
+    }
+    expect(m.state.stepIndex).toBe(2)
+
+    const freeze = this.freezeOnFade()
+    await masterCurrentStep(io)
+    const deadline = getTime() + 5
+    while (getTime() < deadline && !freeze.done()) await sleep(50)
+    expect(freeze.done()).toBe(true)
+    expect(m.state.phase).toBe("fading")
+    expect(m.state.stepIndex).toBe(2)
+    expect(m.state.againCounts[0]).toBe(oneAgain ? 1 : 0)
+    return c.lineText(2)
+  }
+
+  /**
+   * Stop the music the moment the session starts fading, watching every frame.
+   *
+   * The fade advances with the beat, so a paused beat holds it. A frame at a time rather than a
+   * sleep: the fade lasts 0.63 s at Full and a simulated pinch is longer than that, so a look
+   * taken after the pinch returns can miss it entirely.
+   */
+  private freezeOnFade(): { done: () => boolean } {
+    const m = main()
+    let frozen = false
+    const look = async (): Promise<void> => {
+      const deadline = getTime() + 30
+      while (getTime() < deadline && !frozen) {
+        if (m.state.phase === "fading") {
+          audio().pause()
+          frozen = true
+          return
+        }
+        await nextFrame()
+      }
+    }
+    look()
+    return { done: () => frozen }
   }
 
   // ---------------------------------------------------------------- the film shots
@@ -311,6 +401,85 @@ export class FloorcountCaptureScenario extends Scenario {
     expect(rows[0]).toBe("Basic step: 1 Again, 3 last time")
     // The summary is a still frame; hold it while the camera is on it.
     await sleep(12000)
+  }
+
+  /**
+   * A first session at Slow, held while the camera reads the numeral and the strip, then one Got
+   * it through the Lens's own answer guard. The Got it is a clean 8-count, so the count display
+   * goes and the prints carry the beat on their own for the rest of the take.
+   */
+  private async filmGotIt(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    // Held from here, the way C12 holds them: these are the two objects the count display
+    // switches off, and they have to be looked up while they are still enabled.
+    const numeral = objectNamed("CountText")
+    const strip = objectNamed("ClaveStrip")
+    await restartSession(true)
+    await sleep(600)
+    expect(m.state.step.id).toBe("basic")
+    expect(m.state.tempo).toBe(TEMPO_SLOW)
+    expect(m.state.countVisible).toBe(true)
+    expect(numeral.enabled).toBe(true)
+    expect(strip.enabled).toBe(true)
+
+    // Hold the count on screen first: that is the half of the take it has to be in.
+    await sleep(4000)
+    await this.answerWhenDue("GotItButton", io)
+    await sleep(700)
+    print(
+      "[capture] film-got-it: after the Got it, countVisible " + m.state.countVisible + ", numeral " +
+        numeral.enabled + ", strip " + strip.enabled + ", " + TEMPO_NAMES[m.state.tempo],
+    )
+    expect(m.state.countVisible).toBe(false)
+    expect(numeral.enabled).toBe(false)
+    expect(strip.enabled).toBe(false)
+    // The prints keep lighting on the beat while the camera is on them.
+    await sleep(7000)
+  }
+
+  /**
+   * The left turn, the third step, left running at Slow with the whole step on the floor.
+   *
+   * Nothing is pressed to set the tempo: every step loads at the session's start tempo with the
+   * whole step showing, so mastering the two steps before it is all it takes. Those two are
+   * driven with the guard off, because they are not filmed and with it on each answer would cost
+   * an 8-count; the guard goes back on before the session is handed over.
+   */
+  private async filmLeftTurn(io: DefaultLeafInteractor): Promise<void> {
+    const m = main()
+    const p = pad()
+    await restartSession(false)
+    await sleep(600)
+    await masterCurrentStep(io)
+    expect(await waitForStepIndex(1, 15000)).toBe(true)
+    await sleep(400)
+    await masterCurrentStep(io)
+    expect(await waitForStepIndex(2, 15000)).toBe(true)
+    await sleep(600)
+    print(
+      "[capture] film-left-turn: " + m.state.step.name + " at " + TEMPO_NAMES[m.state.tempo] +
+        ", segment " + m.state.segment,
+    )
+    expect(m.state.step.id).toBe("leftTurn")
+    expect(m.state.tempo).toBe(TEMPO_SLOW)
+    expect(m.state.segment).toBe("full")
+
+    // The arc is a per-frame flag, so which counts carry it has to be sampled, the way C4 does.
+    const arcOn: boolean[] = [false, false, false, false, false, false, false, false, false]
+    const deadline = getTime() + 5
+    while (getTime() < deadline) {
+      const n = m.currentCount
+      if (n >= 1 && n <= 8 && p.arcVisible) arcOn[n] = true
+      await sleep(30)
+    }
+    const onCounts: number[] = []
+    for (let i = 1; i <= 8; i++) if (arcOn[i]) onCounts.push(i)
+    print("[capture] film-left-turn: turn arc on counts " + onCounts.join(", "))
+    expect(onCounts.length > 0).toBe(true)
+    for (const n of onCounts) expect(n === 6 || n === 7).toBe(true)
+
+    // Hand a live session back with the guard on, the way the Lens ships.
+    m.answerGuard = true
   }
 
   /**

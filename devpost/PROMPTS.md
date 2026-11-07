@@ -299,3 +299,49 @@ LEAF's panel prints "Loaded 19 scenario(s) from preview" when it is ready, and a
 3. Run floorcount-c1-start through floorcount-c17-teal-law once each, in order. Do not retry a failure more than once, and report any retry with its reason.
 4. Finish with a plain report: the project path, the compile result, each scenario PASS or FAIL, and C2's sample count and BPM. Write nothing to disk.
 ```
+
+## 6 November: four more preview clips
+
+```text
+Record four more preview clips of the Floorcount Lens for the submission video, then leave the project as it was. Do not change how the Lens looks or behaves. About 90 tool calls.
+
+Project root: this folder (ARSpec.esproj). Lens Studio is open on it; the lens-studio MCP server is connected. Read broll/PREVIEW-CLIPS.md first: it says how the nine existing clips were made and what went wrong. Then read Assets/Tests/FloorcountCaptureScenario.ts, the capture helper you will extend, and the "Session memory and coverage" and "Validation" sections of devpost/design-pass-report.md for the camera positions.
+
+Rules: install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse, and do not use tmp/mouse.ps1. Do not edit anything under Assets/Scripts/, or README.md, PHASE0.md, devpost/submission.md, or any existing clip. You may extend Assets/Tests/FloorcountCaptureScenario.ts with new `film-*` shots and nothing else. LEAF's panel prints "Loaded 19 scenario(s) from preview" when it is ready; a run dispatched before that line is lost. Pin LEAF to the preview, not a device. If the preview goes silent, PreviewPanelTool getConfig: "Preview is Paused" needs a refresh. Record with ffmpeg gdigrab over the Lens Studio window region only (the earlier clips used 1536x816 with the window maximised), never the webcam, a microphone or the whole desktop. 30 fps, H.264, yuv420p, silent. Look at one extracted frame from each clip before moving on, and retake once if it does not show what its name says.
+
+The clips, each 1280x720 cropped to the preview like preview-01 to 07 unless said otherwise:
+1. broll/preview-10-arrow.mp4, about 12 s. A first session running at Slow, camera on the pad as in preview-01. While recording, use MovePreviewCamera to turn the view up and away from both the pad and the step card, hold there 4 s so the arrow at the bottom of the view is on camera, then turn back down to the pad. Add a `film-running` shot to the capture scenario if you need one that only starts a session and leaves it running.
+2. broll/preview-11-count-hides.mp4, about 14 s. Camera on the pad with the numeral and strip in frame. The session at Slow; the scenario waits for the answer window and pinches Got it once through the real guard, so the numeral and the strip hide while the prints keep lighting. Add a `film-got-it` shot for this.
+3. broll/preview-12-left-turn.mp4, about 10 s. The third step, the left turn, running at Slow with its arc lighting on counts 6 and 7. A `film-left-turn` shot: master steps 1 and 2 with the guard off (not filmed), set the tempo back to Slow if the Lens allows it through its own rules or otherwise leave it at whatever tempo the rules give, turn the guard on, leave it running.
+4. broll/preview-13-leaf-panel.mp4, about 30 s, the whole Lens Studio window at 1536x816. The LEAF panel's own tab on top (use the Editor API, IDockManager.activatePanels, as the last session did for the Preview tab), its list of scenarios visible, while floorcount-c1-start, floorcount-c3-again and floorcount-c7-step-card run and report PASS. If the preview stops rendering while its tab is hidden, the scenarios may still run; if they do not, say so, and film the LEAF tab for 8 s with its list and the results of the last run instead.
+
+Then: clear the saved session so the project is left as a first session (run floorcount-c9-session-memory on a fresh preview, which ends by clearing it, or call clearSaved through the scenario), save through the Editor API, and append the four clips to broll/PREVIEW-CLIPS.md in the same format (duration from ffprobe, what it shows, what is wrong with it). Plain language, no em-dashes, no local user paths. If something cannot be captured after two honest tries, say so in the notes and move on; do not fake a clip from stills.
+```
+
+## 6 November: verifying the fixes from the code review
+
+```text
+Verify three small fixes in the Floorcount Lens, extend one LEAF scenario to cover them, run the whole sweep, and save. About 110 tool calls. Do not redesign anything; fix compile errors with the smallest change.
+
+Project root: this folder (ARSpec.esproj). Lens Studio is open on it; the lens-studio MCP server is connected. Read devpost/design-pass-report.md, sections "Things worth knowing" and "Session memory and coverage, 6 November 2026", first.
+
+Rules: packages are pinned (SIK 2.0, UI Kit 2.0, LEAF 2.0.2); install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse. Delete any "* 2.*" OneDrive duplicates in Assets/ before compiling. Do not edit devpost/design-brief.md, devpost/design-notes.md, README.md, devpost/submission.md, anything under .design/ or under tests/. Do not edit Assets/Scripts/ unless a scenario proves a bug in the three changes below, and if so say exactly what and why. LEAF's panel prints "Loaded 19 scenario(s) from preview" when it is ready; a run dispatched before that line is lost. Pin LEAF to the preview, not a device. Refresh the preview before c2, c5, c8, c9 and c13. If the preview goes silent, PreviewPanelTool getConfig: "Preview is Paused" needs a refresh. A run that outlasts the MCP timeout may still have finished; read its result from the log. Save through the Editor API after a clean compile, after the sweep, and at the end.
+
+The three changes, already on disk, from an independent code review:
+1. FloorcountMain.ts, the answer guard. An answer could be taken late in an 8-count (say on count 8) and another at the top of the next one, one beat later, which is two "in a row" with nothing danced between. `canAnswer` now also requires `COUNTS_PER_PHRASE - answerWindowCounts` beats (6) since the last answer (`answeredBeat`), and the capsules light from the same `canAnswer`, so bright means an answer would be taken. It also returns false while the music is paused.
+2. FloorcountMain.ts `focusText` and FloorcountState.ts `reviewDue`: after the last step the fade line says "Once more at Full" only if a step has an Again to bring back; otherwise "Three steps done".
+3. FloorcountState.ts `countsInWords`: more than three lost counts read as "4 counts" instead of a list that outgrows the card. FloorcountAudioController.ts: `startMusic` clears `useFallbackClock` so each track syncs to the player on its own. Nothing to verify in the preview for that last one beyond compiling and the sweep.
+
+Do, in order:
+1. Recompile, confirm "Floorcount: session started" with no Floorcount errors, save.
+2. Extend Assets/Tests/FloorcountC8AnswerGuardScenario.ts (guard on, as it already runs) with two more checks, keeping everything it already asserts:
+   a. Late answer, then the next window: wait for a count 7 or 8 of an 8-count from the second on, pinch Again there (it must be taken, `ignoredAnswers` unchanged), then wait for count 1 of the next 8-count and pinch Again again: it must be dropped (`ignoredAnswers` up by one, `state.againStreak` still 1) and `canAnswer` must be false while the capsules are at rest; then from count 7 of that 8-count on, `canAnswer` is true again. Print the beats it pinched on.
+   b. Paused: wait for a window where `canAnswer` is true, pinch the title to pause, assert `canAnswer` is false and that a Got it is dropped (`ignoredAnswers` up by one, tempo unchanged), pinch the title to resume, and assert `canAnswer` comes back within the same or the next window.
+   Use the test kit (`waitForCount`, `waitForBeat`, `pinch`); add a small helper to it only if needed.
+3. Run the whole sweep: c1 to c17 and the two helpers, each once, refreshing before the timing-sensitive ones. Run c8 twice. A scenario that fails is reported as failing with its print; do not loosen an assertion to pass.
+4. Check by hand, with the capture helper or a short session driven from a scenario, that the fade line after the last step of a session with no Agains reads "Three steps done" and with an Again reads "Once more at Full". Say what you saw.
+5. Clear the saved session (floorcount-c9-session-memory ends by clearing it) so the project is left as a first session, and save.
+6. Append a section "Review fixes, 6 November 2026" to devpost/design-pass-report.md: the three changes in a sentence each, what c8 now checks and the beats it printed, the LEAF table with PASS or FAIL for every scenario, what you saw in step 4, and the last save time. Plain language, no em-dashes, no local user paths.
+
+If usage or time runs short: the sweep and the saves come first, then the report, then step 4, then the c8 extension (say so if it is missing).
+```

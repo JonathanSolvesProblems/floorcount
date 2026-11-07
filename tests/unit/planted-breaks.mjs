@@ -44,6 +44,8 @@ const BREAKS = [
   [S, "a lost count is marked twice", "if (marks.indexOf(count) < 0) marks.push(count)", "marks.push(count)"],
   [S, "lost counts are listed backwards", ".sort((a, b) => a - b)", ".sort((a, b) => b - a)"],
   [S, "counts are joined with commas only", '" and " + counts[counts.length - 1]', '", " + counts[counts.length - 1]'],
+  [S, "four lost counts are still spelled out", "if (counts.length > 3) return counts.length", "if (counts.length > 9) return counts.length"],
+  [S, "a session with Agains claims it has no review", "if (this.againCounts[i] > 0) return true", "if (this.againCounts[i] > 1) return true"],
   [S, "a row forgets the comparison when last time was clean", "if (previousAgains >= 0) return", "if (previousAgains > 0) return"],
   [S, "a row with a comparison still lists the lost counts", 'return line + ", " + previousAgains + " last time"', "void 0"],
   [S, "a save from another format version is accepted", "data.v !== 1", "data.v === 0"],

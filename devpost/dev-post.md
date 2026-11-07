@@ -1,4 +1,4 @@
-# I planted 52 bugs in my AR Lens to find out if my tests were lying
+# I planted 54 bugs in my AR Lens to find out if my tests were lying
 
 Draft for DEV. Not published. Tags: `ar`, `testing`, `typescript`, `hackathon`.
 
@@ -20,7 +20,7 @@ The brief said you answer Again or Got it "after an 8-count". Nothing enforced t
 
 A passing test tells you nothing if it would also pass with the bug in. So I wrote a script that plants bugs in the three pure files (the footwork data, the session rules, the brightness curve), one at a time: flip a comparison, change a count, drop a line. It reruns the suite after each one. A planted bug that the tests miss fails the run.
 
-52 planted bugs, 77 tests. All 52 are caught, and the run is part of CI, so a test that stops catching its bug fails the build.
+54 planted bugs, 78 tests. All 54 are caught, and the run is part of CI, so a test that stops catching its bug fails the build.
 
 It is a small version of mutation testing, written by hand because the interesting mutations are the ones that mean something in salsa. "Count 8 stops being a hold" is one of them. So is "two Agains raise the tempo instead of dropping it".
 
@@ -30,7 +30,7 @@ The first build was never saved. Lens Studio closed and the scene was gone. Ever
 
 The preview reports a stale audio position for about a second after play. The first beat clock read that as the loop wrapping and ran the count at up to 620 BPM against a 140 BPM track.
 
-One test failed on every run while the Lens was fine. At full tempo the fade between steps lasts 0.63 seconds and a simulated pinch takes about 0.95, so the fade could start and finish inside the pinch, and the test only looked once, afterwards. It watches every frame now and checks the order, which is a stricter test than the one it replaced.
+One test failed on every run while the Lens was fine. At full tempo the fade between steps lasts 0.63 seconds and a simulated pinch takes about 0.95 seconds, so the fade could start and finish inside the pinch, and the test only looked once, afterwards. It watches every frame now and checks the order, which is a stricter test than the one it replaced.
 
 A fresh clone looked like it hung for half an hour on "Loading Icon Atlas". It was a permission dialog for an editor plugin, sitting behind the agent's session where nothing could click it. The MCP stops answering while a modal is up. Reading the window through Windows accessibility showed two buttons.
 

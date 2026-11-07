@@ -130,6 +130,9 @@ export class FloorcountAudioController extends BaseScriptComponent {
     this.music.play(-1)
     this.playing = true
     this.paused = false
+    // Each track gets its own chance to sync to the player: the fallback is for a device with
+    // no audio position at all, not for one slow start.
+    this.useFallbackClock = false
     this.lastPosition = 0
     this.loops = 0
     this.resync = true

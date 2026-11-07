@@ -1027,3 +1027,173 @@ project's assets, so nothing in the project itself has changed since.
 **Still outstanding, and not done here.** The Lens name in `ARSpec.esproj` is still
 `SpecsBaseTemplate`; it cannot be set through the Editor API, as the 6 November morning note
 explains, and remains a by-hand go-live step in Project Settings.
+
+## Review fixes, 6 November 2026
+
+Verifying three small changes an independent code review left on disk, extending one LEAF
+scenario to cover them, and running the whole sweep. No design work, no scene change, and no
+change to `Assets/Scripts/`: everything below is a check, a measurement or a test-side edit. All
+times are local time on 6 November, evening.
+
+### The three changes
+
+1. **The answer guard also keeps a window between answers.** `canAnswer` in `FloorcountMain.ts`
+   now asks for `COUNTS_PER_PHRASE - answerWindowCounts` beats, six, since the last answer as well
+   as a new 8-count, so an answer taken on count 8 cannot be followed by another on the next
+   count 1 with nothing danced between them; it also returns false while the music is paused, and
+   the capsules light from the same `canAnswer`, so bright means an answer would be taken.
+2. **The fade line after the last step tells the truth.** `focusText` and `FloorcountState`'s
+   `reviewDue` say "Once more at Full" only when some step has an Again to bring back, and
+   "Three steps done" when none has.
+3. **Two smaller ones.** `countsInWords` reads more than three lost counts as "4 counts" rather
+   than a list that outgrows the card, and `startMusic` clears `useFallbackClock` so each track
+   gets its own chance to sync to the audio player instead of inheriting one slow start.
+
+The unit tests cover the second and third directly: `tests/unit/state.test.mjs` passes 32 of 32,
+and `tests/unit/planted-breaks.mjs` catches 54 of 54, among them "a session with Agains claims it
+has no review" and "four lost counts are still spelled out".
+
+### What c8 now checks
+
+`floorcount-c8-answer-guard` keeps everything it asserted before and adds two checks, both with
+the guard on, as the Lens ships:
+
+- **A late answer, then the next 8-count.** It pinches Again late in an 8-count, reads the beat
+  the Lens actually took the answer on, then waits for count 1 of the next 8-count and pinches
+  again. The second has to be dropped, `againStreak` must not move, `canAnswer` has to be false
+  with the capsules at rest, and from count 7 of that 8-count on `canAnswer` has to be true
+  again. It also asserts the two answers landed in different 8-counts and under six beats apart,
+  which is what makes the drop a decision of the new rule rather than of the old one.
+- **Paused.** With `canAnswer` true it pinches the title to hold the session, asserts `canAnswer`
+  goes false and that a Got it is dropped with neither the tempo nor the segment moving, then
+  pinches the title again and asserts the guard comes back.
+
+The aim is measured rather than assumed. A simulated pinch runs SIK's hover, select and release
+over several frames, so the Lens takes an answer well after the scenario asks for it. Each
+attempt reads the beat of its own answer, takes that lag off the next attempt's starting position
+and tries again, up to four times.
+
+**The new checks did not get to run, and the scenario fails before them.** On this evening's
+preview c8 stops in the part it already had: the burst of two pinches that has to sit inside one
+8-count. Four attempts, the preview refreshed before each:
+
+```text
+[C8] first 8-count: tempo 0, dropped 1
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 19.2, 8-count 1 -> 2
+[C8] two pinches in one 8-count: Agains 2, dropped 0, beat 3.9, 8-count 1 -> 0
+[C8] two pinches in one 8-count: Agains 2, dropped 0, beat 2.9, 8-count 1 -> 0
+[C8] two pinches in one 8-count: Agains 1, dropped 1, beat 18.6, 8-count 1 -> 2
+```
+
+The first line is the guard refusing a Got it before any 8-count has played, and it passed every
+time. The four under it are the burst, and the number that fails is the 8-count the burst ended
+in: it starts at the top of 8-count 1 and ends in 8-count 2, or, where the second Again was taken
+and dropped the tempo, in the restarted 8-count 0. In the two runs reading "Agains 1, dropped 1"
+the guard did the right thing, dropping the second pinch even though it had crossed into a new
+8-count, which is the new rule working. What fails is the scenario's own premise, that both
+pinches landed inside one 8-count, and nothing was loosened to get past it.
+
+**Why, measured.** A Medium 8-count lasts 2.82 s. A simulated pinch on this preview costs about
+1.9 s against the 0.8 s it costs on a preview that is keeping up, so two of them need about 3.8 s
+and cannot fit. The frame rate is the cause and C2 is the meter: it reports how many samples it
+took in its 8 s window, and in this sweep it took 41, 26, 21 and 43, against 125 to 154 on 2, 3
+and 6 November. The Lens is unchanged and C2's content assertions came back clean every time, so
+this is a preview that cannot be pinched fast enough rather than a Lens behaving differently.
+
+The cause is outside Lens Studio: another application on the machine held about 77 per cent of
+the GPU's 3D engine for the whole session, sampled five times over six seconds, leaving Lens
+Studio about 23 per cent. Restoring the Lens Studio window, which was minimised, doubled the
+frame rate on its own, 21 samples to 43, and is worth doing before any timing-sensitive run. c8
+needs the GPU back to pass, and both it and the two new checks are worth re-running when the
+machine is quiet.
+
+### The LEAF sweep
+
+One sweep in the Lens Studio preview through the LEAF panel, between 18:41 and 19:11, pinned to
+the preview rather than to a device. The preview was refreshed before c2, c5, c8, c9 and c13, and
+every run was dispatched only after the panel's own "Loaded 19 scenario(s) from preview" line.
+
+| # | Scenario | Result | Note |
+|---|---|---|---|
+| 1 | `floorcount-c1-start` | **PASS** | 2.8 s |
+| 2 | `floorcount-c2-beat` | **PASS** | 12.3 s, and three more times as the frame-rate meter |
+| 3 | `floorcount-c3-again` | **PASS** | 15.6 s |
+| 4 | `floorcount-c4-next-step` | **PASS** | 23.7 s, phases `learning/0 > fading/0 > learning/1` |
+| 5 | `floorcount-c5-mark-and-summary` | **PASS** | on the second attempt, 44.2 s |
+| 6 | `floorcount-c6-off-view-arrow` | **PASS** | 4.0 s |
+| 7 | `floorcount-c7-step-card` | **PASS** | 8.0 s |
+| 8 | `floorcount-c8-answer-guard` | **FAIL** | four attempts, all in the pre-existing burst check, above |
+| 9 | `floorcount-c9-session-memory` | **PASS** | 109.3 s, and again at the end as the clearing step, 83.4 s |
+| 10 | `floorcount-c10-left-turn` | **PASS** | 40.9 s |
+| 11 | `floorcount-c11-halves` | **PASS** | 43.3 s |
+| 12 | `floorcount-c12-count-display` | **PASS** | 10.2 s |
+| 13 | `floorcount-c13-the-and` | **PASS** | 18.9 s |
+| 14 | `floorcount-c14-mark-ring` | **PASS** | 64.1 s |
+| 15 | `floorcount-c15-restart-from-summary` | **PASS** | 66.2 s |
+| 16 | `floorcount-c16-arc-inside-pad` | **PASS** | 30.5 s |
+| 17 | `floorcount-c17-teal-law` | **PASS** | 35.5 s |
+| helper | `floorcount-hold-on-count` | **PASS** | on the second attempt, 20.8 s |
+| helper | `floorcount-capture`, `right-turn-count2` | **PASS** | 50.4 s |
+| helper | `floorcount-capture`, `fade-line` | **PASS** | 97.7 s, the new shot, below |
+
+Both scenarios that needed a second attempt failed the first time on the clock rather than on the
+Lens. C5 pinches a print and looks for the flash 200 ms later: the mark was recorded, but the
+pinch logged at 18:42:39.831 and the check read it at 18:42:41.042, 11 ms past the end of the
+1.2 s flash. The hold-on-count helper froze a beat late and reported count 8 where count 1 was
+asked for. Both passed on a freshly refreshed preview with nothing changed.
+
+What the sweep measured, where it adds to the earlier ones:
+
+- **C1.** Pad 70.0 cm ahead and 150.0 cm below the eyes, sole print quad 29.0 cm at scale 1.00
+  with the 27 cm print inside it, teal on count 1's print and on no other.
+- **C2.** 140.0 to 140.5 BPM against the 140 BPM loop in every run, zero mismatches on lit
+  prints, hold counts, the numeral and the hold cells, zero brightness values out of range.
+- **C6.** The arrow showing with the pad 65.0 degrees and the card 50.3 degrees off the view
+  axis, and hidden as soon as either one comes back on it.
+- **C7.** Capsules 16.8 cm with 1.50 and 1.52 cm of air and a 6.00 cm gap; holding the session
+  turns the focus line into "Paused. Pinch the title to go on." at 2.51 cm cap, and going on puts
+  "Whole step" back.
+- **C13.** Frozen 0.068 beats past count 2's strike with the print and the cell both at 0.844
+  against a curve that says 0.844, nothing off the curve, worst hold cell 0.350.
+- **C16.** Right turn arc 35.68 cm from the pad's centre at its furthest, left turn 35.23 cm,
+  both inside the border's inner edge at 43.2 cm.
+- **C17.** On all three steps the only teal in the scene is count 1's print and cell 1.
+
+### The fade line after the last step, checked by hand
+
+A new shot on the capture helper, `fade-line`, drives two whole sessions and holds the last fade
+of each. The line is only up for the two-count fade, 0.63 s at Full, which is shorter than one
+simulated pinch, so the shot watches every frame and stops the beat the instant the fade starts;
+a stopped beat holds the fade, because the fade advances with the music. It then reads the card's
+own focus line.
+
+What it read, in the preview, driving all three steps both ways round:
+
+- With one Again on the basic step: **"Once more at Full"**.
+- With no Agains at all: **"Three steps done"**.
+
+Both are the card's own text, read off the Text component drawing it while the frame is held, and
+both are asserted by the shot, so it fails rather than prints if either changes. The screenshot
+taken after the run framed the preview room's wall rather than the card, because the preview
+camera was left where the last Lens reset pinned the layout, so the line was read from the live
+card rather than from a picture of it.
+
+### Files
+
+Changed: `Assets/Tests/FloorcountC8AnswerGuardScenario.ts`, the two new checks and their helpers;
+`Assets/Tests/FloorcountCaptureScenario.ts`, the `fade-line` shot; and this section. Nothing under
+`Assets/Scripts/` was touched, because no scenario proved a bug in any of the three changes. No
+scene object was added, removed or renamed, no `@input` was wired or changed, and no texture,
+material, font or sound was touched. Packages are the pinned set, Spectacles Interaction Kit
+2.0.0, Spectacles UI Kit 2.0.0 and LEAF 2.0.2; nothing was installed, and neither
+`QueryRuntimeSceneTool` nor `PreviewInteractTool` was called. `Assets/` was checked for OneDrive's
+"* 2.*" duplicates before compiling and again after the sweep; there are none.
+
+### Saves
+
+Saved through the Editor API (`model.project.save()`) three times: 18:36:49 after the first clean
+compile, 18:40:40 after the scenario edits compiled, and **19:11:16 last**, after the sweep and
+after the saved session was cleared. The project is left as a first session:
+`floorcount-c9-session-memory` ran last and ends by clearing the save and asserting `previous` is
+null. The only thing written after the last save is this section, which is outside the Lens
+project's assets, so nothing in the project itself has changed since.

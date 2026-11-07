@@ -154,10 +154,22 @@ test("finishFade does nothing unless a step has just been cleared", () => {
 test("a session with no Agains ends in the summary, with no review", () => {
   const s = fresh()
   for (let i = 0; i < 3; i++) {
+    assert.equal(s.reviewDue, false) // the fade line after the last step reads off this
     clearStep(s)
     s.finishFade()
   }
   assert.equal(s.phase, "summary")
+})
+
+test("one Again anywhere makes a review due", () => {
+  const s = fresh()
+  clearStep(s)
+  s.finishFade()
+  assert.equal(s.reviewDue, false)
+  s.again()
+  assert.equal(s.reviewDue, true)
+  s.gotIt() // the row is broken, the Again still counts
+  assert.equal(s.reviewDue, true)
 })
 
 test("the step with the most Agains comes back once at Full, then the summary", () => {
@@ -255,6 +267,9 @@ test("counts are said the way a teacher says them", () => {
   assert.equal(countsInWords([2]), "2")
   assert.equal(countsInWords([2, 5]), "2 and 5")
   assert.equal(countsInWords([2, 5, 7]), "2, 5 and 7")
+  // Past three the list would outgrow the card, so it becomes a number.
+  assert.equal(countsInWords([1, 2, 3, 5]), "4 counts")
+  assert.equal(countsInWords([1, 2, 3, 5, 6, 7]), "6 counts")
 })
 
 test("on a first session a summary row names the counts that were lost", () => {

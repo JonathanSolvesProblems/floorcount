@@ -106,6 +106,13 @@ export class FloorcountMain extends BaseScriptComponent {
 
   /** The 8-count (since the music last started) of the last answer taken; -1 for none. */
   private answeredPhrase = -1
+  /**
+   * The beat the last answer was taken on; -1 for none. An answer is allowed anywhere in an
+   * 8-count, not only while the capsules are bright, so one taken late in an 8-count must not be
+   * followed by another at the top of the next: two Agains a beat apart would halve a step nobody
+   * danced. The next answer waits until a whole window's worth of counts has passed.
+   */
+  private answeredBeat = -1
   private lastBeatIndex = -1
   private fadeStartBeat = 0
   private frame = 0
@@ -206,15 +213,20 @@ export class FloorcountMain extends BaseScriptComponent {
     this.lastBeatIndex = -1
     this.currentBeat = 0
     this.answeredPhrase = -1
+    this.answeredBeat = -1
     this.stepCard.setPaused(false)
   }
 
   /** Whether an Again or a Got it would be taken right now (see answerGuard). */
   get canAnswer(): boolean {
     if (!this.ready || !this.state.acceptsAnswers) return false
+    // Paused is paused: nothing is being danced, so nothing is being answered.
+    if (this.audio.isPaused) return false
     if (!this.answerGuard) return true
     const phrase = Math.floor(this.currentBeat / COUNTS_PER_PHRASE)
-    return phrase >= 1 && phrase !== this.answeredPhrase
+    if (phrase < 1 || phrase === this.answeredPhrase) return false
+    const sinceLast = this.answeredBeat < 0 ? Infinity : this.currentBeat - this.answeredBeat
+    return sinceLast >= COUNTS_PER_PHRASE - this.answerWindowCounts
   }
 
   /** Take this 8-count's answer, or drop it if one is not due. */
@@ -224,6 +236,7 @@ export class FloorcountMain extends BaseScriptComponent {
       return false
     }
     this.answeredPhrase = Math.floor(this.currentBeat / COUNTS_PER_PHRASE)
+    this.answeredBeat = this.currentBeat
     return true
   }
 
@@ -241,8 +254,10 @@ export class FloorcountMain extends BaseScriptComponent {
     if (s.phase === "review") return "Once more at Full"
     if (s.phase === "fading") {
       const next = s.stepIndex + 1
-      // After the last step it is the worst step that comes back, at Full, not a new one.
-      return next < s.stepCount ? "Next: " + STEPS[next].name.toLowerCase() : "Once more at Full"
+      if (next < s.stepCount) return "Next: " + STEPS[next].name.toLowerCase()
+      // After the last step it is the worst step that comes back, at Full, not a new one; a
+      // session with no Agains has nothing to bring back and goes straight to the summary.
+      return s.reviewDue ? "Once more at Full" : "Three steps done"
     }
     if (s.segment === "first") return "Counts 1 to 4 only"
     if (s.segment === "second") return "Counts 5 to 8 only"
@@ -355,9 +370,9 @@ export class FloorcountMain extends BaseScriptComponent {
 
     const phraseIndex = Math.floor(beat / COUNTS_PER_PHRASE)
     const waiting = phase === "learning" && phraseIndex >= 1 && p < this.answerWindowCounts
-    // Bright means "waiting for your answer": once this 8-count's answer is in, back to rest.
-    const answered = this.answerGuard && phraseIndex === this.answeredPhrase
-    this.stepCard.setAnswerWindow(waiting && !answered)
+    // Bright means "waiting for your answer": once this 8-count's answer is in, or while one is
+    // still too close to the last, back to rest. The same rule that takes the answer lights it.
+    this.stepCard.setAnswerWindow(waiting && this.canAnswer)
     this.offViewArrow.needed = this.pad.isFloorVisible
 
     if (phase === "fading") {
