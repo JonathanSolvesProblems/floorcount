@@ -27,7 +27,7 @@ To run the tests, open the LEAF panel and run all scenarios. Start them on a fre
 
 I practise salsa alone at home. The tutorial is on my phone. It faces me, so every step is mirrored; I lose the count, walk over, scrub back, and start again.
 
-Floorcount puts the count where my feet go. A 90 cm square sits on the floor with the step's sole prints on it at real size, and each one lights on its count. A clave-stick click marks 1 and 5 from the floor. Above the far edge there is one large numeral and a strip of eight cells that shows where in the phrase I am. A Got it hides the numeral and the strip and an Again brings them back, because the aim is dancing eyes up, to the music.
+Floorcount puts the count where my feet go. A 90 cm square sits on the floor with the step's sole prints on it at real size, and each one lights on its count. A clave-stick click marks 1 and 5 from the floor, the two counts a teacher calls to the class, and not the clave's own syncopated pattern, which is what beginners lose the count to. Above the far edge there is one large numeral and a strip of eight cells that shows where in the phrase I am. A Got it hides the numeral and the strip and an Again brings them back, because the aim is dancing eyes up, to the music.
 
 ## What it does
 
@@ -135,7 +135,7 @@ The brief marked every value I had not chosen myself as a default, and the desig
 - Everything here ran in Lens Studio's preview. No SPECS device was used, so comfort over a real session, real hand tracking, and the hand-over from looking down at the pad to dancing eyes up are unproven.
 - Eye height is a constant 150 cm. The pad hangs off the camera's starting position, not off a tracked floor.
 - A pad 70 cm ahead on the floor is about 65 degrees below a level gaze and the glasses see about 37 by 32 degrees, so the pad, the count and the card are never all in view at once. The arrow is what brings me back.
-- Leader's part and On1 only, three steps, no partner work. The click on 1 and 5 marks the two counts the phrase hangs on; it is not the full clave pattern.
+- Leader's part and On1 only, three steps, no partner work.
 
 ## Repository
 
