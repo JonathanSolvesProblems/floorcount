@@ -27,7 +27,7 @@ To run the tests, open the LEAF panel and run all scenarios. Start them on a fre
 
 I practise salsa alone at home. The tutorial is on my phone. It faces me, so every step is mirrored; I lose the count, walk over, scrub back, and start again.
 
-Floorcount puts the count where my feet go. A 90 cm square sits on the floor with the step's sole prints on it at real size, and each one lights on its count. A clave-stick click marks 1 and 5 from the floor, the two counts a teacher calls to the class, and not the clave's own syncopated pattern, which is what beginners lose the count to. Above the far edge there is one large numeral and a strip of eight cells that shows where in the phrase I am. A Got it hides the numeral and the strip and an Again brings them back, because the aim is dancing eyes up, to the music.
+Floorcount puts the count where my feet go. A 90 cm square sits on the floor with the step's sole prints on it at real size, and each one lights on its count. A clave-stick click marks 1 and 5 from the floor, the two counts a teacher calls to the class, and not the clave's own syncopated pattern, which is what beginners lose the count to. Robin Campbell, who runs the online salsa school The Dance Dojo, calls hearing where the 1 falls "the single biggest hurdle new dancers face" ([The Dance Dojo, 2026](https://thedancedojo.com/blog/how-salsa-music-is-counted/)). Above the far edge there is one large numeral and a strip of eight cells that shows where in the phrase I am. A Got it hides the numeral and the strip and an Again brings them back, because the aim is dancing eyes up, to the music.
 
 ## What it does
 
@@ -49,6 +49,8 @@ The Lens does not watch my feet and there is no machine learning in it. Again an
 ## The view from where you stand
 
 Dancing uses the whole body, so a phone has nowhere to go. It sits on a shelf facing me and I walk back to it. The glasses put the step on the floor from where I stand, at real size, facing the way I face, with both hands free.
+
+I measured one of my own phone practices for the video, with the phone's screen recorded and a camera on the room: 13 minutes with a 4:28 right-turn tutorial, played three times through, two walks to the phone to restart it, and 4 minutes of music to dance to. The other 8 and a half minutes were the instructor talking, watched three times over. The timestamps and the method are in [devpost/phone-vs-glasses.md](devpost/phone-vs-glasses.md).
 
 Where you watch from matters. A preregistered study in PLOS ONE had 32 dancers learn a choreography from video in three views. The view from behind the dancer, which is the learner's own view, beat both front views, mirrored or not, and helped the less trained dancers most ([Versace et al., 2026](https://doi.org/10.1371/journal.pone.0355860)). A tutorial facing you is a front view. The pad is the view from where you stand.
 

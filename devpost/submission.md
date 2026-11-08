@@ -1,6 +1,6 @@
 # Devpost submission
 
-Final values only, one field per block. `[X]` means Jonathan still has to supply it. Nothing here states a rewind number until `devpost/phone-vs-glasses.md` exists.
+Final values only, one field per block. `[X]` means Jonathan still has to supply it. The practice numbers come from `devpost/phone-vs-glasses.md`.
 
 ## Project name
 
@@ -24,6 +24,8 @@ Floorcount is a salsa practice Lens for SPECS. It draws a step's footprints on t
 I've done salsa for a few years: several classes a week for a while, then a phase of going out to social dance nights. At home my practice list is short: left turn, right turn, the basic, and "understanding salsa music beats", which has been on that list for a long time.
 
 A class shows you a step once a week. The rest of the week it's me and a tutorial on my phone. The video faces me, so every step is mirrored and I flip it in my head. I lose the count, walk over, scrub back and start again.
+
+I measured one of those practices for the video: 13 minutes with a 4:28 right-turn tutorial, played three times through, two walks to the phone to restart it, and 4 minutes of music to actually dance to. The rest was the instructor talking, watched three times over ([how it was measured](https://github.com/JonathanSolvesProblems/floorcount/blob/main/devpost/phone-vs-glasses.md)).
 
 ## What it does
 
