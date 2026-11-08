@@ -44,7 +44,8 @@ def new():
 
 
 # ---------- small tags and source plates ----------
-def tag(path, lines, x, y, size=28, align="left", alpha=190, fontpath=MD):
+def tag(path, lines, x, y, size=28, align="left", alpha=236, fontpath=MD):
+    # near-opaque: at 190 the text of a white page (the two articles, GitHub) read through the plate
     img, d = new()
     f = font(fontpath, size)
     tw = max(text_w(d, s, f) for s in lines)
@@ -61,13 +62,22 @@ def tag(path, lines, x, y, size=28, align="left", alpha=190, fontpath=MD):
 
 
 tag("broll/ov-tag-preview.png", ["Lens Studio preview"], W - 60, 48, 28, align="right")
-tag("broll/ov-tag-diagram.png", ["Diagram. The preview has no depth, so this runs on the glasses."], W - 60, 48, 28, align="right")
+tag("broll/ov-tag-diagram.png", ["Diagram. The preview has no depth, so this part is for the glasses, not yet tested on them."], W - 60, 48, 28, align="right")
 tag("broll/ov-src-campbell.png", ["Source: Robin Campbell, The Dance Dojo, 2026"], 60, 48, 28)
 tag("broll/ov-src-versace.png", ["Source: Versace et al., PLOS ONE, 2026. 32 dancers, three views; the back view came out ahead."], 60, 48, 28)
 tag("broll/ov-src-measured.png", ["Measured from this practice's screen recording. devpost/phone-vs-glasses.md"], 60, 48, 26)
 tag("broll/ov-label-front.png", ["Front view. A tutorial faces you."], 60, 48, 30)
 tag("broll/ov-label-yours.png", ["Your view. Floorcount, from where you stand."], W // 2 + 60, 48, 30)
-tag("broll/ov-src-leaf.png", ["LEAF scenarios running in the Lens Studio preview"], 60, 48, 28)
+tag("broll/ov-src-leaf.png", ["LEAF: Snap's test framework for Lenses. 18 scenarios here, all passing."], 60, 48, 28)
+# the states the voice names, labelled while they are on screen (the change itself is subtle in the preview)
+tag("broll/ov-tag-why.png", ["The tutorial faces me. Every restart is a walk to the phone."], 60, 48, 28)
+tag("broll/ov-tag-again.png", ["After two Agains: Slow, counts 1 to 4 only."], 60, 48, 28)
+tag("broll/ov-tag-clean.png", ["After three clean 8-counts at Full: the right turn loads."], 60, 48, 28)
+tag("broll/ov-tag-clad.png", ["CLAD: Snap's coding agent for Lens Studio.",
+                              "It built the scene, the scripts and the tests from the brief, through the Lens Studio MCP."], 60, 48, 28)
+tag("broll/ov-src-plos.png", ["Versace et al., PLOS ONE, September 2026"], W - 60, 48, 28, align="right")
+tag("broll/ov-tag-specs.png", ["Have Specs? Clone the repo, open it in Lens Studio 5.23 and push it to your glasses.",
+                               "github.com/JonathanSolvesProblems/floorcount"], 60, 250, 28)   # below the count numeral and the strip
 tag("broll/ov-tag-class.png", ["Salsa class, January 2026"], 60, 48, 28)
 
 # music credit, under the end card's text column (CC BY 4.0 asks for title, author, source, licence)

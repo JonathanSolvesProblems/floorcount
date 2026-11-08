@@ -28,6 +28,7 @@ os.makedirs(SEG, exist_ok=True)
 CARDS = ".design/brand/export/cards/"
 D = "broll/dslr/"
 TL = json.load(open("tmp/timeline-times.json"))
+RECTS = json.load(open("tmp/web-rects.json"))   # from video/capture_pages.py
 TERM_SUMMARY_AT = float(sys.argv[sys.argv.index("--term-at") + 1]) if "--term-at" in sys.argv else 24.0
 
 
@@ -57,27 +58,44 @@ def ffdur(path):
 # ---------------------------------------------------------------- beats (cut time)
 # (name, start, end, kind, params)
 t_end_card = TL["end"]
+WINDOW_CROP = (1920, 990, 0, 60)     # w, h, x, y after FIT: drops the letterbox bar and the title bar; FIT re-pads
+# captions get a plate on these: white pages, the terminal and the before-and-after card
+BOXED = {"H2", "O1", "Q1", "Q2", "Q3", "Q5", "Q6", "Q7"}
 BEATS = [
     # class, January 2026: only 8.65-12.75 s of the source (0.65-4.75 s into the blurred file) has
     # every frame right, partner always blurred and me always sharp; slowed to fill the beat
     ("A", 0.00, 4.77, "clip", dict(src="broll/class-2026-blurred-b.mp4", inp=0.65, speed=4.10 / 4.77)),
-    ("B", 4.77, 12.77, "clip", dict(src=D + "MVI_0693.MOV", inp=229.0)),
-    ("C", 12.77, 24.83, "clip", dict(src=D + "MVI_0693.MOV", inp=277.0)),
+    # home shots: the desk corner (a VR headset on it) goes soft through corner_mask()
+    ("B", 4.77, 12.77, "clip", dict(src=D + "MVI_0693.MOV", inp=229.0, mask=True)),
+    ("C", 12.77, 24.83, "clip", dict(src=D + "MVI_0693.MOV", inp=277.0, mask=True)),
     ("D", 24.83, 29.69, "clip", dict(src="broll/preview-02-again-half.mp4", inp=0.0)),
-    ("E", 29.69, 34.23, "clip", dict(src="broll/preview-09-lens-studio-wide.mp4", inp=0.5)),
+    # the Lens Studio window: cropped below its title bar (project name and the unsaved asterisk)
+    ("E", 29.69, 34.23, "clip", dict(src="broll/preview-09-lens-studio-wide.mp4", inp=0.5, crop=WINDOW_CROP)),
     ("E2", 34.23, 39.39, "clip", dict(src="broll/preview-01-basic-slow.mp4", inp=0.0)),
     ("F", 39.39, 44.69, "clip", dict(src="broll/floor-diagram.mp4", inp=0.0)),
     ("G", 44.69, 53.21, "clip", dict(src="broll/preview-11-count-hides.mp4", inp=0.0)),
     ("H1", 53.21, 56.43, "punch", dict(src="broll/preview-01-basic-slow.mp4", inp=0.0)),
-    ("H2", 56.43, 61.81, "clip", dict(src="broll/preview-01-basic-slow.mp4", inp=1.8)),
+    # the Dance Dojo article: headline and byline, then down to the quoted sentence at 2x
+    ("H2", 56.43, 61.81, "page", dict(image="broll/web-09-dance-dojo.png",
+                                       # the quote ends low in the frame, so the course links under it stay out of view
+                                       keys=lambda R: [(0.0, 1.3, 800, 420), (1.0, 1.3, 800, 420),
+                                                       (3.4, 2.0, 800, R["dojo"]["single biggest hurdle new dancers face"][0]["y"] + 14 - 170)],
+                                       highlights=lambda R: [(3.3, R["dojo"]["single biggest hurdle new dancers face"])])),
     ("I", 61.81, 67.73, "clip", dict(src="broll/preview-04-step-card.mp4", inp=0.5)),
     ("J", 67.73, 73.41, "clip", dict(src="broll/preview-02-again-half.mp4", inp=6.0)),
     ("K", 73.41, 78.23, "clip", dict(src="broll/preview-03-next-step.mp4", inp=6.8)),
     ("L", 78.23, 82.99, "clip", dict(src="broll/preview-11-count-hides.mp4", inp=6.3)),
     ("M", 82.99, 85.89, "clip", dict(src="broll/preview-10-arrow.mp4", inp=2.3)),
     ("N1", 85.89, 90.93, "clip", dict(src="broll/preview-06-second-session.mp4", inp=1.0)),
-    ("N2", 90.93, 94.37, "clip", dict(src="broll/preview-07-summary-last-time.mp4", inp=0.3)),
-    ("O", 94.37, 110.19, "split", dict(left=D + "MVI_0693.MOV", linp=469.0, right="broll/preview-02-again-half.mp4", rinp=0.0)),
+    ("N2", 90.93, 95.50, "clip", dict(src="broll/preview-07-summary-last-time.mp4", inp=0.3)),
+    # the PLOS ONE study: title and abstract, a slow push onto the abstract, "32 dancers" and the
+    # result sentence lit as the voice reaches them
+    ("O1", 95.50, 104.90, "page", dict(image="broll/web-08-plos-article.png",
+                                        keys=lambda R: [(0.0, 1.1, 940, 800), (9.4, 1.35, 920, 780)],
+                                        highlights=lambda R: [(1.3, R["plos"]["32 dancers"]),
+                                                              (5.6, R["plos"]["The Back view consistently yielded superior outcomes"])])),
+    # me at x=961 in the source (measured over the shot), so a 960-wide crop from 481 centres me
+    ("O", 104.90, 110.19, "split", dict(left=D + "MVI_0693.MOV", linp=479.4, lx=481, right="broll/preview-02-again-half.mp4", rinp=10.4)),
     ("P", 110.19, t_end_card, "clip", dict(src="broll/timeline.mp4", inp=0.0)),
     ("P2", t_end_card, 123.87, "clip", dict(src="broll/preview-03-next-step.mp4", inp=5.5)),
     ("Q1", 123.87, 131.55, "clip", dict(src="broll/web-03-design-brief.mp4", inp=1.0)),
@@ -85,11 +103,13 @@ BEATS = [
     ("Q3", 137.29, 142.01, "clip", dict(src="broll/web-05-build-log.mp4", inp=1.0)),
     ("Q4", 142.01, 145.89, "clip", dict(src="broll/preview-08-leaf-run.mp4", inp=28.5)),
     ("Q5", 145.89, 149.53, "clip", dict(src="broll/web-02-ci-green.mp4", inp=4.0)),
-    ("Q6", 149.53, 152.99, "terminal", dict(src="broll/terminal-tests-take6.mp4", inp=TERM_SUMMARY_AT - 1.5)),
+    ("Q6", 149.53, 152.99, "terminal", dict(src="broll/terminal-tests-take6.mp4", inp=TERM_SUMMARY_AT - 0.7)),   # "61 of 61" up for ~2.8 s
     ("Q7", 152.99, 159.07, "image", dict(src=CARDS + "gallery-before-after-1500x1000.png")),
-    ("R", 159.07, 167.97, "clip", dict(src="broll/preview-09-lens-studio-wide.mp4", inp=0.0)),
+    # the window for "Everything you've seen is the Lens Studio preview", then the pad itself under the limits
+    ("R", 159.07, 163.2, "clip", dict(src="broll/preview-09-lens-studio-wide.mp4", inp=0.0, crop=WINDOW_CROP)),
+    ("R2", 163.2, 167.97, "clip", dict(src="broll/preview-01-basic-slow.mp4", inp=0.5)),
     ("S1", 167.97, 169.40, "clip", dict(src="broll/preview-05-right-turn-clean.mp4", inp=0.0)),
-    ("S2", 169.40, TAIL_AFTER_VOICE, "clip", dict(src=D + "MVI_0694.MOV", inp=17.8)),
+    ("S2", 169.40, TAIL_AFTER_VOICE, "clip", dict(src=D + "MVI_0694.MOV", inp=17.8, mask=True)),
 ]
 # joins: dissolves into/out of the cards and between the two home shots; everything else cuts
 XFADE = {"TITLE->A": 0.5, "B->C": 0.5, "S2->END": 0.6}
@@ -101,6 +121,18 @@ FIT = f"scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-i
 
 def finish(dur):
     return f"fps={FPS},tpad=stop_mode=clone:stop_duration=4,trim=duration={dur:.3f},setpts=PTS-STARTPTS"
+
+
+def corner_mask():
+    # the lower-left desk corner of the home shots, feathered: where the blur and the dimming apply
+    path = "tmp/mask-corner.png"
+    if os.path.exists(path):
+        return path
+    from PIL import ImageDraw, ImageFilter
+    m = Image.new("L", (1920, 1080), 0)
+    ImageDraw.Draw(m).rectangle((0, 820, 520, 1080), fill=255)
+    m.filter(ImageFilter.GaussianBlur(35)).save(path)
+    return path
 
 
 def walnut_bg():
@@ -175,13 +207,83 @@ def smooth_zoom(out, dur, z1, cx, cy, ease, src=None, inp=0.0, image=None):
     open(stamp, "w", encoding="utf-8").write(key)
 
 
+def page_move(out, dur, image, keys, highlights=(), css_scale=2):
+    """A camera move over a web page captured at css_scale device pixels per CSS pixel
+    (video/capture_pages.py). keys: (t, zoom, cx, cy) with zoom in output pixels per CSS pixel and
+    (cx, cy) the CSS point at the frame's centre; smoothstep between keys, held after the last.
+    highlights: (t_on, rects in CSS px), lit in the brand blue over 0.4 s."""
+    import cv2
+    stamp = out + ".cmd"
+    key = f"page_move {image} {os.path.getsize(image)} {dur:.3f} {keys} {highlights} {css_scale} v1"
+    if os.path.exists(out) and os.path.exists(stamp) and open(stamp, encoding="utf-8").read() == key:
+        return
+    W, H = 1920, 1080
+    img = cv2.imread(image)
+    half = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+    n = int(round(dur * FPS))
+    enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{W}x{H}",
+                            "-r", str(FPS), "-i", "-", *ENC, out], stdin=subprocess.PIPE)
+    blue = (232, 180, 95)        # #5FB4E8 in BGR
+    walnut = (18, 22, 26)
+
+    def at(t):
+        if t <= keys[0][0]:
+            return keys[0][1:]
+        for (t0, *a), (t1, *b) in zip(keys, keys[1:]):
+            if t0 <= t <= t1:
+                u = (t - t0) / (t1 - t0)
+                u = u * u * (3 - 2 * u)
+                return tuple(x + (y - x) * u for x, y in zip(a, b))
+        return keys[-1][1:]
+
+    for i in range(n):
+        t = i / FPS
+        zoom, cx, cy = at(t)
+        src, sc = (half, zoom * 2 / css_scale) if zoom / css_scale < 0.75 else (img, zoom / css_scale)
+        iw, ih = src.shape[1] * sc, src.shape[0] * sc
+        tx = W / 2 - cx * zoom
+        ty = H / 2 - cy * zoom
+        tx = min(0.0, max(W - iw, tx)) if iw >= W else (W - iw) / 2
+        ty = min(0.0, max(H - ih, ty)) if ih >= H else 0.0
+        M = np.array([[sc, 0, tx], [0, sc, ty]], np.float64)
+        frame = cv2.warpAffine(src, M, (W, H), flags=cv2.INTER_CUBIC if sc > 1 else cv2.INTER_LINEAR,
+                               borderMode=cv2.BORDER_CONSTANT, borderValue=walnut)
+        for t_on, rects in highlights:
+            a = min(1.0, max(0.0, (t - t_on) / 0.4))
+            if a <= 0:
+                continue
+            wash, line = frame.copy(), frame.copy()
+            for r in rects:
+                x0, y0 = int(r["x"] * zoom + tx) - 6, int(r["y"] * zoom + ty) - 4
+                x1, y1 = int((r["x"] + r["w"]) * zoom + tx) + 6, int((r["y"] + r["h"]) * zoom + ty) + 4
+                cv2.rectangle(wash, (x0, y0), (x1, y1), blue, -1)
+                cv2.rectangle(line, (x0, y1 - 3), (x1, y1), blue, -1)
+            frame = cv2.addWeighted(wash, 0.28 * a, frame, 1 - 0.28 * a, 0)
+            frame = cv2.addWeighted(line, a, frame, 1 - a, 0)
+        enc.stdin.write(frame.tobytes())
+    enc.stdin.close()
+    enc.wait()
+    open(stamp, "w", encoding="utf-8").write(key)
+
+
 def render_segment(name, dur, kind, p, out):
     if kind == "clip":
         sp = p.get("speed", 1.0)
         # slowed clips blend neighbouring frames back up to 30 fps instead of repeating frames
         slow = f"setpts=PTS/{sp:.4f},framerate=fps={FPS}," if sp != 1.0 else ""
-        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['inp']:.3f}", "-t", f"{(dur + 2) * sp:.3f}", "-i", p["src"],
-             "-vf", f"{slow}{FIT},{finish(dur)}", *ENC, out])
+        crop = f"crop={':'.join(str(v) for v in p['crop'])},{FIT}," if p.get("crop") else ""
+        if p.get("mask"):
+            # the masked corner is blurred and dimmed, the rest untouched (alphamerge reads the mask as alpha)
+            run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['inp']:.3f}", "-t", f"{(dur + 2) * sp:.3f}", "-i", p["src"],
+                 "-loop", "1", "-framerate", str(FPS), "-t", f"{dur + 2:.3f}", "-i", corner_mask(),
+                 "-filter_complex",
+                 f"[0:v]{slow}{FIT},{crop}fps={FPS}[v0];[v0]split[a][b];"
+                 f"[b]gblur=sigma=26,eq=brightness=-0.07:saturation=0.8[bl];[bl][1:v]alphamerge[blm];"
+                 f"[a][blm]overlay=0:0:shortest=1,{finish(dur)}[v]",
+                 "-map", "[v]", *ENC, out])
+        else:
+            run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['inp']:.3f}", "-t", f"{(dur + 2) * sp:.3f}", "-i", p["src"],
+                 "-vf", f"{slow}{FIT},{crop}{finish(dur)}", *ENC, out])
     elif kind == "portrait":
         run(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-framerate", str(FPS), "-t", f"{dur + 1:.3f}", "-i", walnut_bg(),
              "-ss", f"{p['inp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["src"],
@@ -197,13 +299,15 @@ def render_segment(name, dur, kind, p, out):
              "-ss", f"{p['linp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["left"],
              "-ss", f"{p['rinp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["right"],
              "-filter_complex",
-             f"[0:v]fps={FPS},crop=960:1080:700:0,setsar=1[l];"
+             f"[0:v]fps={FPS},crop=960:1080:{p.get('lx', 700)}:0,setsar=1[l];"
              f"[1:v]fps={FPS},crop=640:720:320:0,scale=960:1080,setsar=1[r];"
              f"[l][r]hstack=shortest=1,drawbox=x=957:y=0:w=6:h=1080:color=0xF7EEDF@0.9:t=fill,{finish(dur)}[v]",
              "-map", "[v]", *ENC, out])
     elif kind == "image":
         # a slow centred push over the whole beat, as a sub-pixel warp (see smooth_zoom)
         smooth_zoom(out, dur, image=p["src"], z1=1.045, cx=0.5, cy=0.5, ease=dur)
+    elif kind == "page":
+        page_move(out, dur, p["image"], p["keys"](RECTS), p["highlights"](RECTS))
     elif kind == "terminal":
         # 1920x1066 capture of the terminal window: drop the title bar and the taskbar, keep 16:9 from the left
         run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['inp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["src"],
@@ -280,17 +384,22 @@ def ov(png, a, b, fade=0.4):
     return (png, a + TITLE, b + TITLE, fade)
 
 
-PREVIEW_SPANS = [(24.83, 29.69), (34.23, 39.39), (44.69, 94.37), (t_end_card, 123.87), (167.97, 169.40)]
+PREVIEW_SPANS = [(24.83, 29.69), (34.23, 39.39), (44.69, 56.43), (61.81, 95.50), (t_end_card, 123.87), (163.2, 169.40)]
 OVERLAYS = [
     ov("broll/ov-tag-class.png", 0.3, 4.6),
     ov("broll/ov-stat.png", 16.3, 24.3, 0.5),
+    ov("broll/ov-tag-why.png", 17.5, 24.3),              # the problem in words, over the walk to the phone
     ov("broll/ov-wordmark.png", 28.0, 33.6),
     ov("broll/ov-tag-diagram.png", 39.6, 44.5),
-    ov("broll/ov-src-campbell.png", 56.6, 61.6),
-    ov("broll/ov-label-front.png", 94.5, 110.0),
-    ov("broll/ov-label-yours.png", 94.5, 110.0),
-    ov("broll/ov-src-versace-low.png", 95.6, 104.8),
-    ov("broll/ov-src-leaf.png", 142.2, 145.7),
+    ov("broll/ov-src-campbell.png", 58.6, 61.6),         # once the page has left the byline
+    ov("broll/ov-tag-again.png", 69.0, 73.3),            # "Two Agains in a row..."
+    ov("broll/ov-tag-clean.png", 74.4, 78.1),            # "Three clean at full speed..."
+    ov("broll/ov-src-plos.png", 97.4, 104.7),            # gone before the split frame at 104.90
+    ov("broll/ov-label-front.png", 105.1, 110.0),
+    ov("broll/ov-label-yours.png", 105.1, 110.0),
+    ov("broll/ov-tag-clad.png", 132.0, 137.1),           # "Snap's CLAD built it..."
+    ov("broll/ov-src-leaf.png", 142.1, 145.8),           # the whole LEAF shot: "18 LEAF scenarios test it in the preview"
+    ov("broll/ov-tag-specs.png", 163.0, 167.8),          # "It hasn't run on glasses yet"
     ov("broll/ov-credit-music.png", TAIL_AFTER_VOICE + 0.3, TAIL_AFTER_VOICE + END_CARD - 0.7),
 ] + [ov("broll/ov-tag-preview.png", a + 0.2, b - 0.2, 0.3) for a, b in PREVIEW_SPANS]
 
@@ -366,7 +475,34 @@ def captions(path):
     }
     from pathlib import Path
     transcript_to_ass(transcript, Path(path), style)
+    box_captions(path)
     return out
+
+
+def ass_seconds(t):
+    h, m, s = t.split(":")
+    return int(h) * 3600 + int(m) * 60 + float(s)
+
+
+def box_captions(path):
+    # over the white pages, the terminal and the before-and-after card the outline alone is not enough:
+    # those lines get a second style, the same type on a walnut plate (libass BorderStyle 4, one box per line)
+    boxed = [(s + TITLE, e + TITLE) for name, s, e, _, _ in BEATS if name in BOXED]
+    lines = []
+    for ln in open(path, encoding="utf-8").read().splitlines():
+        if ln.startswith("Style: Cap,"):
+            lines.append(ln)
+            f = ln[len("Style: "):].split(",")
+            f[0], f[6], f[15], f[17] = "CapBox", "&H4012161A", "4", "0"   # name, BackColour (walnut, 75%), BorderStyle, Shadow
+            ln = "Style: " + ",".join(f)
+        elif ln.startswith("Dialogue: "):
+            parts = ln.split(",", 9)
+            t = ass_seconds(parts[1])
+            if any(a <= t < b for a, b in boxed):
+                parts[3] = "CapBox"
+                ln = ",".join(parts)
+        lines.append(ln)
+    open(path, "w", encoding="utf-8").write("\n".join(lines) + "\n")
 
 
 # ---------------------------------------------------------------- audio

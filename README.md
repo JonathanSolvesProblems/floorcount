@@ -21,6 +21,8 @@ You need Lens Studio 5.23.2, the version it was built in. No SPECS device, no Gi
 6. Turn right to the step card. After an 8-count has played, click **Again** or **Got it**. The Lens takes one answer per 8-count.
 7. Click a print to mark the count you lost. Click the step name to pause.
 
+To run it on a pair of Specs, pair the glasses with Lens Studio and send the Lens to them from the Preview panel; the project needs no change for that. I have not had a pair to try it on, so the preview is where it has been tested.
+
 To run the tests, open the LEAF panel and run all scenarios. Start them on a freshly refreshed preview: five of them time themselves against the clock (c2, c5, c8, c9, c13), and the preview slows down the longer it has been running.
 
 ## The moment
