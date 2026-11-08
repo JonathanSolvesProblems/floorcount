@@ -7,7 +7,7 @@ Each claim on the Devpost page (`submission.md`), traced to where it comes from.
 - Dance Reality, 2017: https://www.uploadvr.com/arkit-app-uses-virtual-footsteps-show-dance/ (16 July 2017) and https://www.geekwire.com/2017/dance-reality-app-helps-users-get-footwork-augmented-reality-thanks-apples-arkit/ (the App Store listing, id1277367395, returned 404 on 7 November 2026)
 - "The single biggest hurdle new dancers face" (hearing where the 1 falls): Robin Campbell, "How Salsa Music Is Counted (Why Dancers Say 1-2-3, 5-6-7)", The Dance Dojo, 12 June 2026. https://thedancedojo.com/blog/how-salsa-music-is-counted/ Campbell founded The Dance Dojo, an online salsa and bachata school (Baila Room podcast, episode 50). The choice of a click on 1 and 5 over the clave pattern is mine; a pseudonymous 2015 Son y Casino post, "Against clave", makes the same case for following the conga instead: https://sonycasino.com/2015/06/20/against-clave-why-this-instrument-may-not-be-the-best-one-in-helping-you-keep-a-beat/
 - Session and MCP call counts: `devpost/BUILD_LOG.md`, regenerated from the session transcripts.
-- LEAF results: `devpost/design-pass-report.md`, section "Session memory and coverage, 6 November 2026".
+- LEAF results: `devpost/design-pass-report.md`, section "The real floor, 8 November 2026" (the latest sweep; earlier sweeps are in the sections before it).
 - Unit tests and planted breaks: `npm test` and `npm run breaks` in `tests/unit/`.
 - Beat test figures on the page (130 samples, 140.4 BPM) and 18 of 18 on a fresh clone: `devpost/clean-clone-test.md`.
 - The 620 BPM beat-clock fault, the 37 by 32 degree field of view and the 65 degree look-down angle: `devpost/build-report.md`, from the first build session.
