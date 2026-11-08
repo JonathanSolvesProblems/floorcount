@@ -458,3 +458,22 @@ Do, in order:
 4. Clear the saved session (floorcount-c9-session-memory ends by clearing it) so the project is left as a first session, and save.
 5. Append a section "The real floor, 8 November 2026" to devpost/design-pass-report.md: the change in three sentences, what the preview did at step 2 (the print, quoted), the LEAF table PASS or FAIL for every scenario with any retry and its reason, c18's "[C18]" prints, C2's numbers, and the last save time. Plain language, no em-dashes, no local user paths.
 ```
+
+## 8 November: LEAF sweep on a fresh clone after the floor settle
+
+```text
+Run the LEAF scenarios on a fresh clone of the public repository. Keep this tight: about 60 tool calls. Change nothing in the Lens.
+
+Lens Studio is already open on the fresh clone at <fresh clone>/ (cloned from GitHub minutes ago) and the lens-studio MCP server is connected. Work only in that folder. Do not touch the working project.
+
+Rules: install nothing; never call QueryRuntimeSceneTool or PreviewInteractTool. Do not run git. Do not start a shell command with `cd`. Do not move or click the mouse. Do not save the project: it is a throwaway clone. Do not edit any file.
+
+LEAF's panel prints "Loaded 20 scenario(s) from preview" when it is ready, and a run dispatched before that line is lost. Pin LEAF to the preview, not a device. The preview slows down the longer it runs, so refresh it before the timing-sensitive scenarios (c2, c5, c8, c9, c13). If it goes silent, check PreviewPanelTool getConfig: "Preview is Paused" needs a refresh. Check that the Lens Studio window is not minimised (IsIconic from PowerShell; restore with ShowWindow(handle, 9)), because a minimised window throttles rendering. A run that outlasts the MCP timeout may still have finished: read the result from the log.
+
+1. Confirm the open project is the clone (Editor API `projectFile` or `projectDirectory`) and that it compiled clean. If the wrong project is open, stop and say so.
+2. Start the preview and confirm "Floorcount: session started" with no Floorcount errors. Also report which of these prints appears in the first ten seconds, quoted: "pad settled onto the floor", "no world query here", "the floor query stopped", or none.
+3. Run floorcount-c1-start through floorcount-c18-floor-settle once each, in order, reading C2's sample count. If that count is under 90 the preview is throttled: say so.
+4. Then run floorcount-c18-floor-settle once more (two runs in all; it is new today) and read its "[C18]" prints. If floorcount-c8-answer-guard failed on timing in step 3 (its prints say the pinch landed outside the window), refresh and run it again, at most twice more.
+5. Do not retry any other failure more than once, and report any retry with its reason.
+6. Finish with a plain report: the project path, the compile result, the floor print from step 2, each scenario PASS or FAIL, C2's sample count and BPM, and c18's prints for both runs. Write nothing to disk.
+```

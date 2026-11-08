@@ -34,24 +34,25 @@ The first session, on 1 November, ran inside the planning chat and its transcrip
 | 8 Nov, 04:54 | Real floor (stopped) | Compiled the floor settle clean. Stopped by hand before the sweep so two fixes from a code review could go in first. | 8 | 36 | 19 |
 | 8 Nov, 05:03 | Real floor, second start (cut off) | Compiled clean again and found that the preview has no depth to read: the world query session is created, the hit test returns nothing, and the pad keeps its fixed height. Lens Studio then stopped responding and the session ended before any scenario ran. | 12 | 70 | 19 |
 | 8 Nov, 05:22 | Real floor | After a restart of Lens Studio: compiled clean, confirmed the preview returns no depth so the pad keeps its fixed height, and ran all 18 scenarios with the new floor scenario twice: 18 of 18, no retries, C2 at 121 samples and 140.0 BPM. | 12 | 81 | 44 |
-| | **Counted total** | 27 sessions | 589 | **2647** | **1055** |
+| 8 Nov, 05:37 | Fresh-clone sweep | All 18 LEAF scenarios on a fresh clone of the public repository after the floor settle, the floor scenario twice: 18 of 18, no retries, C2 at 130 samples and 140.4 BPM. | 8 | 44 | 40 |
+| | **Counted total** | 28 sessions | 597 | **2691** | **1095** |
 
 ## What the Lens Studio MCP was used for
 
 | MCP tool | Calls |
 |---|---|
-| `run_leaf_scenario` | 326 |
-| `PreviewPanelTool` | 135 |
-| `RunAndCollectLogsTool` | 122 |
+| `run_leaf_scenario` | 345 |
+| `PreviewPanelTool` | 140 |
+| `RunAndCollectLogsTool` | 130 |
 | `MovePreviewCamera` | 120 |
-| `ExecuteEditorCode` | 109 |
-| `RecompileTypeScriptTool` | 67 |
+| `ExecuteEditorCode` | 111 |
+| `RecompileTypeScriptTool` | 68 |
 | `asset-graphql` | 38 |
+| `list_leaf_scenarios` | 31 |
 | `scene-graphql` | 30 |
-| `list_leaf_scenarios` | 28 |
-| `open_leaf_panel` | 23 |
+| `open_leaf_panel` | 24 |
+| `set_leaf_execution_target` | 16 |
 | `CapturePanelScreenshotTool` | 15 |
-| `set_leaf_execution_target` | 15 |
 | `ListAllPanels` | 9 |
 | `VirtualScene` | 6 |
 | `ListInstalledPackagesTool` | 4 |
