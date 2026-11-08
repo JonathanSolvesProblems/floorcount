@@ -27,14 +27,14 @@ To run the tests, open the LEAF panel and run all scenarios. Start them on a fre
 
 I practise salsa alone at home. The tutorial is on my phone. It faces me, so every step is mirrored; I lose the count, walk over, scrub back, and start again.
 
-Floorcount puts the count where my feet go. A 90 cm square sits on the floor with the step's sole prints on it at real size, and each one lights on its count. A clave-stick click marks 1 and 5 from the floor. Above the far edge there is one large numeral and a strip of eight cells that shows where in the phrase I am. The numeral and strip hide once I have the step, because the aim is dancing eyes up, to the music.
+Floorcount puts the count where my feet go. A 90 cm square sits on the floor with the step's sole prints on it at real size, and each one lights on its count. A clave-stick click marks 1 and 5 from the floor. Above the far edge there is one large numeral and a strip of eight cells that shows where in the phrase I am. A Got it hides the numeral and the strip and an Again brings them back, because the aim is dancing eyes up, to the music.
 
 ## What it does
 
 - Three steps from my own practice list: the basic, the right turn and the left turn (On1, leader's part).
 - After each 8-count, two targets at hip height: **Again** or **Got it**. Two Agains in a row slow the music one level and show only counts 1 to 4 until I get them, then 5 to 8, then the whole step. Three clean 8-counts at Full tempo move to the next step.
 - Pinch the print for the count I lost, and it takes a ring.
-- At the end, the step with the most Agains comes back once. Then the floor clears and the card lists each step's Agains. On a first practice each row also names the counts I lost; after that it shows last time's Agains.
+- At the end, the step with the most Agains comes back once, if there were any. Then the floor clears and the card lists each step's Agains. On a first practice each row also names the counts I lost; after that it shows last time's Agains.
 - The Lens keeps my last practice. Next time, the counts I lost carry a fainter ring, the card reads "Last time: lost it on 2 and 5" until I answer, and the end card puts each step's Agains beside last time's.
 - Look away from both the pad and the card, and a small arrow at the bottom of the view points back to the floor. The clave keeps going.
 - The practice music is generated at 140, 170 and 190 BPM, each loop exactly four 8-counts long, so there is no licensed track.
@@ -57,7 +57,7 @@ Footprints on the floor are a hundred years old. Arthur Murray [sold them by mai
 
 Floorcount is worn, so the prints are on the floor and nothing is in my hands. It also counts the way salsa is counted: on 4 and 8 no print lights and the cell stays an outline.
 
-It changes with how I'm doing. Two Agains slow the music and cut the step in half, and three clean 8-counts at full tempo move on. Once I have a step the numeral and the strip hide, because the goal is dancing to the music with my eyes up, not following lights.
+It changes with how I'm doing. Two Agains slow the music (unless it is already at Slow) and cut the step in half, and three clean 8-counts at full tempo move on. A Got it hides the numeral and the strip, because the goal is dancing to the music with my eyes up, not following lights.
 
 ## How it was planned and built
 
@@ -74,7 +74,7 @@ It changes with how I'm doing. Two Agains slow the music and cut the step in hal
 
 ## Tests
 
-Seventeen LEAF scenarios in [`Assets/Tests/`](Assets/Tests/), run in the preview on 6 November 2026. All seventeen pass.
+Seventeen LEAF scenarios in [`Assets/Tests/`](Assets/Tests/), run in the preview on 6 and 7 November 2026. All seventeen pass, also on a fresh clone of this repository.
 
 | Scenario | What it checks |
 |---|---|
