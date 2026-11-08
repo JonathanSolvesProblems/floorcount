@@ -19,6 +19,7 @@ FPS = 30
 TITLE = 2.0
 VOICE = "broll/voice-cut.wav"
 VOICE_LEN = 171.05
+MUSIC = "broll/music/Bailarina.mp3"   # Justin Allan Arnold, CC BY 4.0 (ifnessfreemusic.com)
 TAIL_AFTER_VOICE = 173.0            # the final turn runs to here (cut time)
 END_CARD = 3.0
 WALNUT = "0x1A1612"
@@ -31,10 +32,13 @@ TERM_SUMMARY_AT = float(sys.argv[sys.argv.index("--term-at") + 1]) if "--term-at
 
 
 def run(cmd):
-    # segment renders are cached on their exact command, so a rerun only redoes what changed
+    # segment renders are cached on their exact command plus the size and time of every input,
+    # so a rerun only redoes what changed (the command alone missed a re-rendered input)
     out = cmd[-1]
     stamp = out + ".cmd" if out.startswith(SEG + "/") and out.endswith(".mp4") else None
-    if stamp and os.path.exists(out) and os.path.exists(stamp) and open(stamp, encoding="utf-8").read() == " ".join(cmd):
+    ins = [cmd[k + 1] for k, a in enumerate(cmd[:-1]) if a == "-i" and os.path.exists(cmd[k + 1])]
+    key = " ".join(cmd) + "".join(f" |{p}:{os.path.getsize(p)}:{os.path.getmtime(p):.0f}" for p in ins)
+    if stamp and os.path.exists(out) and os.path.exists(stamp) and open(stamp, encoding="utf-8").read() == key:
         return
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
@@ -42,7 +46,7 @@ def run(cmd):
         print(r.stderr[-4000:])
         raise SystemExit(1)
     if stamp:
-        open(stamp, "w", encoding="utf-8").write(" ".join(cmd))
+        open(stamp, "w", encoding="utf-8").write(key)
 
 
 def ffdur(path):
@@ -54,7 +58,9 @@ def ffdur(path):
 # (name, start, end, kind, params)
 t_end_card = TL["end"]
 BEATS = [
-    ("A", 0.00, 4.77, "portrait", dict(src="broll/class-blurred.mp4", inp=0.0)),
+    # class, January 2026: only 8.65-12.75 s of the source (0.65-4.75 s into the blurred file) has
+    # every frame right, partner always blurred and me always sharp; slowed to fill the beat
+    ("A", 0.00, 4.77, "clip", dict(src="broll/class-2026-blurred-b.mp4", inp=0.65, speed=4.10 / 4.77)),
     ("B", 4.77, 12.77, "clip", dict(src=D + "MVI_0693.MOV", inp=229.0)),
     ("C", 12.77, 24.83, "clip", dict(src=D + "MVI_0693.MOV", inp=277.0)),
     ("D", 24.83, 29.69, "clip", dict(src="broll/preview-02-again-half.mp4", inp=0.0)),
@@ -112,23 +118,80 @@ def walnut_bg():
     return path
 
 
+def smooth_zoom(out, dur, z1, cx, cy, ease, src=None, inp=0.0, image=None):
+    """Zoom from 1 to z1 toward (cx, cy) (fractions of the frame), smoothstep-eased over `ease`
+    seconds and held after. Each frame is one affine warp with float scale and offset, so the
+    picture moves by fractions of a pixel instead of jumping a whole pixel at a time."""
+    import cv2
+    stamp = out + ".cmd"
+    key = f"smooth_zoom {src} {inp} {image} {dur:.3f} {z1} {cx} {cy} {ease} v2"
+    if os.path.exists(out) and os.path.exists(stamp) and open(stamp, encoding="utf-8").read() == key:
+        return
+    W, H = 1920, 1080
+    n = int(round(dur * FPS))
+    if image:
+        im = cv2.imread(image)
+        s = min(W / im.shape[1], H / im.shape[0])
+        still = np.full((H * 2, W * 2, 3), (0x12, 0x16, 0x1A), np.uint8)   # walnut, BGR, at 2x
+        big = cv2.resize(im, None, fx=s * 2, fy=s * 2, interpolation=cv2.INTER_LANCZOS4)
+        y0, x0 = (H * 2 - big.shape[0]) // 2, (W * 2 - big.shape[1]) // 2
+        still[y0:y0 + big.shape[0], x0:x0 + big.shape[1]] = big
+        dec, fw, fh = None, W * 2, H * 2
+    else:
+        fw, fh = [int(v) for v in subprocess.run(
+            ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0", src],
+            capture_output=True, text=True).stdout.strip().split(",")[:2]]
+        dec = subprocess.Popen(["ffmpeg", "-v", "error", "-ss", f"{inp:.3f}", "-t", f"{dur + 1:.3f}", "-i", src,
+                                "-vf", f"fps={FPS}", "-f", "rawvideo", "-pix_fmt", "bgr24", "-"], stdout=subprocess.PIPE)
+    enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{W}x{H}",
+                            "-r", str(FPS), "-i", "-", *ENC, out], stdin=subprocess.PIPE)
+    frame = None
+    for i in range(n):
+        if dec:
+            raw = dec.stdout.read(fw * fh * 3)
+            if len(raw) == fw * fh * 3:
+                frame = np.frombuffer(raw, np.uint8).reshape(fh, fw, 3)
+        else:
+            frame = still
+        u = min(1.0, (i / FPS) / ease)
+        u = u * u * (3 - 2 * u)
+        z = 1 + (z1 - 1) * u
+        base = W / fw                       # source pixels -> output pixels at zoom 1
+        sc = base * z
+        # keep the focus point drifting from the frame centre toward (cx, cy), clamped to the frame
+        fx = (0.5 + (cx - 0.5) * u) * fw
+        fy = (0.5 + (cy - 0.5) * u) * fh
+        tx = W / 2 - fx * sc
+        ty = H / 2 - fy * sc
+        tx = min(0.0, max(W - fw * sc, tx))
+        ty = min(0.0, max(H - fh * sc, ty))
+        M = np.array([[sc, 0, tx], [0, sc, ty]], np.float64)
+        img = cv2.warpAffine(frame, M, (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+        enc.stdin.write(img.tobytes())
+    enc.stdin.close()
+    enc.wait()
+    if dec:
+        dec.kill()
+    open(stamp, "w", encoding="utf-8").write(key)
+
+
 def render_segment(name, dur, kind, p, out):
     if kind == "clip":
-        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['inp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["src"],
-             "-vf", f"{FIT},{finish(dur)}", *ENC, out])
+        sp = p.get("speed", 1.0)
+        # slowed clips blend neighbouring frames back up to 30 fps instead of repeating frames
+        slow = f"setpts=PTS/{sp:.4f},framerate=fps={FPS}," if sp != 1.0 else ""
+        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['inp']:.3f}", "-t", f"{(dur + 2) * sp:.3f}", "-i", p["src"],
+             "-vf", f"{slow}{FIT},{finish(dur)}", *ENC, out])
     elif kind == "portrait":
         run(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-framerate", str(FPS), "-t", f"{dur + 1:.3f}", "-i", walnut_bg(),
              "-ss", f"{p['inp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["src"],
              "-filter_complex", f"[1:v]scale=-2:1080[p];[0:v][p]overlay=(W-w)/2:0:shortest=1,setsar=1,{finish(dur)}[v]",
              "-map", "[v]", *ENC, out])
     elif kind == "punch":
-        # a slow push into the count strip above the pad (source 1280x720, strip near x=640, y=230),
-        # done with zoompan on a 2x supersampled frame so the move stays smooth
-        n = int(dur * FPS)
-        zp = (f"zoompan=z='1+0.6*on/{n}':d=1:x='min(max(1280-(iw/zoom)/2,0),iw-iw/zoom)'"
-              f":y='min(max(460-(ih/zoom)/2,0),ih-ih/zoom)':s=1920x1080:fps={FPS}")
-        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['inp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["src"],
-             "-vf", f"fps={FPS},scale=2560:1440:flags=lanczos,{zp},setsar=1,{finish(dur)}", *ENC, out])
+        # a push into the count strip above the pad (source 1280x720, strip near x=640, y=230):
+        # eased in over the first 1.6 s, then held. zoompan steps in whole pixels and shakes,
+        # so the zoom is a sub-pixel affine warp per frame instead
+        smooth_zoom(out, dur, src=p["src"], inp=p["inp"], z1=1.55, cx=640 / 1280, cy=230 / 720, ease=1.6)
     elif kind == "split":
         run(["ffmpeg", "-v", "error", "-y",
              "-ss", f"{p['linp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["left"],
@@ -139,11 +202,8 @@ def render_segment(name, dur, kind, p, out):
              f"[l][r]hstack=shortest=1,drawbox=x=957:y=0:w=6:h=1080:color=0xF7EEDF@0.9:t=fill,{finish(dur)}[v]",
              "-map", "[v]", *ENC, out])
     elif kind == "image":
-        n = int(dur * FPS)
-        run(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-framerate", str(FPS), "-t", f"{dur + 1:.3f}", "-i", p["src"],
-             "-vf", f"scale=3240:2160:force_original_aspect_ratio=decrease,pad=3840:2160:(ow-iw)/2:(oh-ih)/2:color={WALNUT},"
-                    f"zoompan=z='1+0.045*on/{n}':d=1:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1920x1080:fps={FPS},setsar=1,{finish(dur)}",
-             *ENC, out])
+        # a slow centred push over the whole beat, as a sub-pixel warp (see smooth_zoom)
+        smooth_zoom(out, dur, image=p["src"], z1=1.045, cx=0.5, cy=0.5, ease=dur)
     elif kind == "terminal":
         # 1920x1066 capture of the terminal window: drop the title bar and the taskbar, keep 16:9 from the left
         run(["ffmpeg", "-v", "error", "-y", "-ss", f"{p['inp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["src"],
@@ -231,6 +291,7 @@ OVERLAYS = [
     ov("broll/ov-label-yours.png", 94.5, 110.0),
     ov("broll/ov-src-versace-low.png", 95.6, 104.8),
     ov("broll/ov-src-leaf.png", 142.2, 145.7),
+    ov("broll/ov-credit-music.png", TAIL_AFTER_VOICE + 0.3, TAIL_AFTER_VOICE + END_CARD - 0.7),
 ] + [ov("broll/ov-tag-preview.png", a + 0.2, b - 0.2, 0.3) for a, b in PREVIEW_SPANS]
 
 
@@ -334,18 +395,38 @@ def mix_audio(out_wav):
     v0 = int(TITLE * sr)
     n = min(len(voice), total - v0)
     mix[v0:v0 + n] += voice[:n]
-    # the Lens's own loop as the bed, from the Floorcount reveal to the end card
-    loop = read_wav_f32("Assets/GeneratedSFX/FloorcountSalsa140.wav", sr)
-    m_start, m_end = TITLE + 24.83, TOTAL - 0.6
-    gain = 10 ** (-20.0 / 20)       # the loop sits at -15.5 LUFS; this puts the bed near -35.5
-    s0, s1 = int(m_start * sr), int(m_end * sr)
-    reps = int(np.ceil((s1 - s0) / len(loop)))
-    bed = np.tile(loop, (reps, 1))[: s1 - s0] * gain
-    env = np.ones(len(bed), np.float32)
-    fi, fo = int(1.5 * sr), int(3.0 * sr)
-    env[:fi] = np.linspace(0, 1, fi)
-    env[-fo:] = np.linspace(1, 0, fo)
-    mix[s0:s1] += bed * env[:, None]
+    # salsa under the whole video, ducked under the voice. "Bailarina" by Justin Allan Arnold,
+    # CC BY 4.0, credited on the end card and in DEMO_SCRIPT.md. The track measures -13.7 LUFS:
+    # OPEN_DB puts it near -22 LUFS on the cards and in long pauses, DUCK_DB near -33 under the voice
+    # The track opens on 8 s of quiet intro, so it starts 8.5 s in, where the band comes in.
+    OPEN_DB, DUCK_DB = -8.0, -21.5
+    music = read_wav_f32(MUSIC, sr)[int(8.5 * sr):]
+    if len(music) < total:
+        music = np.concatenate([music, np.zeros((total - len(music), 2), np.float32)])
+    music = music[:total]
+    vtrack = np.zeros(total, np.float32)
+    vtrack[v0:v0 + n] = np.mean(voice[:n] ** 2, axis=1)
+    w20 = int(0.02 * sr)
+    vrms = np.sqrt(np.convolve(vtrack, np.ones(w20) / w20, mode="same"))
+    active = vrms > 10 ** (-42 / 20)
+    # hold the duck through the gaps inside and between sentences: 0.3 s before a word, 1.2 s after
+    pre, post = int(0.3 * sr), int(1.2 * sr)
+    held = active.copy()
+    starts = np.flatnonzero(active[1:] & ~active[:-1]) + 1
+    ends = np.flatnonzero(active[:-1] & ~active[1:]) + 1
+    for s in starts:
+        held[max(0, s - pre):s] = True
+    for e in ends:
+        held[e:min(total, e + post)] = True
+    gdb = np.where(held, DUCK_DB, OPEN_DB).astype(np.float32)
+    ramp = int(0.35 * sr)                   # gain moves over 0.35 s, never a jump
+    gdb = np.convolve(gdb, np.ones(ramp) / ramp, mode="same")
+    genv = 10 ** (gdb / 20)
+    fi = int(1.0 * sr)
+    genv[:fi] *= np.linspace(0, 1, fi)
+    fo = int(2.6 * sr)
+    genv[-fo:] *= np.linspace(1, 0, fo) ** 1.5
+    mix += music * genv[:, None]
     # inaudible dark floor wherever the mix is near silent, so no player ever sees exact zeros
     rng = np.random.default_rng(7)
     noise = rng.standard_normal((total, 2)).astype(np.float32)

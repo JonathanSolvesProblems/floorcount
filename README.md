@@ -155,3 +155,5 @@ The brief marked every value I had not chosen myself as a default, and the desig
 ## Credits and licences
 
 The Floorcount code, tests, audio, textures and documents are under the [MIT licence](LICENSE). The packages in `Packages/` are Snap's and stay under their own terms. The typeface is Atkinson Hyperlegible Next by the Braille Institute, under the SIL Open Font License. The three photos on the brand sheet are adapted from Wikimedia Commons under CC BY-SA 4.0 and credited in [.design/refs/credits.json](.design/refs/credits.json).
+
+The demo video's music is "Bailarina" by Justin Allan Arnold ([ifnessfreemusic.com](https://www.ifnessfreemusic.com/), from the album [Salsa Jazz](https://justinallanarnold.bandcamp.com/album/salsa-jazz-royalty-free)), under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). It is in the video only; the Lens plays its own generated music.

@@ -68,7 +68,13 @@ tag("broll/ov-src-measured.png", ["Measured from this practice's screen recordin
 tag("broll/ov-label-front.png", ["Front view. A tutorial faces you."], 60, 48, 30)
 tag("broll/ov-label-yours.png", ["Your view. Floorcount, from where you stand."], W // 2 + 60, 48, 30)
 tag("broll/ov-src-leaf.png", ["LEAF scenarios running in the Lens Studio preview"], 60, 48, 28)
-tag("broll/ov-tag-class.png", ["Salsa class, 2024"], 60, 48, 28)
+tag("broll/ov-tag-class.png", ["Salsa class, January 2026"], 60, 48, 28)
+
+# music credit, under the end card's text column (CC BY 4.0 asks for title, author, source, licence)
+img, d = new()
+d.text((700, 960), "Music: “Bailarina” by Justin Allan Arnold, ifnessfreemusic.com, CC BY 4.0",
+       font=font(MD, 26), fill=ink(165))
+img.save("broll/ov-credit-music.png")
 tag("broll/ov-src-versace-low.png", ["Source: Versace et al., PLOS ONE, 2026. 32 dancers, three views; the back view came out ahead."], 60, 130, 26)
 
 # ---------- wordmark lower third for the reveal ----------
