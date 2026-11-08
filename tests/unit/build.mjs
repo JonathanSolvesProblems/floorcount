@@ -10,7 +10,7 @@ import ts from "typescript"
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const scripts = path.join(here, "..", "..", "Assets", "Scripts")
-export const SOURCES = ["FloorcountSteps.ts", "FloorcountState.ts", "FloorcountLook.ts"]
+export const SOURCES = ["FloorcountSteps.ts", "FloorcountState.ts", "FloorcountLook.ts", "FloorcountFloor.ts"]
 
 export function build(outDir = path.join(here, ".build"), overrides = {}) {
   fs.mkdirSync(outDir, { recursive: true })

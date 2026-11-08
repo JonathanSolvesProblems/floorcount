@@ -20,6 +20,7 @@ const read = (name) => fs.readFileSync(path.join(scripts, name), "utf8")
 const S = "FloorcountState.ts"
 const T = "FloorcountSteps.ts"
 const L = "FloorcountLook.ts"
+const F = "FloorcountFloor.ts"
 
 /** [file, what the break does, text to find, replacement, which occurrence (1-based, default 1)] */
 const BREAKS = [
@@ -79,6 +80,13 @@ const BREAKS = [
   [L, "text is sized from the wrong cap height", "const CAP_HEIGHT_OF_EM = 0.668", "const CAP_HEIGHT_OF_EM = 0.7"],
   [L, "the teal is the wrong green", "new vec3(0.3846, 0.7563, 1.0)", "new vec3(0.3846, 0.6, 1.0)"],
   [L, "the ink is pure white", "new vec3(0.9686, 0.9333, 0.8745)", "new vec3(1, 1, 1)"],
+  [F, "two floor hits move the pad (needs three)", "hitYs.length < FLOOR_SAMPLES", "hitYs.length < FLOOR_SAMPLES - 1"],
+  [F, "floor hits that disagree still move the pad", "if (hi - lo > FLOOR_AGREE_CM) return null", ""],
+  [F, "an early bad reading blocks the floor forever", "hitYs.slice(-FLOOR_SAMPLES)", "hitYs"],
+  [F, "the pad moves the wrong way", "const shift = mean - padY", "const shift = padY - mean"],
+  [F, "the pad climbs onto a sofa", "if (Math.abs(shift) > FLOOR_MAX_SHIFT_CM) return null", ""],
+  [F, "the pad may move 40 cm", "export const FLOOR_MAX_SHIFT_CM = 30", "export const FLOOR_MAX_SHIFT_CM = 40"],
+  [F, "a wall counts as floor", "return normalY >= FLOOR_MIN_NORMAL_UP", "return normalY >= -1"],
 ]
 
 function plant(source, find, replace, nth = 1) {
@@ -90,7 +98,7 @@ function plant(source, find, replace, nth = 1) {
   return source.slice(0, at) + replace + source.slice(at + find.length)
 }
 
-const sources = { [S]: read(S), [T]: read(T), [L]: read(L) }
+const sources = { [S]: read(S), [T]: read(T), [L]: read(L), [F]: read(F) }
 const root = path.join(here, ".breaks")
 fs.rmSync(root, { recursive: true, force: true })
 

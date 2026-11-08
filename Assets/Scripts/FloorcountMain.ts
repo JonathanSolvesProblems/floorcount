@@ -28,6 +28,14 @@ import {
 /** Where a finished session is kept so the next practice can pick up from it. */
 const SAVE_KEY = "floorcount.lastSession"
 import { COUNTS_PER_PHRASE, STEPS } from "./FloorcountSteps"
+import { floorShift, isFloorHit } from "./FloorcountFloor"
+
+/** Frames between two readings of the floor under the pad. The depth runs at about 5 Hz. */
+const FLOOR_QUERY_EVERY_FRAMES = 12
+/** How far past the pad's centre the floor ray is carried, in cm, so a floor below it is met. */
+const FLOOR_RAY_PAST_CM = 100
+/** Floor readings kept; the rule looks at the last few. */
+const FLOOR_HITS_KEPT = 16
 
 /**
  * Counts after the bright window during which an answer is still taken. A pinch is taken when
@@ -74,6 +82,9 @@ export class FloorcountMain extends BaseScriptComponent {
   @hint("Move the layout so the pad is in front of where the user stands when the Lens starts.")
   recenterOnStart: boolean = true
   @input
+  @hint("Read the real floor under the pad through the glasses' depth and settle the layout onto it. Off, the pad stays at a fixed 150 cm below the eye.")
+  settleOnFloor: boolean = true
+  @input
   @widget(new SliderWidget(1, 4, 1))
   @hint("Counts after each 8-count during which the buttons are bright (waiting for an answer).")
   answerWindowCounts: number = 2
@@ -110,6 +121,24 @@ export class FloorcountMain extends BaseScriptComponent {
   answerGuard = true
   /** Answers the guard dropped since the session started, for tests. */
   ignoredAnswers = 0
+  /**
+   * World heights of the floor readings under the pad so far, oldest first. On glasses they come
+   * from the world query (the depth the glasses see); a scenario feeds them by hand, since the
+   * preview has no real floor to read. FloorcountFloor decides when they are trusted.
+   */
+  readonly floorHitYs: number[] = []
+  /** How far the layout was moved to meet the floor, in cm (up is positive); 0 until it settles. */
+  floorShiftCm = 0
+  /** True once the layout has been settled onto the floor the glasses saw. */
+  floorSettled = false
+
+  private hitSession: HitTestSession | null = null
+  /** Set when this runtime has no world query (the preview): the pad keeps its fixed height. */
+  private floorQueryUnavailable = false
+  /** Whether the depth session is computing; it is stopped once the layout has settled. */
+  private hitSessionRunning = false
+  /** Bumped by recenter and resetFloor, so a depth reading from before them is ignored. */
+  private floorGeneration = 0
 
   /** The 8-count (since the music last started) of the last answer taken; -1 for none. */
   private answeredPhrase = -1
@@ -339,6 +368,7 @@ export class FloorcountMain extends BaseScriptComponent {
   private tick(): void {
     this.frame++
     if (this.frame === 3 && this.recenterOnStart) this.recenter()
+    if (this.settleOnFloor && !this.floorSettled && this.frame % FLOOR_QUERY_EVERY_FRAMES === 0) this.queryFloor()
     if (!this.ready) return
     const s = this.state
     // Read the phase once per frame. Keeping it in a local also stops the narrowing below
@@ -401,5 +431,108 @@ export class FloorcountMain extends BaseScriptComponent {
     const t = this.worldRoot.getTransform()
     t.setWorldPosition(pos)
     t.setWorldRotation(quat.angleAxis(yaw, vec3.up()))
+    // A fresh place to stand means fresh floor readings; the position above is the fixed one.
+    this.floorHitYs.length = 0
+    this.floorShiftCm = 0
+    this.floorSettled = false
+    this.floorGeneration++
+  }
+
+  // ---------------------------------------------------------------- the real floor
+
+  /**
+   * One reading of the floor under the pad. Cast a ray from the eye through the pad's centre and
+   * on past it, so it meets the floor whether the real one is a little above or below where the
+   * pad was placed, and hand what it meets to feedFloorHit. Nothing happens where there is no
+   * world query to ask (the preview).
+   */
+  private queryFloor(): void {
+    if (this.floorQueryUnavailable || !this.cameraObject || !this.worldRoot) return
+    const session = this.floorSession()
+    if (!session) return
+    const eye = this.cameraObject.getTransform().getWorldPosition()
+    const padCentre = this.pad.getSceneObject().getTransform().getWorldPosition()
+    const toPad = padCentre.sub(eye)
+    const distance = toPad.length
+    if (distance < 1) return
+    const end = eye.add(toPad.uniformScale((distance + FLOOR_RAY_PAST_CM) / distance))
+    const generation = this.floorGeneration
+    try {
+      if (!this.hitSessionRunning) {
+        session.start()
+        this.hitSessionRunning = true
+      }
+      session.hitTest(eye, end, (hit) => {
+        // The reading arrives later. One from before a reset or a recentre, or after the
+        // automatic settle was switched off, is about a layout that is no longer there.
+        if (!hit || generation !== this.floorGeneration || !this.settleOnFloor) return
+        this.feedFloorHit(hit.position.y, hit.normal.y)
+      })
+    } catch (e) {
+      this.floorQueryUnavailable = true
+      print("Floorcount: the floor query stopped, the pad keeps its fixed height (" + e + ")")
+    }
+  }
+
+  /** The depth session the floor is read through, started on first use; null where there is none. */
+  private floorSession(): HitTestSession | null {
+    if (this.hitSession) return this.hitSession
+    try {
+      const worldQuery = require("LensStudio:WorldQueryModule") as WorldQueryModule
+      const options = HitTestSessionOptions.create()
+      options.filter = true
+      this.hitSession = worldQuery.createHitTestSessionWithOptions(options)
+    } catch (e) {
+      this.floorQueryUnavailable = true
+      print("Floorcount: no world query here, the pad keeps its fixed height (" + e + ")")
+    }
+    return this.hitSession
+  }
+
+  /**
+   * One reading of where the floor is under the pad: the world height of the surface a ray met
+   * and the y of that surface's unit normal. The glasses feed this from the world query; a
+   * scenario feeds it by hand. Once the last few readings agree on a floor within reach of where
+   * the pad was placed (FloorcountFloor), the whole layout moves to stand on it, once.
+   */
+  feedFloorHit(y: number, normalY: number): void {
+    if (this.floorSettled || !this.worldRoot) return
+    if (!isFloorHit(normalY)) return
+    this.floorHitYs.push(y)
+    if (this.floorHitYs.length > FLOOR_HITS_KEPT) this.floorHitYs.shift()
+    const padY = this.pad.getSceneObject().getTransform().getWorldPosition().y
+    const shift = floorShift(this.floorHitYs, padY)
+    if (shift === null) return
+    const t = this.worldRoot.getTransform()
+    const p = t.getWorldPosition()
+    t.setWorldPosition(new vec3(p.x, p.y + shift, p.z))
+    this.floorShiftCm = shift
+    this.floorSettled = true
+    print("Floorcount: pad settled onto the floor, moved " + shift.toFixed(1) + " cm")
+    this.stopFloorQuery()
+  }
+
+  /** The depth is not needed once the layout has settled; stop computing it until a reset. */
+  private stopFloorQuery(): void {
+    if (!this.hitSession || !this.hitSessionRunning) return
+    try {
+      this.hitSession.stop()
+    } catch (e) {
+      print("Floorcount: could not stop the floor query: " + e)
+    }
+    this.hitSessionRunning = false
+  }
+
+  /** Forget the floor readings and put the layout back at its fixed height. Scenarios use it. */
+  resetFloor(): void {
+    if (this.floorSettled && this.worldRoot) {
+      const t = this.worldRoot.getTransform()
+      const p = t.getWorldPosition()
+      t.setWorldPosition(new vec3(p.x, p.y - this.floorShiftCm, p.z))
+    }
+    this.floorHitYs.length = 0
+    this.floorShiftCm = 0
+    this.floorSettled = false
+    this.floorGeneration++
   }
 }

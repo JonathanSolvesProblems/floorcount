@@ -31,25 +31,28 @@ The first session, on 1 November, ran inside the planning chat and its transcrip
 | 7 Nov, 18:15 | Answer window | Swept the Lens after the answer guard moved to a fixed window with a grace, from a second code review: 17 of 17. | 32 | 78 | 45 |
 | 7 Nov, 18:48 | Answer guard, off the seam | Reran the answer-guard scenario four times after moving its pause off the loop seam: four of four. | 7 | 33 | 17 |
 | 7 Nov, 18:57 | Fresh-clone sweep | All 17 LEAF scenarios on a fresh clone of the public repository after the answer-window change, the answer-guard scenario three times: 17 of 17, no retries. | 9 | 39 | 33 |
-| | **Counted total** | 24 sessions | 557 | **2460** | **973** |
+| 8 Nov, 04:54 | Real floor (stopped) | Compiled the floor settle clean. Stopped by hand before the sweep so two fixes from a code review could go in first. | 8 | 36 | 19 |
+| 8 Nov, 05:03 | Real floor, second start (cut off) | Compiled clean again and found that the preview has no depth to read: the world query session is created, the hit test returns nothing, and the pad keeps its fixed height. Lens Studio then stopped responding and the session ended before any scenario ran. | 12 | 70 | 19 |
+| 8 Nov, 05:22 | Real floor | After a restart of Lens Studio: compiled clean, confirmed the preview returns no depth so the pad keeps its fixed height, and ran all 18 scenarios with the new floor scenario twice: 18 of 18, no retries, C2 at 121 samples and 140.0 BPM. | 12 | 81 | 44 |
+| | **Counted total** | 27 sessions | 589 | **2647** | **1055** |
 
 ## What the Lens Studio MCP was used for
 
 | MCP tool | Calls |
 |---|---|
-| `run_leaf_scenario` | 305 |
-| `PreviewPanelTool` | 121 |
+| `run_leaf_scenario` | 326 |
+| `PreviewPanelTool` | 135 |
+| `RunAndCollectLogsTool` | 122 |
 | `MovePreviewCamera` | 120 |
-| `RunAndCollectLogsTool` | 113 |
-| `ExecuteEditorCode` | 95 |
-| `RecompileTypeScriptTool` | 64 |
+| `ExecuteEditorCode` | 109 |
+| `RecompileTypeScriptTool` | 67 |
 | `asset-graphql` | 38 |
-| `list_leaf_scenarios` | 27 |
-| `open_leaf_panel` | 21 |
-| `scene-graphql` | 16 |
+| `scene-graphql` | 30 |
+| `list_leaf_scenarios` | 28 |
+| `open_leaf_panel` | 23 |
 | `CapturePanelScreenshotTool` | 15 |
-| `set_leaf_execution_target` | 13 |
-| `ListAllPanels` | 7 |
+| `set_leaf_execution_target` | 15 |
+| `ListAllPanels` | 9 |
 | `VirtualScene` | 6 |
 | `ListInstalledPackagesTool` | 4 |
 | `SearchLensStudioAssetLibrary` | 2 |
@@ -60,4 +63,4 @@ The first session, on 1 November, ran inside the planning chat and its transcrip
 
 Two of these tools are on every later prompt's do-not-call list, and the table still shows them. The two `QueryRuntimeSceneTool` calls and the one `InstallLensStudioPackage` call are from the 2 November build session. The install was LEAF itself, which the Lens needed. The scene query silently installed a second package that broke the TypeScript build, which is how that rule got onto every prompt after it. The one `PreviewInteractTool` call, on 3 November, did the same, and joined the list.
 
-Five sessions were cut off partway through by a usage or turn limit or a crash, three were stopped by hand, and one stopped itself on finding the wrong project open. All nine are listed and counted, including the ones that went wrong. Each session after a cut-off began by reading what the last one had written.
+Six sessions were cut off partway through by a usage or turn limit, a crash or an editor hang, four were stopped by hand, and one stopped itself on finding the wrong project open. All eleven are listed and counted, including the ones that went wrong. Each session after a cut-off began by reading what the last one had written.

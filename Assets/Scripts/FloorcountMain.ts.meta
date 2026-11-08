@@ -38,6 +38,7 @@
     offViewArrow: false
     pad: false
     recenterOnStart: false
+    settleOnFloor: false
     stepCard: false
     worldRoot: false
   ScriptTypesHidden:
@@ -57,6 +58,7 @@
       cameraObject: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       worldRoot: !<reference.SceneObject> 00000000-0000-0000-0000-000000000000
       recenterOnStart: true
+      settleOnFloor: true
       answerWindowCounts: !<float> 2.000000
       fadeCounts: !<float> 2.000000
       againsToDrop: !<float> 2.000000
@@ -79,6 +81,7 @@
     - '// @ui {"widget":"separator"}'
     - '// @ui {"widget":"group_start", "label":"Settings"}'
     - '// @input bool recenterOnStart = true {"hint":"Move the layout so the pad is in front of where the user stands when the Lens starts."}'
+    - "// @input bool settleOnFloor = true {\"hint\":\"Read the real floor under the pad through the glasses' depth and settle the layout onto it. Off, the pad stays at a fixed 150 cm below the eye.\"}"
     - '// @input float answerWindowCounts = 2 {"hint":"Counts after each 8-count during which the buttons are bright (waiting for an answer).", "widget":"slider", "min":1, "max":4, "step":1}'
     - '// @input float fadeCounts = 2 {"hint":"Counts the footprints take to fade out before the next step loads.", "widget":"slider", "min":1, "max":4, "step":1}'
     - '// @input float againsToDrop = 2 {"hint":"Agains in a row that drop the tempo and split the step into halves.", "widget":"slider", "min":1, "max":5, "step":1}'

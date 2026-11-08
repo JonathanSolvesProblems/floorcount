@@ -37,6 +37,7 @@ Floorcount puts the count where my feet go. A 90 cm square sits on the floor wit
 - At the end, the step with the most Agains comes back once, if there were any. Then the floor clears and the card lists each step's Agains. On a first practice each row also names the counts I lost; after that it shows last time's Agains.
 - The Lens keeps my last practice. Next time, the counts I lost carry a fainter ring, the card reads "Last time: lost it on 2 and 5" until I answer, and the end card puts each step's Agains beside last time's.
 - Look away from both the pad and the card, and a small arrow at the bottom of the view points back to the floor. The clave keeps going.
+- The glasses see the floor. The pad is placed 150 cm below the eye to begin with, and once three depth readings under it agree, the whole layout settles onto the real floor, card included. A reading of a wall, or of a sofa seat 45 cm up, is refused.
 - The practice music is generated at 140, 170 and 190 BPM, each loop exactly four 8-counts long, so there is no licensed track.
 
 The Lens does not watch my feet and there is no machine learning in it. Again and Got it are my own report, and a fixed rule in [`FloorcountState.ts`](Assets/Scripts/FloorcountState.ts) decides what comes next.
@@ -64,7 +65,7 @@ It changes with how I'm doing. Two Agains slow the music (unless it is already a
 1. **Planned with the Devpost Learn skill pack.** The `plan-lens` interview wrote [devpost/design-brief.md](devpost/design-brief.md): one spatial moment, where each thing lives, how the hands act on it, and six done criteria that can be checked in the preview.
 2. **Built by CLAD through the Lens Studio MCP.** Snap's `specs-experience-builder` agent built the scene in Lens Studio 5.23.2 from the brief. Spectacles Interaction Kit handles every pinch, `build-music` and `build-sfx` generated the audio, the sound plays spatially from the pad, and the Editor API saves the project at each milestone.
 
-   Twenty-four CLAD sessions made 973 Lens Studio MCP calls: [devpost/BUILD_LOG.md](devpost/BUILD_LOG.md) counts them from the sessions' own transcripts, and [devpost/PROMPTS.md](devpost/PROMPTS.md) holds every prompt, word for word. The account of the build is in [devpost/build-report.md](devpost/build-report.md), including the beat clock CLAD had to rewrite: the preview reports a stale audio position for about a second after play, and the first version read that as the loop wrapping and ran the count at up to 620 BPM against a 140 BPM track.
+   Twenty-seven CLAD sessions made 1055 Lens Studio MCP calls: [devpost/BUILD_LOG.md](devpost/BUILD_LOG.md) counts them from the sessions' own transcripts, and [devpost/PROMPTS.md](devpost/PROMPTS.md) holds every prompt, word for word. The account of the build is in [devpost/build-report.md](devpost/build-report.md), including the beat clock CLAD had to rewrite: the preview reports a stale audio position for about a second after play, and the first version read that as the loop wrapping and ran the count at up to 620 BPM against a 140 BPM track.
 3. **Tested twice over.** LEAF scenarios run the Lens in the preview, one per done criterion and then more for what the criteria leave out. Unit tests run the session rules and the footwork data with no Lens Studio at all, on every push. See [Tests](#tests).
 4. **Designed as its own thing.** The first build worked and looked like a default: cartoon feet in blue and orange, a frosted panel, stock icons. The look it has now comes from the clave, the pair of wooden sticks that keep time in salsa. The pad is laid out like its rhythm grid, each print is a struck note, and the light fades over one beat the way a struck clave rings out. On this display black is transparent and alpha is brightness, so there is one ivory ink at three brightnesses and one blue reserved for the 1. Left feet are solid and right feet are outlined, because a clave pair has two roles: one is held and the other strikes it. The laws are in [.design/brand/CHARTER.md](.design/brand/CHARTER.md), the sheet is [.design/brand/index.html](.design/brand/index.html), and what CLAD changed to apply them is in [devpost/design-pass-report.md](devpost/design-pass-report.md).
 
@@ -74,7 +75,7 @@ It changes with how I'm doing. Two Agains slow the music (unless it is already a
 
 ## Tests
 
-Seventeen LEAF scenarios in [`Assets/Tests/`](Assets/Tests/), run in the preview on 6 and 7 November 2026. All seventeen pass, also on a fresh clone of this repository.
+Eighteen LEAF scenarios in [`Assets/Tests/`](Assets/Tests/), run in the preview on 6, 7 and 8 November 2026. All eighteen pass, also on a fresh clone of this repository.
 
 | Scenario | What it checks |
 |---|---|
@@ -95,6 +96,7 @@ Seventeen LEAF scenarios in [`Assets/Tests/`](Assets/Tests/), run in the preview
 | `floorcount-c15-restart-from-summary` | Pinching the title in the summary goes back to step 1 at Slow, with the floor and the buttons. |
 | `floorcount-c16-arc-inside-pad` | Measured in the running Lens, both turn arcs stay inside the border: 35.7 and 35.2 cm from the centre against an inner edge at 43.2. |
 | `floorcount-c17-teal-law` | Across all three steps, the only blue in the scene is the count 1 print and cell 1. |
+| `floorcount-c18-floor-settle` | The rule that settles the layout onto the real floor, with the readings fed by hand because the preview has no depth: a wall is ignored, three agreeing readings move the pad and the card together, a sofa seat is refused, disagreeing readings wait, and a reset restores the fixed height. |
 
 The first six are the brief's done criteria. The beat test, run on a fresh clone of this repository, sampled the Lens 128 times over 8 seconds and found no wrong print, nothing lit on a hold, and 139.7 BPM against the 140 BPM loop. How many samples it gets depends on how fast the preview is running that day; the result is the same.
 
@@ -113,8 +115,8 @@ npm run breaks --prefix tests/unit
 node tests/check-repo.mjs
 ```
 
-- `npm test`: 78 tests. They walk every rule of a session, check each step's prints against the footwork tables in the brief, and hold the brightness curve to the charter (rest at 35%, the "and", the half beat before a count, at 60%, the strike at 100%, a hold never lit).
-- `npm run breaks`: plants 54 bugs in those three files, one at a time, and reruns the tests against each. A planted bug the tests miss fails the run. All 54 are caught.
+- `npm test`: 84 tests. They walk every rule of a session, check each step's prints against the footwork tables in the brief, hold the brightness curve to the charter (rest at 35%, the "and", the half beat before a count, at 60%, the strike at 100%, a hold never lit), and check the floor rule (three readings that agree, a sofa seat refused, a wall ignored).
+- `npm run breaks`: plants 61 bugs in those four files, one at a time, and reruns the tests against each. A planted bug the tests miss fails the run. All 61 are caught.
 - `check-repo.mjs`: no tracked binary is a Git LFS pointer, every LEAF scenario is registered, no tracked file carries a local path, and no string the Lens shows breaks the voice rules.
 
 GitHub Actions runs the same three checks on every push ([`.github/workflows/checks.yml`](.github/workflows/checks.yml)). The LEAF scenarios need Lens Studio's preview, so they run there and not in CI.
@@ -129,11 +131,12 @@ The brief marked every value I had not chosen myself as a default, and the desig
 - The count display was to be one number. It is a numeral above a strip of eight cells, and both are blank on 4 and 8 because a hold is a rest.
 - Pinching Again or Got it "after an 8-count" is now enforced: one answer per 8-count.
 - The step card was to be a UI Kit panel. It is text on the air with two capsule targets, because a panel floating in front of the face is what the event's own design rules warn against.
+- The pad was to hang off the start position at a fixed height. It now settles onto the floor the glasses see.
 
 ## Limits
 
 - Everything here ran in Lens Studio's preview. No SPECS device was used, so comfort over a real session, real hand tracking, and the hand-over from looking down at the pad to dancing eyes up are unproven.
-- Eye height is a constant 150 cm. The pad hangs off the camera's starting position, not off a tracked floor.
+- The pad starts 150 cm below the eye and settles onto the floor the glasses see through the WorldQueryModule depth, once three readings under it agree. The preview has no depth to read, so there it keeps the fixed height, and the settle has only ever run on readings a scenario fed by hand.
 - A pad 70 cm ahead on the floor is about 65 degrees below a level gaze and the glasses see about 37 by 32 degrees, so the pad, the count and the card are never all in view at once. The arrow is what brings me back.
 - Leader's part and On1 only, three steps, no partner work.
 

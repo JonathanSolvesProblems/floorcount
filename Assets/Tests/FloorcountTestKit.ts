@@ -108,6 +108,11 @@ export function cameraObject(): SceneObject {
 export async function restartSession(answerGuard: boolean = false, keepSaved: boolean = false): Promise<void> {
   const m = main()
   m.answerGuard = answerGuard
+  // The layout stays at its fixed height for every scenario: c1 and c6 measure the authored
+  // relationship to the eye, and the preview's floor, if its depth answers at all, is not the
+  // one those numbers were written for. C18 feeds floor readings by hand and asserts the rule.
+  m.settleOnFloor = false
+  m.resetFloor()
   // Every scenario starts as a first session unless it is the one testing the memory of the
   // last: a session another scenario finished must not leak rings or "last time" rows into it.
   if (!keepSaved) m.clearSaved()

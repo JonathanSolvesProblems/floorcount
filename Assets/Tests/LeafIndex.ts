@@ -22,6 +22,7 @@ import { FloorcountC14MarkRingScenario } from "./FloorcountC14MarkRingScenario"
 import { FloorcountC15RestartFromSummaryScenario } from "./FloorcountC15RestartFromSummaryScenario"
 import { FloorcountC16ArcInsidePadScenario } from "./FloorcountC16ArcInsidePadScenario"
 import { FloorcountC17TealLawScenario } from "./FloorcountC17TealLawScenario"
+import { FloorcountC18FloorSettleScenario } from "./FloorcountC18FloorSettleScenario"
 import { FloorcountHoldOnCountScenario } from "./FloorcountHoldOnCountScenario"
 import { FloorcountCaptureScenario } from "./FloorcountCaptureScenario"
 
@@ -51,6 +52,9 @@ export class LeafIndex extends BaseScriptComponent {
     { id: "floorcount-c15-restart-from-summary", typename: FloorcountC15RestartFromSummaryScenario.getTypeName() },
     { id: "floorcount-c16-arc-inside-pad", typename: FloorcountC16ArcInsidePadScenario.getTypeName() },
     { id: "floorcount-c17-teal-law", typename: FloorcountC17TealLawScenario.getTypeName() },
+    // The rule that settles the layout onto the real floor, fed by hand: the preview has no
+    // floor to read, the glasses do.
+    { id: "floorcount-c18-floor-settle", typename: FloorcountC18FloorSettleScenario.getTypeName() },
     // Capture helpers rather than done criteria: they hold the Lens on a known frame so a
     // screenshot can be taken of it.
     {

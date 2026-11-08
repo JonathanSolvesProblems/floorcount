@@ -23,3 +23,4 @@ globalThis.vec3 = class {
 export const Steps = require(path.join(dir, "FloorcountSteps.js"))
 export const State = require(path.join(dir, "FloorcountState.js"))
 export const Look = require(path.join(dir, "FloorcountLook.js"))
+export const Floor = require(path.join(dir, "FloorcountFloor.js"))

@@ -1,4 +1,4 @@
-# I planted 54 bugs in my AR Lens to find out if my tests were lying
+# I planted 61 bugs in my AR Lens to find out if my tests were lying
 
 Draft for DEV. Not published. Tags: `ar`, `testing`, `typescript`, `hackathon`.
 
@@ -20,7 +20,7 @@ The brief said you answer Again or Got it "after an 8-count". Nothing enforced t
 
 A passing test tells you nothing if it would also pass with the bug in. So I wrote a script that plants bugs in the three pure files (the footwork data, the session rules, the brightness curve), one at a time: flip a comparison, change a count, drop a line. It reruns the suite after each one. A planted bug that the tests miss fails the run.
 
-54 planted bugs, 78 tests. All 54 are caught, and the run is part of CI, so a test that stops catching its bug fails the build.
+61 planted bugs, 84 tests. All 61 are caught, and the run is part of CI, so a test that stops catching its bug fails the build.
 
 It is a small version of mutation testing, written by hand because the interesting mutations are the ones that mean something in salsa. "Count 8 stops being a hold" is one of them. So is "two Agains raise the tempo instead of dropping it".
 

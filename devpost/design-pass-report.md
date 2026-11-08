@@ -1643,3 +1643,149 @@ outside the Lens project's assets.
 not edited here; this subsection is the only thing I wrote. No scene change, nothing under
 `Assets/Scripts/`, nothing installed, and neither `QueryRuntimeSceneTool` nor `PreviewInteractTool`
 was called.
+
+## The real floor, 8 November 2026
+
+Verifying one addition to the Lens, the real-floor settle, and running the whole LEAF sweep. The
+change arrived already on disk. Nothing in the sweep proved a bug in it and the compile was clean,
+so nothing under `Assets/Scripts/` or `Assets/Tests/` was edited and no scene object changed. All
+times are local time on 8 November.
+
+### The change
+
+`FloorcountFloor.ts` is a new pure rule that decides when depth readings of the floor are worth
+trusting: three hits that agree to within 4 cm, each on a surface whose normal points at least 0.9
+straight up, and a mean within 30 cm of where the pad was placed, which is what refuses a sofa seat
+or a coffee table. `FloorcountMain.ts` gained a `settleOnFloor` input, on by default, which every
+12 frames casts a ray from the eye through the pad's centre and 100 cm past it through a
+`WorldQueryModule` hit-test session, feeds each hit's height and normal to that rule, and moves the
+whole `FloorcountWorld` root once when the rule agrees, printing how far it moved; where the module
+cannot be created or the hit test throws it says so once and the pad keeps its fixed 150 cm below
+the eye. A generation counter drops any reading that arrives after a reset, a recentre or
+`settleOnFloor` being switched off, the depth session is stopped once the layout has settled, and
+the test kit now turns `settleOnFloor` off and calls `resetFloor()` on every restart, so the other
+seventeen scenarios still measure the fixed layout.
+
+### Compile and start
+
+The recompile succeeded with no errors, and the preview started with `Floorcount: session started,
+Basic step at Slow (140 BPM)` and no Floorcount error. Nothing had to be fixed: the `require` line
+and the `WorldQueryModule` types compiled as written. `Assets/` was checked for OneDrive "* 2.*"
+duplicates before compiling and there were none, and the Lens Studio window was confirmed not
+minimised before any run.
+
+### What the preview did
+
+This was the one fact about the preview that could not be predicted, so it was read before any
+scenario ran, with the Lens exactly as it ships. `settleOnFloor` is `true` in the saved scene and
+`recenterOnStart` is `true`, both read back through the Editor API, so the query really does run.
+
+**None of the three prints appeared.** Not "pad settled onto the floor", not "no world query here",
+and not "the floor query stopped". The preview was refreshed and the log watched for 11.0 s after
+the Lens reset, then read again 26 s later, and across both the only Floorcount line was the
+ordinary start:
+
+```text
+Floorcount: session started, Basic step at Slow (140 BPM)
+```
+
+**The pad did not move.** `FootprintPad` sits at y -150 under `FloorcountWorld` at y 0, before and
+after, and the settle print is the line that would have reported a move, so the `setWorldPosition`
+that moves the root was never reached.
+
+What that rules out is worth stating. Because "no world query here" never printed,
+`createHitTestSessionWithOptions` returned a session without throwing; because "the floor query
+stopped" never printed, neither `start()` nor `hitTest()` threw. So the module exists in the Lens
+Studio preview and the ray is being cast, and no hit the rule would accept ever came back. The two
+failure paths are therefore still unproven in the preview, and the settle itself is proven instead
+by c18, which feeds the readings by hand. The first real test of the settle is on glasses, where the
+world query returns actual depth. An earlier start of this work was thought to have printed "the floor query
+stopped" here; that was a misreading of its session log, which had quoted the source line of the
+print, not a runtime print. The preview has never printed any of the three.
+
+### The LEAF sweep
+
+One sweep in the Lens Studio preview through the LEAF panel, 05:23 to 05:30, pinned to the preview
+rather than to a device. The preview was refreshed before c2, c5, c8, c9 and c13, and every run was
+dispatched only after the panel's "Loaded 20 scenario(s) from preview", which is 20 now that c18 is
+registered. **Nothing failed and no scenario was retried.** c18 was run twice on purpose, as asked.
+c8 passed on its first and only attempt, so the two further runs it was allowed were not needed.
+
+| # | Scenario | Result | Retry |
+|---|---|---|---|
+| 1 | `floorcount-c1-start` | **PASS** | none |
+| 2 | `floorcount-c2-beat` | **PASS** | none |
+| 3 | `floorcount-c3-again` | **PASS** | none |
+| 4 | `floorcount-c4-next-step` | **PASS** | none |
+| 5 | `floorcount-c5-mark-and-summary` | **PASS** | none |
+| 6 | `floorcount-c6-off-view-arrow` | **PASS** | none |
+| 7 | `floorcount-c7-step-card` | **PASS** | none |
+| 8 | `floorcount-c8-answer-guard` | **PASS** | none; it passed first time, so the retries allowed for timing were not used |
+| 9 | `floorcount-c9-session-memory` | **PASS** | none |
+| 10 | `floorcount-c10-left-turn` | **PASS** | none |
+| 11 | `floorcount-c11-halves` | **PASS** | none |
+| 12 | `floorcount-c12-count-display` | **PASS** | none |
+| 13 | `floorcount-c13-the-and` | **PASS** | none |
+| 14 | `floorcount-c14-mark-ring` | **PASS** | none |
+| 15 | `floorcount-c15-restart-from-summary` | **PASS** | none |
+| 16 | `floorcount-c16-arc-inside-pad` | **PASS** | none |
+| 17 | `floorcount-c17-teal-law` | **PASS** | none |
+| 18 | `floorcount-c18-floor-settle` | **PASS, PASS** over two runs | none; the two runs were planned, not retries |
+| helper | `floorcount-hold-on-count` | **PASS** | none |
+| clearing step | `floorcount-capture` at `shot=clear-saved` | **PASS** | none |
+
+### c18, the new scenario
+
+Both runs printed the same three lines to the decimal, 05:29:42 to 05:29:44 and 05:29:47 to
+05:29:50. The pad was placed at its fixed height, a floor 6 cm below it was fed three times, and the
+pad and the card moved down together by exactly that much:
+
+```text
+[C18] pad placed at y -150.0, card 95.0 cm above it, floor fed at -156.0
+[C18] after three readings: settled true, moved -6.0 cm, pad at y -156.0
+[C18] passed: wall ignored, three agreeing readings settle pad and card together, sofa refused, disagreement waits, reset restores
+```
+
+### The preview was keeping up
+
+`floorcount-c2-beat` is the frame-rate meter, and it reported **121 samples over 8.04 s**, well
+above the 90 that would say the preview is throttled, against 154 and 130 on 7 November. **140.0
+BPM** against the 140 BPM loop, and every content counter zero:
+
+```text
+[C2] 121 samples over 8.04 s, 18.75 beats (140.0 BPM), litMismatch=0 holdLit=0 numberMismatch=0 holdCellLit=0 outOfRange=0 brightestOwnCell=0.97
+[C2] clave hits in the window: 7
+```
+
+### Left as a first session
+
+`floorcount-c9-session-memory` ends by clearing the save, but nine scenarios ran after it, so the
+clearing was done again at the end through the capture helper's `clear-saved` shot, which calls the
+same `clearSaved()` and then asserts the result. It printed `[capture] clear-saved: previous is now
+null`, so the project is left as a first session.
+
+### The error channel
+
+No Floorcount error was printed in any run. The whole channel over the sweep was six LEAF "Skipping
+plugin state save" warnings, one per preview refresh, which come from the plugin and not from the
+Lens; four GLSL preprocessor warnings during c7; and two engine lines, `E 05:24:42.199 [AudioOutput]
+Can not Set Media Type for Sink Writer` and the same again at `05:29:04.266`, from Lens Studio's
+speaker output on the host rather than from any Floorcount script. The scenarios running at those
+moments, c4 and c15, both passed.
+
+### Saves
+
+Saved through the Editor API (`model.project.save()`): 05:23:24 after the clean compile, 05:30:53
+after the sweep and after the saved session was cleared, and **05:32:44 last**. The only thing
+written after the last save is this section, which is outside the Lens project's assets, so nothing
+in the project itself has changed since.
+
+### Files
+
+Changed: this section only. `Assets/Scripts/FloorcountFloor.ts`,
+`Assets/Scripts/FloorcountMain.ts`, `Assets/Tests/FloorcountTestKit.ts`,
+`Assets/Tests/FloorcountC18FloorSettleScenario.ts` and `Assets/Tests/LeafIndex.ts` all arrived
+already changed on disk and were not edited here. No scene object was added, removed or renamed, no
+`@input` was wired or changed, and no texture, material, font or sound was touched. Packages are the
+pinned set; nothing was installed, and neither `QueryRuntimeSceneTool` nor `PreviewInteractTool` was
+called.
