@@ -30,24 +30,25 @@ The first session, on 1 November, ran inside the planning chat and its transcrip
 | 7 Nov, 18:12 | Answer window sweep (stopped) | Stopped by hand a few minutes in so one sweep could cover the next review's fixes too. | 3 | 29 | 14 |
 | 7 Nov, 18:15 | Answer window | Swept the Lens after the answer guard moved to a fixed window with a grace, from a second code review: 17 of 17. | 32 | 78 | 45 |
 | 7 Nov, 18:48 | Answer guard, off the seam | Reran the answer-guard scenario four times after moving its pause off the loop seam: four of four. | 7 | 33 | 17 |
-| | **Counted total** | 23 sessions | 548 | **2421** | **940** |
+| 7 Nov, 18:57 | Fresh-clone sweep | All 17 LEAF scenarios on a fresh clone of the public repository after the answer-window change, the answer-guard scenario three times: 17 of 17, no retries. | 9 | 39 | 33 |
+| | **Counted total** | 24 sessions | 557 | **2460** | **973** |
 
 ## What the Lens Studio MCP was used for
 
 | MCP tool | Calls |
 |---|---|
-| `run_leaf_scenario` | 286 |
-| `PreviewPanelTool` | 120 |
+| `run_leaf_scenario` | 305 |
+| `PreviewPanelTool` | 121 |
 | `MovePreviewCamera` | 120 |
-| `RunAndCollectLogsTool` | 104 |
-| `ExecuteEditorCode` | 93 |
+| `RunAndCollectLogsTool` | 113 |
+| `ExecuteEditorCode` | 95 |
 | `RecompileTypeScriptTool` | 64 |
 | `asset-graphql` | 38 |
 | `list_leaf_scenarios` | 27 |
-| `open_leaf_panel` | 20 |
+| `open_leaf_panel` | 21 |
 | `scene-graphql` | 16 |
 | `CapturePanelScreenshotTool` | 15 |
-| `set_leaf_execution_target` | 12 |
+| `set_leaf_execution_target` | 13 |
 | `ListAllPanels` | 7 |
 | `VirtualScene` | 6 |
 | `ListInstalledPackagesTool` | 4 |

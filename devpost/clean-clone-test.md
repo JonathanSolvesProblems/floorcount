@@ -1,6 +1,6 @@
 # Fresh-clone test
 
-What happens when someone who is not me gets this repository and opens it. Run on 6 November 2026 from the public GitHub repository, on Windows 11 with Lens Studio 5.23.2. Results are for commit `222c26d`. Any commit after it changes only documents: the Lens, its tests and the packages are byte for byte the same. It runs again if any of those change before submission.
+What happens when someone who is not me gets this repository and opens it. Run on 6 November 2026 from the public GitHub repository, on Windows 11 with Lens Studio 5.23.2. Results are for commit `e048e4f`. Any commit after it changes only documents: the Lens, its tests and the packages are byte for byte the same. It runs again if any of those change before submission.
 
 ## What was done
 
@@ -19,7 +19,7 @@ What happens when someone who is not me gets this repository and opens it. Run o
 | TypeScript compiles | Yes, clean |
 | The Lens starts | Yes: "Floorcount: session started, Basic step at Slow (140 BPM)", no Floorcount errors |
 | LEAF scenarios | **17 of 17 pass, no retries**, and the answer-guard scenario, changed that day, 3 of 3 |
-| Beat test on the clone | 121 samples over 8 seconds, no wrong print, nothing lit on a hold, 140.6 BPM |
+| Beat test on the clone | 128 samples over 8 seconds, no wrong print, nothing lit on a hold, 139.7 BPM |
 | GitHub Actions on the same commit | Passes: unit tests, planted breaks, repository checks |
 
 The number of samples depends on how fast the preview is running on the day. The result is the same: no wrong print, on tempo.
