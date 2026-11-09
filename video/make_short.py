@@ -1,8 +1,8 @@
 """The Floorcount YouTube Short, 1080x1920:  py video/make_short.py
 
 Built from the demo's own narration (tmp/voice-proc.wav, written by make_video.py) and its source clips. The story:
-"Why glasses?" over the two views stacked, then the step on the floor, the count, the answers that change the lesson,
-the memory of the last practice, and the right turn on the 1. The first half second is the vertical thumbnail
+learning salsa at a dance school (the class clip), so Floorcount, a Lens for Specs that puts the step on your floor,
+the count, the answers that change the lesson, the front view against your own view, and the right turn on the 1. The first half second is the vertical thumbnail
 (tmp/short/thumbnail-short.jpg, from the youtube-thumbnail skill), so that is the frame to pick at upload.
 
 Every voice cut lands at the quietest 10 ms between words, with a 30 ms fade, and the windows are joined by a
@@ -38,12 +38,11 @@ SR = 48000
 
 # narration windows, in cut time (the demo's voice timeline)
 WINDOWS = [
-    (94.37, 95.23),     # Why glasses?
-    (105.11, 109.71),   # A tutorial gives you the front view. This gives you yours, with your hands free.
-    (29.69, 38.87),     # It is a Lens for Specs, Snap's AR glasses. It puts the step on my own floor...
+    (0.21, 4.23),       # So for the past couple of years, I've been learning salsa at a dance school.
+    (24.69, 38.87),     # So this inspired this application, which is called Floorcount. It is a Lens for Specs...
     (44.69, 55.91),     # Each sole print lights up on its count... And a wooden click marks 1 and 5.
     (61.81, 77.75),     # After every 8-count... Again or Got it. Two Agains... Three clean...
-    (85.89, 90.73),     # Next practice, it remembers. The count I lost last time has a ring around it.
+    (105.11, 109.71),   # A tutorial gives you the front view. This gives you yours, with your hands free.
     (167.97, 170.45),   # Right turn, on the 1. Floorcount.
 ]
 
@@ -117,14 +116,17 @@ def word_start(text, after):
 # ---------------------------------------------------------------- shots
 # (cut-time anchor where the shot starts, kind, params). The first shot after the card starts at CARD.
 SHOTS = [
-    (94.37, "stacked", dict(top=D + "MVI_0693.MOV", tinp=478.6, tx=97, bottom=P + "preview-02-again-half.mp4", binp=10.0)),
+    # the class: only 0.65-4.75 s of the blurred file has every frame right (see blur_dancers.py), slowed so the
+    # 5.15 s shot never reads past 4.75 s (4.1 s / 5.15 s = 0.796)
+    (0.21, "dslr", dict(src=P + "class-2026-blurred-b.mp4", inp=0.65, x0=560, speed=0.79, tag="Salsa class, January 2026")),
+    (24.69, "preview", dict(src=P + "preview-02-again-half.mp4", inp=0.0)),
     (29.69, "preview", dict(src=P + "preview-01-basic-slow.mp4", inp=0.0)),
     (34.23, "preview", dict(src=P + "preview-11-count-hides.mp4", inp=0.0)),
     (53.21, "preview", dict(src=P + "preview-01-basic-slow.mp4", inp=3.5)),
     (61.81, "preview", dict(src=P + "preview-04-step-card.mp4", inp=0.5, x0=380)),
     (67.73, "preview", dict(src=P + "preview-02-again-half.mp4", inp=6.0, tag="After two Agains: Slow, counts 1 to 4 only.")),
     (73.33, "preview", dict(src=P + "preview-03-next-step.mp4", inp=6.8, tag="Three clean 8-counts at Full: the right turn loads.")),
-    (85.89, "preview", dict(src=P + "preview-06-second-session.mp4", inp=3.0, x0=390)),
+    (105.11, "stacked", dict(top=D + "MVI_0693.MOV", tinp=478.6, tx=97, bottom=P + "preview-02-again-half.mp4", binp=10.0)),
     (167.97, "preview", dict(src=P + "preview-05-right-turn-clean.mp4", inp=0.0)),
     (word_start("floor", 168.5), "dslr", dict(src=D + "MVI_0694.MOV", inp=17.8, x0=600)),
 ]
@@ -177,6 +179,8 @@ def overlay_png(k, kind, p):
         tag(d, ["Lens Studio preview"], 36, VY + VH - 88, 28)
         if p.get("tag"):
             tag(d, [p["tag"]], 36, VY + 28, 32)
+    elif p.get("tag"):
+        tag(d, [p["tag"]], 36, VY + 28, 32)
     path = f"{SEG}/ov{k:02}.png"
     img.save(path)
     return path
@@ -211,8 +215,10 @@ def render(k, kind, p, dur):
         crop = f"crop=576:720:{p.get('x0', 352)}:0"
     else:                       # 1920x1080 camera: a 4:5 window around me
         crop = f"crop=864:1080:{p.get('x0', 528)}:0"
-    src = ["-ss", f"{p['inp']:.3f}", "-t", f"{dur + 2:.3f}", "-i", p["src"]]
-    fc = (f"[1:v]fps={FPS},{crop},scale={W}:{VH}:flags=lanczos,setsar=1[v];"
+    sp = p.get("speed", 1.0)
+    slow = f"setpts=PTS/{sp:.4f},framerate=fps={FPS}," if sp != 1.0 else ""
+    src = ["-ss", f"{p['inp']:.3f}", "-t", f"{(dur + 2) * sp:.3f}", "-i", p["src"]]
+    fc = (f"[1:v]{slow}fps={FPS},{crop},scale={W}:{VH}:flags=lanczos,setsar=1[v];"
           f"[0:v][v]overlay=0:{VY}[x];[x][2:v]overlay=0:0,{finish(dur)}[o]")
     ffmpeg([*bg, *src, *ov, "-filter_complex", fc, "-map", "[o]", *ENC, out])
     return out
