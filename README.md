@@ -22,7 +22,7 @@ Every Lens image here is Lens Studio's preview. [How it was made](devpost/previe
 
 ## How to run it
 
-You need Lens Studio 5.23.2, the version it was built in. No SPECS device, no Git LFS and no install step: everything runs in Lens Studio's preview.
+You need [Lens Studio 5.23.2](https://ar.snap.com/download/v5-23-2), the version it was built in. No SPECS device, no Git LFS and no install step for the Lens: everything runs in Lens Studio's preview. The unit tests also need Node.js 22 or later (see the end of this section).
 
 1. Get the project. Either clone it or use GitHub's Download ZIP.
    ```
@@ -35,11 +35,22 @@ You need Lens Studio 5.23.2, the version it was built in. No SPECS device, no Gi
 6. Turn right to the step card. After an 8-count has played, click **Again** or **Got it**. The Lens takes one answer per 8-count.
 7. Click a print to mark the count you lost. Click the step name to pause.
 
-If Lens Studio closes on launch without showing a window on Windows 11, check Smart App Control. Lens Studio 5.23.2 ships `spk-signer.dll` unsigned, and when Smart App Control is on it refuses that file, so Lens Studio exits at startup. It is logged in Event Viewer under Applications and Services Logs > Microsoft > Windows > CodeIntegrity > Operational, as events 3033 and 3077 naming `spk-signer.dll`. The only fix on the user's side is turning Smart App Control off (Windows Security > App & browser control > Smart App Control settings), and on many Windows 11 builds it cannot be turned back on without resetting Windows. This hit me on 9 November 2026, after Smart App Control left its evaluation mode; the day before, the same install ran fine.
+**If it doesn't open or doesn't compile:**
+
+- *Lens Studio closes on launch without showing a window (Windows 11).* Check Smart App Control. Lens Studio 5.23.2 ships `spk-signer.dll` unsigned, and when Smart App Control is on it refuses that file, so Lens Studio exits at startup. It is logged in Event Viewer under Applications and Services Logs > Microsoft > Windows > CodeIntegrity > Operational, as events 3033 and 3077 naming `spk-signer.dll`. The only fix on the user's side is turning Smart App Control off (Windows Security > App & browser control > Smart App Control settings), and on many Windows 11 builds it cannot be turned back on without resetting Windows. This hit me on 9 November 2026, after Smart App Control left its evaluation mode; the day before, the same install ran fine.
+- *TypeScript errors about duplicate classes.* If the project sits in a OneDrive folder, OneDrive can make copies of files Lens Studio writes, named with " 2" before the extension (`FloorcountMain 2.ts`). Delete those copies and reopen the project.
 
 To run it on a pair of Specs, pair the glasses with Lens Studio and send the Lens to them from the Preview panel; the project needs no change for that. I have not had a pair to try it on, so the preview is where it has been tested.
 
-To run the tests, open the LEAF panel and run all scenarios. Start them on a freshly refreshed preview: five of them time themselves against the clock (c2, c5, c8, c9, c13), and the preview slows down the longer it has been running.
+To run the LEAF tests, open the LEAF panel and run all scenarios. Start them on a freshly refreshed preview: five of them time themselves against the clock (c2, c5, c8, c9, c13), and the preview slows down the longer it has been running.
+
+The unit tests and the planted-bug check run without Lens Studio, on Node.js 22 or later, from the repository root:
+```
+npm ci --prefix tests/unit
+npm test --prefix tests/unit
+npm run breaks --prefix tests/unit
+```
+What each one checks is under [Tests](#tests).
 
 ## The moment
 
