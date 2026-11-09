@@ -35,7 +35,7 @@ To your right at hip height, a step card names the step and holds two buttons, A
 
 The Lens remembers your last practice. Next time the counts you lost carry a fainter ring, the step card names them until your first answer, and the summary at the end puts each step beside last time.
 
-Three steps so far: the basic and the right and left turns, where an arc on the floor shows the turn. All three are On1, the salsa style where the first step lands on count 1, and the leader's part: the partner who steps forward on that 1. The music is generated, so there's no licensed track.
+Three steps so far: the basic and the right and left turns, where an arc on the floor shows the turn. All three are On1, the salsa style where the first step lands on count 1, and the leader's part: the partner who steps forward on that 1. The Lens's practice music is generated with CLAD's build-music skill, so the Lens needs no licensed track.
 
 ## The view from where you stand
 
