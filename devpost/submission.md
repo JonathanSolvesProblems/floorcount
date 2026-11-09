@@ -103,7 +103,7 @@ Tests have to be specific. The brief said you answer "after an 8-count", and not
 
 ## What's next
 
-Trying it on real glasses first. Then the other dances I take classes in. Bachata counts in eights like salsa but steps on 1, 2, 3 and taps on 4, so the dark hold cells become tap cells. West Coast swing is danced in a slot, in six-count and eight-count patterns (a sugar push is six counts, a whip is eight), so the square pad becomes a long strip along the floor and the count strip has to change length from one pattern to the next, which it can't yet. The footwork lives in a data table and the music comes from CLAD's build-music skill, so a new dance is mostly a new table and a new loop. After that, salsa shines (solo footwork like the Suzie Q) and the follower's parts.
+Trying it on real glasses first: I've posted it in the Devpost Discord's feedback channel for anyone with a pair to try. Then the other dances I take classes in. Bachata counts in eights like salsa but steps on 1, 2, 3 and taps on 4, so the dark hold cells become tap cells. West Coast swing is danced in a slot, in six-count and eight-count patterns (a sugar push is six counts, a whip is eight), so the square pad becomes a long strip along the floor and the count strip has to change length from one pattern to the next, which it can't yet. The footwork lives in a data table and the music comes from CLAD's build-music skill, so a new dance is mostly a new table and a new loop. After that, salsa shines (solo footwork like the Suzie Q) and the follower's parts.
 
 ## What it can't do yet
 
