@@ -19,6 +19,8 @@ A salsa practice Lens for Specs: the step's footprints light up on your own floo
 ```markdown
 Floorcount is a salsa practice Lens for SPECS. It draws a step's footprints on the floor in front of you at real size and lights each one on its beat, so you practise from where you stand, not from a video that faces you.
 
+It's for salsa learners practising alone between classes: the hours when a tutorial on a phone is the only teacher in the room.
+
 ## Inspiration
 
 I've done salsa for a few years: several classes a week for a while, then a phase of going out to social dance nights. At home my practice list is short: left turn, right turn, the basic, and "understanding salsa music beats", which has been on that list for a long time.

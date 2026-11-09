@@ -2,7 +2,7 @@
 
 The salsa count lights up on your own floor, so you stop walking back to the video.
 
-A practice Lens for SPECS, built for Learn AR with SPECS (Devpost Learn, with Snap's CLAD) in November 2026.
+A practice Lens for SPECS, built for Learn AR with SPECS (Devpost Learn, with Snap's CLAD) in November 2026. It's for salsa learners practising alone between classes: the hours when a tutorial on a phone is the only teacher in the room.
 
 **Demo video (2:58):** https://www.youtube.com/watch?v=n4pGnXYn0ys
 **Write-up:** [Floorcount: salsa steps on your floor](https://jonathanandrei.com/blog/floorcount-salsa-steps-on-your-floor-specs-lens/)
