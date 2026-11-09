@@ -35,6 +35,8 @@ You need Lens Studio 5.23.2, the version it was built in. No SPECS device, no Gi
 6. Turn right to the step card. After an 8-count has played, click **Again** or **Got it**. The Lens takes one answer per 8-count.
 7. Click a print to mark the count you lost. Click the step name to pause.
 
+If Lens Studio closes on launch without showing a window on Windows 11, check Smart App Control. Lens Studio 5.23.2 ships `spk-signer.dll` unsigned, and when Smart App Control is on it refuses that file, so Lens Studio exits at startup. It is logged in Event Viewer under Applications and Services Logs > Microsoft > Windows > CodeIntegrity > Operational, as events 3033 and 3077 naming `spk-signer.dll`. The only fix on the user's side is turning Smart App Control off (Windows Security > App & browser control > Smart App Control settings), and on many Windows 11 builds it cannot be turned back on without resetting Windows. This hit me on 9 November 2026, after Smart App Control left its evaluation mode; the day before, the same install ran fine.
+
 To run it on a pair of Specs, pair the glasses with Lens Studio and send the Lens to them from the Preview panel; the project needs no change for that. I have not had a pair to try it on, so the preview is where it has been tested.
 
 To run the tests, open the LEAF panel and run all scenarios. Start them on a freshly refreshed preview: five of them time themselves against the clock (c2, c5, c8, c9, c13), and the preview slows down the longer it has been running.
