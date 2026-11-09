@@ -19,7 +19,10 @@ FPS = 30
 TITLE = 2.0
 VOICE = "broll/voice-cut.wav"
 VOICE_LEN = 171.05
-MUSIC = "broll/music/Bailarina.mp3"   # Justin Allan Arnold, CC BY 4.0 (ifnessfreemusic.com)
+# "Latin Salsa Caliente Dance Floor Cut" by Alex Morgan, CC BY 4.0 (Free Music Archive): montuno, horn stabs,
+# busy percussion. MUSIC_IN is where it starts, MUSIC_TRIM_DB brings it to the -13.6 LUFS the gains below were set for
+MUSIC = "broll/music/candidates/alex-morgan-salsa-caliente.mp3"
+MUSIC_IN, MUSIC_TRIM_DB = 0.3, -4.0
 TAIL_AFTER_VOICE = 173.0            # the final turn runs to here (cut time)
 END_CARD = 3.0
 WALNUT = "0x1A1612"
@@ -522,8 +525,9 @@ def write_wav_f32(path, data, sr=48000):
 
 def mix_audio(out_wav):
     sr = 48000
+    # the cut file opens on 0.21 s of room and an intake before "So": fade through it so the voice starts on the word
     run(["ffmpeg", "-v", "error", "-y", "-i", VOICE, "-af",
-         "highpass=f=85:poles=2,afftdn=nr=6:nf=-50:nt=c,acompressor=threshold=-20dB:ratio=3:attack=8:release=120,"
+         "afade=t=in:st=0:d=0.18,highpass=f=85:poles=2,afftdn=nr=6:nf=-50:nt=c,acompressor=threshold=-20dB:ratio=3:attack=8:release=120,"
          "loudnorm=I=-16:TP=-0.7:LRA=11", "-ar", str(sr), "-ac", "2", "tmp/voice-proc.wav"])
     voice = read_wav_f32("tmp/voice-proc.wav", sr)
     total = int(TOTAL * sr)
@@ -531,12 +535,10 @@ def mix_audio(out_wav):
     v0 = int(TITLE * sr)
     n = min(len(voice), total - v0)
     mix[v0:v0 + n] += voice[:n]
-    # salsa under the whole video, ducked under the voice. "Bailarina" by Justin Allan Arnold,
-    # CC BY 4.0, credited on the end card and in DEMO_SCRIPT.md. The track measures -13.7 LUFS:
-    # OPEN_DB puts it near -22 LUFS on the cards and in long pauses, DUCK_DB near -33 under the voice
-    # The track opens on 8 s of quiet intro, so it starts 8.5 s in, where the band comes in.
+    # salsa under the whole video, ducked under the voice (track and credit: MUSIC above). At -13.6 LUFS after
+    # the trim, OPEN_DB puts it near -22 LUFS on the cards and in long pauses, DUCK_DB near -33 under the voice
     OPEN_DB, DUCK_DB = -8.0, -21.5
-    music = read_wav_f32(MUSIC, sr)[int(8.5 * sr):]
+    music = read_wav_f32(MUSIC, sr)[int(MUSIC_IN * sr):] * np.float32(10 ** (MUSIC_TRIM_DB / 20))
     if len(music) < total:
         music = np.concatenate([music, np.zeros((total - len(music), 2), np.float32)])
     music = music[:total]

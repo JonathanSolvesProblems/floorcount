@@ -5,13 +5,13 @@ Final values only, one field per block. `[X]` means Jonathan still has to supply
 ## Project name
 
 ```
-Floorcount
+Floorcount: salsa steps that light up on your floor
 ```
 
 ## Tagline
 
 ```
-The salsa count lights up on your own floor, so you stop walking back to the video.
+A salsa practice Lens for Specs: the step's footprints light up on your own floor on the beat, and the lesson changes after every 8-count, so you stop walking back to the video.
 ```
 
 ## About the project
@@ -103,32 +103,29 @@ lens-studio, clad, lens-studio-mcp, spectacles-interaction-kit, leaf, typescript
 ## Image gallery (upload in this order, with these captions)
 
 ```
-1. .design/brand/export/cards/devpost-thumbnail-1500x1000.png
-   (thumbnail, 3:2, no caption)
+1. devpost/preview/1-floorcount.png
+   (also the thumbnail) Floorcount: the salsa count, on your own floor. A practice Lens for SPECS.
 
-2. devpost/shots/pad-count1-teal.png
-   Count 1. The 1 is the only blue in the Lens: the left foot's print and the first cell. Lens Studio preview.
+2. devpost/preview/2-the-problem.png
+   One real practice with a phone tutorial, measured: 13 minutes, the same 4:28 video three times, two walks to the phone, 4 minutes of music to dance to.
 
-3. devpost/shots/pad-count5-lit.png
-   Count 5: the lit print is the right foot, outlined. The cells for 4 and 8 stay empty because those are holds. Lens Studio preview.
+3. devpost/preview/3-the-count-on-the-floor.png
+   Count 1. Each sole print lights on its count, the holds on 4 and 8 stay dark, and the 1 is the only blue. Lens Studio preview.
 
-4. devpost/shots/right-turn-arc.png
-   The right turn on count 2. The arc appears only on the two counts that turn. Lens Studio preview.
+4. devpost/preview/4-again-or-got-it.png
+   The step card at hip height. After every 8-count you pinch Again or Got it, and the tempo and the step change with your answers. Lens Studio preview.
 
-5. devpost/shots/step-card-answer-window.png
-   The step card at hip height: the step, the tempo and the two answers, written on the air with no panel behind it. Lens Studio preview.
+5. devpost/preview/5-the-right-turn.png
+   Three clean 8-counts at Full and the right turn loads, with an arc on the floor for the turn. Lens Studio preview.
 
-6. devpost/shots/last-time-rings.png
-   The next practice opens with last time's lost counts ringed and named on the card. Lens Studio preview.
+6. devpost/preview/6-it-remembers.png
+   The next practice opens with the count you lost last time named on the card and ringed on the pad. Lens Studio preview.
 
-7. devpost/shots/summary-last-time.png
-   The end of the second practice: each step's Agains next to last time's. Lens Studio preview.
+7. devpost/preview/7-your-view.png
+   A tutorial gives you the front view. Floorcount gives you the step from where you stand, hands free. Lens Studio preview on the right.
 
-8. .design/brand/export/cards/gallery-before-after-1500x1000.png
-   The first build worked and looked like a default. The second is after the design rules were applied.
-
-9. devpost/shots/ci-run.png
-   Every push runs the unit tests, the planted-bug check and the repository checks on GitHub.
+8. devpost/preview/8-how-it-was-made.png
+   Six done criteria from the plan-lens brief, 1095 Lens Studio MCP calls across 28 CLAD sessions, 18 LEAF scenarios, 84 unit tests.
 ```
 
 ## Links
