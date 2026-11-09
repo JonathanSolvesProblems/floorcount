@@ -19,10 +19,12 @@ FPS = 30
 TITLE = 2.0
 VOICE = "broll/voice-cut.wav"
 VOICE_LEN = 171.05
-# "Latin Salsa Caliente Dance Floor Cut" by Alex Morgan, CC BY 4.0 (Free Music Archive): montuno, horn stabs,
-# busy percussion. MUSIC_IN is where it starts, MUSIC_TRIM_DB brings it to the -13.6 LUFS the gains below were set for
-MUSIC = "broll/music/candidates/alex-morgan-salsa-caliente.mp3"
-MUSIC_IN, MUSIC_TRIM_DB = 0.3, -4.0
+# "Salsa Island" by Steve Oxen, music used from https://www.FesliyanStudios.com (free for videos that are not
+# monetised, credited on the end card). The track is 2:43, so salsa-island-loop.wav is it twice with a 3 s crossfade:
+#   ffmpeg -i salsa-island.mp3 -i salsa-island.mp3 -filter_complex "acrossfade=d=3:c1=tri:c2=tri" -ar 48000 ...
+# MUSIC_IN skips the first second; MUSIC_TRIM_DB brings its -14.1 LUFS to the -13.6 LUFS the gains below were set for
+MUSIC = "broll/music/salsa-island-loop.wav"
+MUSIC_IN, MUSIC_TRIM_DB = 1.0, 0.5
 TAIL_AFTER_VOICE = 173.0            # the final turn runs to here (cut time)
 END_CARD = 3.0
 WALNUT = "0x1A1612"
@@ -101,9 +103,9 @@ BEATS = [
     ("O", 104.90, 110.19, "split", dict(left=D + "MVI_0693.MOV", linp=479.4, lx=481, right="broll/preview-02-again-half.mp4", rinp=10.4)),
     ("P", 110.19, t_end_card, "clip", dict(src="broll/timeline.mp4", inp=0.0)),
     ("P2", t_end_card, 123.87, "clip", dict(src="broll/preview-03-next-step.mp4", inp=5.5)),
-    ("Q1", 123.87, 131.55, "clip", dict(src="broll/web-03-design-brief.mp4", inp=1.0)),
+    ("Q1", 123.87, 131.55, "clip", dict(src="broll/web-03-design-brief.mp4", inp=1.2)),   # after the file tree loads at 1.02 s
     ("Q2", 131.55, 137.29, "clip", dict(src="broll/web-04-prompts.mp4", inp=2.0)),
-    ("Q3", 137.29, 142.01, "clip", dict(src="broll/web-05-build-log.mp4", inp=1.0)),
+    ("Q3", 137.29, 142.01, "clip", dict(src="broll/web-05-build-log.mp4", inp=1.6)),   # after the file tree loads at 1.35 s and the page jumps
     ("Q4", 142.01, 145.89, "clip", dict(src="broll/preview-08-leaf-run.mp4", inp=28.5)),
     ("Q5", 145.89, 149.53, "clip", dict(src="broll/web-02-ci-green.mp4", inp=4.0)),
     ("Q6", 149.53, 152.99, "terminal", dict(src="broll/terminal-tests-take6.mp4", inp=TERM_SUMMARY_AT - 0.7)),   # "61 of 61" up for ~2.8 s

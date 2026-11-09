@@ -132,7 +132,8 @@ lens-studio, clad, lens-studio-mcp, spectacles-interaction-kit, leaf, typescript
 
 ```
 Repository: https://github.com/JonathanSolvesProblems/floorcount
-Video (public YouTube, under 3 minutes): [X]
+Video (public YouTube, under 3 minutes): https://www.youtube.com/watch?v=n4pGnXYn0ys
+Write-up: https://jonathanandrei.com/blog/floorcount-salsa-steps-on-your-floor-specs-lens/
 ```
 
 ## Disclosure of pre-existing work

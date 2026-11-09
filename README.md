@@ -4,7 +4,21 @@ The salsa count lights up on your own floor, so you stop walking back to the vid
 
 A practice Lens for SPECS, built for Learn AR with SPECS (Devpost Learn, with Snap's CLAD) in November 2026.
 
-![The pad on count 1: the numeral, the strip of eight cells with the 1 in blue, and the left foot's print struck on the floor](devpost/shots/pad-count1-teal.png)
+**Demo video (2:58):** https://www.youtube.com/watch?v=n4pGnXYn0ys
+**Write-up:** [Floorcount: salsa steps on your floor](https://jonathanandrei.com/blog/floorcount-salsa-steps-on-your-floor-specs-lens/)
+
+[![Floorcount demo video](devpost/preview/1-floorcount.png)](https://www.youtube.com/watch?v=n4pGnXYn0ys)
+
+| | |
+|---|---|
+| ![One real practice with a phone tutorial, measured: 13 minutes, the same video three times, two walks to the phone](devpost/preview/2-the-problem.png) | ![Count 1: each sole print lights on its count and the 1 is the only blue](devpost/preview/3-the-count-on-the-floor.png) |
+| The problem, measured: one practice with a phone tutorial. | Each print lights on its count; the holds on 4 and 8 stay dark. |
+| ![The step card with Again and Got it](devpost/preview/4-again-or-got-it.png) | ![The right turn loads with an arc on the floor](devpost/preview/5-the-right-turn.png) |
+| After every 8-count, one pinch: Again or Got it. | Three clean 8-counts at Full and the right turn loads. |
+| ![The next practice: the card names the count lost last time](devpost/preview/6-it-remembers.png) | ![A tutorial's front view beside your own view of the pad](devpost/preview/7-your-view.png) |
+| Next practice, it remembers the count you lost. | A tutorial faces you; this is the step from where you stand. |
+
+Every Lens image here is Lens Studio's preview. [How it was made](devpost/preview/8-how-it-was-made.png): six done criteria, 1095 Lens Studio MCP calls over 28 CLAD sessions, 18 LEAF scenarios, 84 unit tests.
 
 ## How to run it
 
@@ -158,4 +172,4 @@ The brief marked every value I had not chosen myself as a default, and the desig
 
 The Floorcount code, tests, audio, textures and documents are under the [MIT licence](LICENSE). The packages in `Packages/` are Snap's and stay under their own terms. The typeface is Atkinson Hyperlegible Next by the Braille Institute, under the SIL Open Font License. The three photos on the brand sheet are adapted from Wikimedia Commons under CC BY-SA 4.0 and credited in [.design/refs/credits.json](.design/refs/credits.json).
 
-The demo video's music is ["Latin Salsa Caliente Dance Floor Cut"](https://freemusicarchive.org/music/alex-morgan/bossa-nova-latin-jazz-vol-2/latin-salsa-caliente-dance-floor-cut/) by Alex Morgan (Free Music Archive, marked there as made with AI), under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). It is in the video only; the Lens plays its own generated music.
+The demo video's music is ["Salsa Island"](https://www.fesliyanstudios.com/royalty-free-music/download/salsa-island/735) by Steve Oxen, music used from [https://www.FesliyanStudios.com](https://www.fesliyanstudios.com/), an instrumental, under their [free-use policy](https://www.fesliyanstudios.com/policy) for videos that are not monetised. It is in the video only; the Lens plays its own generated music.
